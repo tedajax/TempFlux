@@ -1,0 +1,25 @@
+﻿body {
+    font-family: 'Segoe UI', sans-serif;
+}
+
+span {
+    font-style: italic;
+}
+
+/*#fps {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 2147483647;
+}*/
+
+#info {
+    position: absolute;
+    text-align: center;
+    top: 15px;
+    width: 100%;
+}
+
+#canvas {
+    cursor: crosshair;
+}

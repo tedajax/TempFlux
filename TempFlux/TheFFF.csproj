@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{33A3FAF9-3C59-4DFC-B9D0-000E8683F34E}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <TypeScriptToolsVersion>0.9</TypeScriptToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="worldobjects.ts" />
+    <TypeScriptCompile Include="animation.ts" />
+    <TypeScriptCompile Include="animationcontroller.ts" />
+    <TypeScriptCompile Include="animationfactory.ts" />
+    <Content Include="app.css" />
+    <TypeScriptCompile Include="worldterrain.ts" />
+    <TypeScriptCompile Include="camera.ts" />
+    <TypeScriptCompile Include="controllers.ts" />
+    <Content Include="assets\bear\bearAttack00.png" />
+    <Content Include="assets\bear\bearAttack01.png" />
+    <Content Include="assets\bear\bearAttack02.png" />
+    <Content Include="assets\bear\bearAttack03.png" />
+    <Content Include="assets\bear\bearAttack04.png" />
+    <Content Include="assets\bear\bearAttack05.png" />
+    <Content Include="assets\bear\bearIdle00.png" />
+    <Content Include="assets\bear\bearIdle01.png" />
+    <Content Include="assets\bear\bearIdle02.png" />
+    <Content Include="assets\bear\bearIdle03.png" />
+    <Content Include="assets\bear\bearWalk00.png" />
+    <Content Include="assets\bear\bearWalk01.png" />
+    <Content Include="assets\bear\bearWalk02.png" />
+    <Content Include="assets\bear\bearWalk03.png" />
+    <Content Include="assets\billboards\mountain.png" />
+    <Content Include="assets\billboards\tree0.png" />
+    <Content Include="assets\magus\mageAttack00.png" />
+    <Content Include="assets\magus\mageAttack01.png" />
+    <Content Include="assets\magus\mageAttack02.png" />
+    <Content Include="assets\magus\mageAttack03.png" />
+    <Content Include="assets\magus\mageAttack04.png" />
+    <Content Include="assets\magus\mageAttack05.png" />
+    <Content Include="assets\magus\mageAttack06.png" />
+    <Content Include="assets\magus\mageAttack07.png" />
+    <Content Include="assets\magus\mageIdle00.png" />
+    <Content Include="assets\magus\mageIdle01.png" />
+    <Content Include="assets\magus\mageIdle02.png" />
+    <Content Include="assets\magus\mageIdle03.png" />
+    <Content Include="assets\magus\mageWalk00.png" />
+    <Content Include="assets\magus\mageWalk01.png" />
+    <Content Include="assets\magus\mageWalk02.png" />
+    <Content Include="assets\magus\mageWalk03.png" />
+    <Content Include="assets\priest\priestAttack00.png" />
+    <Content Include="assets\priest\priestAttack01.png" />
+    <Content Include="assets\priest\priestAttack02.png" />
+    <Content Include="assets\priest\priestAttack03.png" />
+    <Content Include="assets\priest\priestAttack04.png" />
+    <Content Include="assets\priest\priestAttack05.png" />
+    <Content Include="assets\priest\priestIdle00.png" />
+    <Content Include="assets\priest\priestIdle01.png" />
+    <Content Include="assets\priest\priestIdle02.png" />
+    <Content Include="assets\priest\priestIdle03.png" />
+    <Content Include="assets\priest\priestWalk00.png" />
+    <Content Include="assets\priest\priestWalk01.png" />
+    <Content Include="assets\priest\priestWalk02.png" />
+    <Content Include="assets\priest\priestWalk03.png" />
+    <Content Include="assets\skeleton\skeletonAttack00.png" />
+    <Content Include="assets\skeleton\skeletonAttack01.png" />
+    <Content Include="assets\skeleton\skeletonAttack02.png" />
+    <Content Include="assets\skeleton\skeletonAttack03.png" />
+    <Content Include="assets\skeleton\skeletonAttack04.png" />
+    <Content Include="assets\skeleton\skeletonAttack05.png" />
+    <Content Include="assets\skeleton\skeletonIdle00.png" />
+    <Content Include="assets\skeleton\skeletonIdle01.png" />
+    <Content Include="assets\skeleton\skeletonIdle02.png" />
+    <Content Include="assets\skeleton\skeletonIdle03.png" />
+    <Content Include="assets\skeleton\skeletonWalk00.png" />
+    <Content Include="assets\skeleton\skeletonWalk01.png" />
+    <Content Include="assets\skeleton\skeletonWalk02.png" />
+    <Content Include="assets\skeleton\skeletonWalk03.png" />
+    <Content Include="assets\slime\slimeAttack00.png" />
+    <Content Include="assets\slime\slimeAttack01.png" />
+    <Content Include="assets\slime\slimeAttack02.png" />
+    <Content Include="assets\slime\slimeAttack03.png" />
+    <Content Include="assets\slime\slimeAttack04.png" />
+    <Content Include="assets\slime\slimeAttack05.png" />
+    <Content Include="assets\slime\slimeIdle00.png" />
+    <Content Include="assets\slime\slimeIdle01.png" />
+    <Content Include="assets\slime\slimeIdle02.png" />
+    <Content Include="assets\slime\slimeIdle03.png" />
+    <Content Include="assets\slime\slimeWalk00.png" />
+    <Content Include="assets\slime\slimeWalk01.png" />
+    <Content Include="assets\slime\slimeWalk02.png" />
+    <Content Include="assets\slime\slimeWalk03.png" />
+    <Content Include="assets\tiles\dirt0.png" />
+    <Content Include="assets\tiles\dirt1.png" />
+    <Content Include="assets\tiles\grass0.png" />
+    <Content Include="assets\tiles\grass1.png" />
+    <Content Include="assets\tiles\grass2.png" />
+    <Content Include="assets\tiles\mtn0.png" />
+    <Content Include="assets\tiles\water0.png" />
+    <Content Include="assets\tiles\water1.png" />
+    <Content Include="ByteBuffer.min.js" />
+    <Content Include="assets\bear\bearTiming.rtf" />
+    <Content Include="assets\magus\.DS_Store" />
+    <Content Include="assets\magus\mageTiming.rtf" />
+    <Content Include="assets\priest\priestTiming.rtf" />
+    <Content Include="assets\skeleton\.DS_Store" />
+    <Content Include="assets\skeleton\skeletonTiming.rtf" />
+    <Content Include="assets\slime\slimeTiming.rtf" />
+    <Content Include="assets\tiles\.DS_Store" />
+    <None Include="config.json" />
+    <TypeScriptCompile Include="connection.ts" />
+    <Content Include="default.htm" />
+    <TypeScriptCompile Include="shaders.ts" />
+    <TypeScriptCompile Include="sprite.ts" />
+    <TypeScriptCompile Include="renderable.ts" />
+    <TypeScriptCompile Include="texturemanager.ts" />
+    <TypeScriptCompile Include="input.ts" />
+    <TypeScriptCompile Include="gameobject.ts" />
+    <TypeScriptCompile Include="gameobjectmanager.ts" />
+    <Content Include="Long.min.js" />
+    <TypeScriptCompile Include="messagehandler.ts" />
+    <TypeScriptCompile Include="meshfactory.ts" />
+    <TypeScriptCompile Include="mesh.ts" />
+    <Content Include="ProtoBuf.js" />
+    <TypeScriptCompile Include="rendermanager.ts" />
+    <Content Include="tsm-0.7.d.ts" />
+    <Content Include="tsm-0.7.js" />
+    <Content Include="tsm-0.7.min.js" />
+    <TypeScriptCompile Include="util.ts" />
+    <Content Include="WebGL.d.ts" />
+    <TypeScriptCompile Include="game.ts" />
+    <Content Include="web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="app.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\sprite.vert" />
+    <None Include="assets\shaders\sprite.frag" />
+    <Content Include="proto\core.proto" />
+    <Content Include="tsm-0.7.js.map" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>TheFFF</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>16805</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:10679/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
+    <FilesToIncludeForPublish>AllFilesInTheProject</FilesToIncludeForPublish>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+    <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
+  </PropertyGroup>
+  <Import Project="$(VSToolsPath)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(VSToolsPath)\TypeScript\Microsoft.TypeScript.targets')" />
+</Project>

@@ -1,0 +1,73 @@
+﻿{
+  "game_config": {
+    "resource_map": {
+      "player_bullet": {
+        "url": "assets/game/bullet.png",
+        "mode": "clamp"
+      },
+      "redsquare": {
+        "url": "assets/enemies/redsquare.png",
+        "mode": "clamp"
+      },
+      "greentriangle": {
+        "url": "assets/enemies/greentriangle.png",
+        "mode": "clamp"
+      },
+      "bitIdle00": {
+        "url": "assets/bit/bitIdle00.png",
+        "mode": "clamp"
+      },
+      "grid0": {
+        "url": "assets/tiles/grid0.png",
+        "mode": "wrap"
+      },
+      "grid1": {
+        "url": "assets/tiles/grid1.png",
+        "mode": "wrap"
+      },
+      "gridedge_right": {
+        "url": "assets/tiles/gridedge_right.png",
+        "mode": "clamp"
+      },
+      "gridedge_left": {
+        "url": "assets/tiles/gridedge_left.png",
+        "mode": "clamp"
+      },
+      "gridedge_top": {
+        "url": "assets/tiles/gridedge_top.png",
+        "mode": "clamp"
+      },
+      "gridedge_bottom": {
+        "url": "assets/tiles/gridedge_bottom.png",
+        "mode": "clamp"
+      },
+      "gridcorner_bottomright": {
+        "url": "assets/tiles/gridcorner_bottomright.png",
+        "mode": "clamp"
+      },
+      "gridcorner_bottomleft": {
+        "url": "assets/tiles/gridcorner_bottomleft.png",
+        "mode": "clamp"
+      },
+      "gridcorner_topleft": {
+        "url": "assets/tiles/gridcorner_topleft.png",
+        "mode": "clamp"
+      },
+      "gridcorner_topright": {
+        "url": "assets/tiles/gridcorner_topright.png",
+        "mode": "clamp"
+      },
+      "grid_blank": {
+        "url": "assets/tiles/grid_blank.png",
+        "mode": "clamp"
+      }
+    },
+    "world_width": 16,
+    "world_height": 9,
+    "player": {
+      "speed": 300,
+      "fire_delay": 0.2,
+      "bullet_speed": 800
+    }
+  }
+}

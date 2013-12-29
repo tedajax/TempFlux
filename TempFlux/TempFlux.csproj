@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{CFCDE24E-6ADE-4EBC-94CC-581A1CC2969A}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <TypeScriptToolsVersion>0.9</TypeScriptToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="animation.ts" />
+    <TypeScriptCompile Include="animationcontroller.ts" />
+    <TypeScriptCompile Include="animationfactory.ts" />
+    <TypeScriptCompile Include="aicontrollers.ts" />
+    <Content Include="app.css" />
+    <TypeScriptCompile Include="camera.ts" />
+    <TypeScriptCompile Include="controllers.ts" />
+    <Content Include="assets\bit\bitIdle00.png" />
+    <Content Include="assets\enemies\redsquare.png" />
+    <Content Include="assets\game\bullet.png" />
+    <Content Include="assets\tiles\grid0.png" />
+    <Content Include="assets\tiles\grid1.png" />
+    <Content Include="assets\tiles\gridcorner_bottomleft.png" />
+    <Content Include="assets\tiles\gridcorner_bottomright.png" />
+    <Content Include="assets\tiles\gridcorner_topleft.png" />
+    <Content Include="assets\tiles\gridcorner_topright.png" />
+    <Content Include="assets\tiles\gridedge_bottom.png" />
+    <Content Include="assets\tiles\gridedge_left.png" />
+    <Content Include="assets\tiles\gridedge_right.png" />
+    <Content Include="assets\tiles\gridedge_top.png" />
+    <Content Include="assets\tiles\grid_blank.png" />
+    <Content Include="default.htm" />
+    <TypeScriptCompile Include="game.ts" />
+    <TypeScriptCompile Include="gameobject.ts" />
+    <TypeScriptCompile Include="gameobjectmanager.ts" />
+    <TypeScriptCompile Include="input.ts" />
+    <TypeScriptCompile Include="mesh.ts" />
+    <TypeScriptCompile Include="meshfactory.ts" />
+    <TypeScriptCompile Include="renderable.ts" />
+    <TypeScriptCompile Include="rendermanager.ts" />
+    <TypeScriptCompile Include="shaders.ts" />
+    <TypeScriptCompile Include="sprite.ts" />
+    <TypeScriptCompile Include="texturemanager.ts" />
+    <TypeScriptCompile Include="tsm-0.7.d.ts" />
+    <TypeScriptCompile Include="util.ts" />
+    <TypeScriptCompile Include="enemyfactory.ts" />
+    <TypeScriptCompile Include="physics.ts" />
+    <Content Include="web.config" />
+    <TypeScriptCompile Include="WebGL.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="app.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="assets\shaders\sprite.frag" />
+    <Content Include="assets\shaders\sprite.vert" />
+    <Content Include="assets\tiles\.DS_Store" />
+    <Content Include="config.json" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>TempFlux</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:57072/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+    <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
+  </PropertyGroup>
+  <Import Project="$(VSToolsPath)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(VSToolsPath)\TypeScript\Microsoft.TypeScript.targets')" />
+</Project>
