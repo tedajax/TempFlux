@@ -1,4 +1,4 @@
-var Util = (function () {
+﻿var Util = (function () {
     function Util() {
     }
     Util.toDegrees = function (radians) {
@@ -97,14 +97,18 @@ var Util = (function () {
         return a + (b - a) * t;
     };
 
-    Util.vec3Lerp = function (a, b, t) {
+    Util.lerpVec2 = function (a, b, t) {
+        return new TSM.vec2([Util.lerp(a.x, b.x, t), Util.lerp(a.y, b.y, t)]);
+    };
+
+    Util.lerpVec3 = function (a, b, t) {
         return new TSM.vec3([
             Util.lerp(a.x, b.x, t),
             Util.lerp(a.y, b.y, t),
             Util.lerp(a.z, b.z, t)]);
     };
 
-    Util.vec3LerpNoZ = function (a, b, t) {
+    Util.lerpVec3NoZ = function (a, b, t) {
         return new TSM.vec3([
             Util.lerp(a.x, b.x, t),
             Util.lerp(a.y, b.y, t),
@@ -230,6 +234,10 @@ var Rectangle = (function () {
         this.height += amount * 2;
         return this;
     };
+
+    Rectangle.lerp = function (a, b, t) {
+        return new Rectangle(Util.lerpVec2(a.position, b.position, t), Util.lerp(a.width, b.width, t), Util.lerp(a.height, b.height, t));
+    };
     return Rectangle;
 })();
 
@@ -271,6 +279,10 @@ var Circle = (function () {
         var x = point[0], y = point[1];
         var distSqr = Math.pow(x - this.position.x, 2) + Math.pow(y - this.position.y, 2);
         return (distSqr <= this.radius * this.radius);
+    };
+
+    Circle.lerp = function (a, b, t) {
+        return new Circle(Util.lerpVec2(a.position, b.position, t), Util.lerp(a.radius, b.radius, t));
     };
     return Circle;
 })();

@@ -40,6 +40,11 @@ var Health = (function () {
             }
         }
     };
+
+    Health.prototype.setMax = function (max) {
+        this.current += (max - this.max);
+        this.max = max;
+    };
     return Health;
 })();
 //# sourceMappingURL=health.js.map

@@ -28,6 +28,8 @@ var Collider = (function () {
         this.layer = layer;
         this.offset = offset;
         this.type = 0 /* None */;
+        this.continuousCollision = false;
+        this.previousPosition = new TSM.vec2([0, 0]);
     }
     Collider.prototype.updatePosition = function () {
     };
@@ -56,6 +58,8 @@ var CircleCollider = (function (_super) {
         this.type = 1 /* Circle */;
     }
     CircleCollider.prototype.updatePosition = function () {
+        this.previousPosition.x = this.circle.position.x;
+        this.previousPosition.y = this.circle.position.y;
         this.circle.position.x = this.parent.position.x + this.offset.x;
         this.circle.position.y = this.parent.position.y + this.offset.y;
     };
@@ -67,16 +71,38 @@ var CircleCollider = (function (_super) {
 
         switch (other.type) {
             case 1 /* Circle */:
-                return this.intersectsCircle(other);
+                if (this.continuousCollision) {
+                    return this.continuousIntersectsCircle(other);
+                } else {
+                    return this.intersectsCircle(other);
+                }
                 break;
 
             case 2 /* Rectangle */:
-                return this.intersectsRectangle(other);
+                if (this.continuousCollision) {
+                    return this.continuousIntersectsRectangle(other);
+                } else {
+                    return this.intersectsRectangle(other);
+                }
                 break;
 
             default:
                 return false;
         }
+    };
+
+    CircleCollider.prototype.continuousIntersectsCircle = function (other) {
+        var prevCircle = new Circle(this.previousPosition, this.circle.radius);
+        var midCircle = Circle.lerp(prevCircle, this.circle, 0.5);
+        var circ = other;
+        return (this.circle.intersects(circ.circle) || midCircle.intersects(circ.circle) || prevCircle.intersects(circ.circle));
+    };
+
+    CircleCollider.prototype.continuousIntersectsRectangle = function (other) {
+        var prevCircle = new Circle(this.previousPosition, this.circle.radius);
+        var midCircle = Circle.lerp(prevCircle, this.circle, 0.5);
+        var rect = other;
+        return (this.circle.intersectsRectangle(rect.rectangle) || midCircle.intersectsRectangle(rect.rectangle) || prevCircle.intersectsRectangle(rect.rectangle));
     };
 
     CircleCollider.prototype.intersectsCircle = function (other) {
@@ -106,6 +132,8 @@ var RectangleCollider = (function (_super) {
         this.type = 2 /* Rectangle */;
     }
     RectangleCollider.prototype.updatePosition = function () {
+        this.previousPosition.x = this.rectangle.position.x;
+        this.previousPosition.y = this.rectangle.position.y;
         this.rectangle.position.x = this.parent.position.x + this.offset.x;
         this.rectangle.position.y = this.parent.position.y + this.offset.y;
     };
@@ -117,16 +145,38 @@ var RectangleCollider = (function (_super) {
 
         switch (other.type) {
             case 1 /* Circle */:
-                return this.intersectsCircle(other);
+                if (this.continuousCollision) {
+                    return this.continuousIntersectsCircle(other);
+                } else {
+                    return this.intersectsCircle(other);
+                }
                 break;
 
             case 2 /* Rectangle */:
-                return this.intersectsRectangle(other);
+                if (this.continuousCollision) {
+                    return this.continuousIntersectsRectangle(other);
+                } else {
+                    return this.intersectsRectangle(other);
+                }
                 break;
 
             default:
                 return false;
         }
+    };
+
+    RectangleCollider.prototype.continuousIntersectsCircle = function (other) {
+        var prevRectangle = new Rectangle(this.previousPosition, this.rectangle.width, this.rectangle.height);
+        var midRectangle = Rectangle.lerp(prevRectangle, this.rectangle, 0.5);
+        var circ = other;
+        return (circ.circle.intersectsRectangle(this.rectangle) || circ.circle.intersectsRectangle(midRectangle) || circ.circle.intersectsRectangle(prevRectangle));
+    };
+
+    RectangleCollider.prototype.continuousIntersectsRectangle = function (other) {
+        var prevRectangle = new Rectangle(this.previousPosition, this.rectangle.width, this.rectangle.height);
+        var midRectangle = Rectangle.lerp(prevRectangle, this.rectangle, 0.5);
+        var rect = other;
+        return (this.rectangle.intersects(rect.rectangle) || midRectangle.intersects(rect.rectangle) || prevRectangle.intersects(rect.rectangle));
     };
 
     RectangleCollider.prototype.intersectsCircle = function (other) {
@@ -212,7 +262,7 @@ var CollisionManager = (function () {
 
                 var b = this.colliders[key2];
                 b.updatePosition();
-                if (a.intersects(b)) {
+                if (a.intersects(b) || b.intersects(a)) {
                     this.registerCollision(a, b);
                 } else {
                     this.collisionComplete(a, b);

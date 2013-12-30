@@ -60,12 +60,18 @@ var AIController = (function (_super) {
     function AIController(gameObject) {
         var _this = this;
         _super.call(this, gameObject);
+        this.damageFlashTime = 0.1;
+        this.damageFlashTimer = 0;
 
         this.aiState = 0 /* Idle */;
         this.stateStarted = false;
 
         this.health.onDeath = function () {
             _this.gameObject.destroy();
+        };
+
+        this.health.onDamage = function () {
+            _this.damageColorFlash();
         };
     }
     AIController.prototype.update = function (dt) {
@@ -76,6 +82,7 @@ var AIController = (function (_super) {
         this.stateMachine(dt);
 
         this.constrainToBoundaries();
+        this.damageFlashUpdate(dt);
 
         this.gameObject.position = this.position;
         this.gameObject.rotation = this.rotation;
@@ -181,6 +188,24 @@ var AIController = (function (_super) {
             this.nudgeAway(collider.parent.controller, 2);
         }
     };
+
+    AIController.prototype.damageFlashUpdate = function (dt) {
+        if (this.damageFlashTimer > 0) {
+            this.damageFlashTimer -= dt;
+            if (this.damageFlashTimer <= 0) {
+                this.gameObject.sprite.addColor[0] = 0;
+                this.gameObject.sprite.addColor[1] = 0;
+                this.gameObject.sprite.addColor[2] = 0;
+            }
+        }
+    };
+
+    AIController.prototype.damageColorFlash = function () {
+        this.damageFlashTimer = this.damageFlashTime;
+        this.gameObject.sprite.addColor[0] = 1;
+        this.gameObject.sprite.addColor[1] = 1;
+        this.gameObject.sprite.addColor[2] = 1;
+    };
     return AIController;
 })(Controller);
 
@@ -207,8 +232,8 @@ var AIRedSquareController = (function (_super) {
 
 var AIGreenTriangleController = (function (_super) {
     __extends(AIGreenTriangleController, _super);
-    function AIGreenTriangleController() {
-        _super.apply(this, arguments);
+    function AIGreenTriangleController(gameObject) {
+        _super.call(this, gameObject);
         this.idleTime = 2;
         this.idleTimer = this.idleTime;
         this.defensiveTime = Util.randomRangeF(3, 4);
@@ -221,6 +246,8 @@ var AIGreenTriangleController = (function (_super) {
         this.aggressivePauseTimer = this.aggressivePauseTime;
         this.aggressiveSpeed = 0;
         this.aggressiveMaxSpeed = 700;
+
+        this.health.setMax(1);
     }
     AIGreenTriangleController.prototype.stateIdle = function (dt) {
         this.turnToFace(AIController.player.position, 2);
@@ -255,7 +282,7 @@ var AIGreenTriangleController = (function (_super) {
         this.targetPosition.x += Math.cos(this.defensiveAngle) * this.defensiveRadius;
         this.targetPosition.y += Math.sin(this.defensiveAngle) * this.defensiveRadius;
 
-        this.position = Util.vec3LerpNoZ(this.position, this.targetPosition, 2 * dt);
+        this.position = Util.lerpVec3NoZ(this.position, this.targetPosition, 2 * dt);
     };
 
     AIGreenTriangleController.prototype.stateTransitionDefensive = function (dt) {

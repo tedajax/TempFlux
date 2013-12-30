@@ -58,6 +58,9 @@ class AIController extends Controller {
     stateStarted: boolean;
     static player: GameObject;
 
+    damageFlashTime: number = 0.1;
+    damageFlashTimer: number = 0;
+
     constructor(gameObject: GameObject) {
         super(gameObject);
 
@@ -67,6 +70,10 @@ class AIController extends Controller {
         this.health.onDeath = () => {
             this.gameObject.destroy();
         };
+
+        this.health.onDamage = () => {
+            this.damageColorFlash();
+        }
     }
 
     update(dt: number) {
@@ -77,6 +84,7 @@ class AIController extends Controller {
         this.stateMachine(dt);
 
         this.constrainToBoundaries();
+        this.damageFlashUpdate(dt);        
 
         this.gameObject.position = this.position;
         this.gameObject.rotation = this.rotation;
@@ -181,6 +189,24 @@ class AIController extends Controller {
             this.nudgeAway(collider.parent.controller, 2);
         }
     }
+
+    damageFlashUpdate(dt: number) {
+        if (this.damageFlashTimer > 0) {
+            this.damageFlashTimer -= dt;
+            if (this.damageFlashTimer <= 0) {
+                this.gameObject.sprite.addColor[0] = 0;
+                this.gameObject.sprite.addColor[1] = 0;
+                this.gameObject.sprite.addColor[2] = 0;
+            }
+        }
+    }
+
+    damageColorFlash() {
+        this.damageFlashTimer = this.damageFlashTime;
+        this.gameObject.sprite.addColor[0] = 1;
+        this.gameObject.sprite.addColor[1] = 1;
+        this.gameObject.sprite.addColor[2] = 1;
+    }
 }
 
 class AIRedSquareController extends AIController {
@@ -217,6 +243,12 @@ class AIGreenTriangleController extends AIController {
     aggressiveSpeed: number = 0;
     aggressiveMaxSpeed: number = 700;
     aggressiveSpeedTween: Tween;
+
+    constructor(gameObject: GameObject) {
+        super(gameObject);
+
+        this.health.setMax(1);
+    }
     
     stateIdle(dt: number) {
         this.turnToFace(AIController.player.position, 2);
@@ -251,7 +283,7 @@ class AIGreenTriangleController extends AIController {
         this.targetPosition.x += Math.cos(this.defensiveAngle) * this.defensiveRadius;
         this.targetPosition.y += Math.sin(this.defensiveAngle) * this.defensiveRadius;
 
-        this.position = Util.vec3LerpNoZ(this.position, this.targetPosition, 2 * dt);
+        this.position = Util.lerpVec3NoZ(this.position, this.targetPosition, 2 * dt);
     }
 
     stateTransitionDefensive(dt: number): AIState {

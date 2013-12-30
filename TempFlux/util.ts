@@ -100,13 +100,17 @@ class Util {
         return a + (b - a) * t;
     }
 
-    static vec3Lerp(a: TSM.vec3, b: TSM.vec3, t: number) {
+    static lerpVec2(a: TSM.vec2, b: TSM.vec2, t: number) {
+        return new TSM.vec2([Util.lerp(a.x, b.x, t), Util.lerp(a.y, b.y, t)]);
+    }
+    
+    static lerpVec3(a: TSM.vec3, b: TSM.vec3, t: number) {
         return new TSM.vec3([Util.lerp(a.x, b.x, t),
             Util.lerp(a.y, b.y, t),
             Util.lerp(a.z, b.z, t)]);
     }
 
-    static vec3LerpNoZ(a: TSM.vec3, b: TSM.vec3, t: number) {
+    static lerpVec3NoZ(a: TSM.vec3, b: TSM.vec3, t: number) {
         return new TSM.vec3([Util.lerp(a.x, b.x, t),
             Util.lerp(a.y, b.y, t),
             a.z]);
@@ -229,6 +233,10 @@ class Rectangle {
         this.height += amount * 2;
         return this;
     }
+
+    static lerp(a: Rectangle, b: Rectangle, t: number) {
+        return new Rectangle(Util.lerpVec2(a.position, b.position, t), Util.lerp(a.width, b.width, t), Util.lerp(a.height, b.height, t));
+    }
 }
 
 class Circle {
@@ -272,6 +280,10 @@ class Circle {
         var x = point[0], y = point[1];
         var distSqr = Math.pow(x - this.position.x, 2) + Math.pow(y - this.position.y, 2);
         return (distSqr <= this.radius * this.radius);
+    }
+
+    static lerp(a: Circle, b: Circle, t: number) {
+        return new Circle(Util.lerpVec2(a.position, b.position, t), Util.lerp(a.radius, b.radius, t));
     }
 }
 

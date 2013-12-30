@@ -101,6 +101,7 @@ class SpriteShader extends Shader {
     texture: ImageTexture;
     lastBoundTexture: ImageTexture;
     tintColor: Float32Array;
+    addColor: Float32Array;
 
     constructor() {
         super();
@@ -121,6 +122,7 @@ class SpriteShader extends Shader {
         this.addUniform("projection", "uProjection");
         this.addUniform("texture", "uTexture");
         this.addUniform("tintColor", "uTintColor");
+        this.addUniform("addColor", "uAddColor");
     }
 
     frameDrawSetup() {
@@ -153,5 +155,6 @@ class SpriteShader extends Shader {
 
         game.gl.uniformMatrix4fv(this.uniforms["world"], false, this.worldMatrix.all());
         game.gl.uniform4fv(this.uniforms["tintColor"], this.tintColor);
+        game.gl.uniform4fv(this.uniforms["addColor"], this.addColor);
     }
 }

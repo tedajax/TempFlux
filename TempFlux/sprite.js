@@ -19,6 +19,7 @@ var Sprite = (function (_super) {
 
         this.alpha = false;
         this.tintColor = new Float32Array([1, 1, 1, 1]);
+        this.addColor = new Float32Array([0, 0, 0, 0]);
 
         this.width = width;
         this.height = height;
@@ -41,6 +42,7 @@ var Sprite = (function (_super) {
     Sprite.prototype.render = function () {
         var spriteShader = this.shader;
         spriteShader.tintColor = this.tintColor;
+        spriteShader.addColor = this.addColor;
         spriteShader.worldMatrix = this.buildWorldMatrix();
         spriteShader.objectDrawSetup();
         if (this.bindTexture) {

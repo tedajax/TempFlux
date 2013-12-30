@@ -2,7 +2,7 @@ class RenderManager {
     lastVertexBuffer: RenderBuffer;
     lastColorBuffer: RenderBuffer;
     lastTexCoordBuffer: RenderBuffer;
-    lastIndexBuffers: RenderBuffer;
+    lastIndexBuffer: RenderBuffer;
 
     alphaEnabled: boolean;
 

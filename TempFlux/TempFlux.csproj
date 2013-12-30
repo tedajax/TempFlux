@@ -67,10 +67,6 @@
     <Content Include="assets\shaders\sprite.vert" />
     <Content Include="assets\tiles\.DS_Store" />
     <Content Include="config.json" />
-    <Content Include="assets\shaders\fsquad.frag" />
-    <Content Include="assets\shaders\fsquad.vert" />
-    <Content Include="assets\shaders\glow.frag" />
-    <Content Include="assets\shaders\glow.vert" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

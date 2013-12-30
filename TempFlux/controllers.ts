@@ -266,9 +266,10 @@ class LocalPlayerController extends Controller {
         bulletController.speed = this.playerConfig["bullet_speed"];
         bulletController.velocity = new TSM.vec3([Math.cos(this.rotation.z), Math.sin(this.rotation.z), 0]);
         bulletController.posess(go);
-
+        
         game.gameObjects.add(go);
         go.addCircleCollider();
+        //go.collider.continuousCollision = true;
     }
 }
 
@@ -332,5 +333,6 @@ class PlayerRecordingController extends Controller {
 
         game.gameObjects.add(go);
         go.addCircleCollider();
+        go.collider.continuousCollision = true;
     }
 }

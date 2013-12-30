@@ -113,6 +113,7 @@ var SpriteShader = (function (_super) {
         this.addUniform("projection", "uProjection");
         this.addUniform("texture", "uTexture");
         this.addUniform("tintColor", "uTintColor");
+        this.addUniform("addColor", "uAddColor");
     };
 
     SpriteShader.prototype.frameDrawSetup = function () {
@@ -143,6 +144,7 @@ var SpriteShader = (function (_super) {
         //game.gl.useProgram(this.program);
         game.gl.uniformMatrix4fv(this.uniforms["world"], false, this.worldMatrix.all());
         game.gl.uniform4fv(this.uniforms["tintColor"], this.tintColor);
+        game.gl.uniform4fv(this.uniforms["addColor"], this.addColor);
     };
     return SpriteShader;
 })(Shader);

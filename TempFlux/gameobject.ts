@@ -54,7 +54,7 @@ class GameObject {
     addRectangleCollider(layer: CollisionLayer = CollisionLayer.Default,
         width: number = this.sprite.width,
         height: number = this.sprite.height,
-        offset: TSM.vec2 = new TSM.vec2([-this.sprite.width / 2, -this.sprite.height / 2])) {
+        offset: TSM.vec2 = new TSM.vec2([-this.sprite.width, -this.sprite.height2])) {
             var rect = new RectangleCollider(this, width, height, offset, layer);
             this.addCollider(rect);
     }

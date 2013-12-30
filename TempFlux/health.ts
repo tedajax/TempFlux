@@ -47,4 +47,9 @@ class Health {
             }
         }
     }
+
+    setMax(max: number) {
+        this.current += (max - this.max);
+        this.max = max;
+    }
 } 

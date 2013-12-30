@@ -2,6 +2,7 @@ class Sprite extends Renderable {
     texture: ImageTexture;
     alpha: boolean;
     tintColor: Float32Array;
+    addColor: Float32Array;
     width: number;
     height: number;
     bindTexture: boolean;
@@ -16,6 +17,7 @@ class Sprite extends Renderable {
 
         this.alpha = false;
         this.tintColor = new Float32Array([1, 1, 1, 1]);
+        this.addColor = new Float32Array([0, 0, 0, 0]);
 
         this.width = width;
         this.height = height;
@@ -39,6 +41,7 @@ class Sprite extends Renderable {
     render() {
         var spriteShader = <SpriteShader>this.shader;
         spriteShader.tintColor = this.tintColor;
+        spriteShader.addColor = this.addColor;
         spriteShader.worldMatrix = this.buildWorldMatrix();
         spriteShader.objectDrawSetup();
         if (this.bindTexture) {

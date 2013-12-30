@@ -17,12 +17,16 @@ class Collider {
     type: ColliderType; 
     parent: GameObject
     offset: TSM.vec2;
+    continuousCollision: boolean;
+    previousPosition: TSM.vec2;
 
     constructor(parent: GameObject, offset: TSM.vec2 = TSM.vec2.zero, layer: number = CollisionLayer.Default) {
         this.parent = parent;
         this.layer = layer;
         this.offset = offset;
         this.type = ColliderType.None;
+        this.continuousCollision = false;
+        this.previousPosition = new TSM.vec2([0, 0]);
     }
 
     updatePosition() {
@@ -52,6 +56,8 @@ class CircleCollider extends Collider {
     }
 
     updatePosition() {
+        this.previousPosition.x = this.circle.position.x;
+        this.previousPosition.y = this.circle.position.y;
         this.circle.position.x = this.parent.position.x + this.offset.x;
         this.circle.position.y = this.parent.position.y + this.offset.y;
     }
@@ -63,16 +69,38 @@ class CircleCollider extends Collider {
 
         switch (other.type) {
             case ColliderType.Circle:
-                return this.intersectsCircle(other);
+                if (this.continuousCollision) {
+                    return this.continuousIntersectsCircle(other);
+                } else {
+                    return this.intersectsCircle(other);
+                }
                 break;
 
             case ColliderType.Rectangle:
-                return this.intersectsRectangle(other);
+                if (this.continuousCollision) {
+                    return this.continuousIntersectsRectangle(other);
+                } else {
+                    return this.intersectsRectangle(other);
+                }
                 break;
 
             default:
                 return false;
         }
+    }
+
+    continuousIntersectsCircle(other: Collider): boolean {
+        var prevCircle = new Circle(this.previousPosition, this.circle.radius);
+        var midCircle = Circle.lerp(prevCircle, this.circle, 0.5);
+        var circ = <CircleCollider>other;
+        return (this.circle.intersects(circ.circle) || midCircle.intersects(circ.circle) || prevCircle.intersects(circ.circle));
+    }
+
+    continuousIntersectsRectangle(other: Collider): boolean {
+        var prevCircle = new Circle(this.previousPosition, this.circle.radius);
+        var midCircle = Circle.lerp(prevCircle, this.circle, 0.5);
+        var rect = <RectangleCollider>other;
+        return (this.circle.intersectsRectangle(rect.rectangle) || midCircle.intersectsRectangle(rect.rectangle) || prevCircle.intersectsRectangle(rect.rectangle));
     }
 
     intersectsCircle(other: Collider): boolean {
@@ -101,6 +129,8 @@ class RectangleCollider extends Collider {
     }
 
     updatePosition() {
+        this.previousPosition.x = this.rectangle.position.x;
+        this.previousPosition.y = this.rectangle.position.y;
         this.rectangle.position.x = this.parent.position.x + this.offset.x;
         this.rectangle.position.y = this.parent.position.y + this.offset.y;
     }
@@ -112,16 +142,38 @@ class RectangleCollider extends Collider {
 
         switch (other.type) {
             case ColliderType.Circle:
-                return this.intersectsCircle(other);
+                if (this.continuousCollision) {
+                    return this.continuousIntersectsCircle(other);
+                } else {
+                    return this.intersectsCircle(other);
+                }
                 break;
 
             case ColliderType.Rectangle:
-                return this.intersectsRectangle(other);
+                if (this.continuousCollision) {
+                    return this.continuousIntersectsRectangle(other);
+                } else {
+                    return this.intersectsRectangle(other);
+                }
                 break;
 
             default:
                 return false;
         }
+    }
+
+    continuousIntersectsCircle(other: Collider): boolean {
+        var prevRectangle = new Rectangle(this.previousPosition, this.rectangle.width, this.rectangle.height);
+        var midRectangle = Rectangle.lerp(prevRectangle, this.rectangle, 0.5);
+        var circ = <CircleCollider>other;
+        return (circ.circle.intersectsRectangle(this.rectangle) || circ.circle.intersectsRectangle(midRectangle) || circ.circle.intersectsRectangle(prevRectangle));
+    }
+
+    continuousIntersectsRectangle(other: Collider): boolean {
+        var prevRectangle = new Rectangle(this.previousPosition, this.rectangle.width, this.rectangle.height);
+        var midRectangle = Rectangle.lerp(prevRectangle, this.rectangle, 0.5);
+        var rect = <RectangleCollider>other;
+        return (this.rectangle.intersects(rect.rectangle) || midRectangle.intersects(rect.rectangle) || prevRectangle.intersects(rect.rectangle));
     }
 
     intersectsCircle(other: Collider): boolean {
@@ -210,7 +262,7 @@ class CollisionManager {
 
                 var b = this.colliders[key2];
                 b.updatePosition();
-                if (a.intersects(b)) {
+                if (a.intersects(b) || b.intersects(a)) {
                     this.registerCollision(a, b);
                 } else {
                     this.collisionComplete(a, b);

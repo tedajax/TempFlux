@@ -43,7 +43,7 @@ var GameObject = (function () {
         if (typeof layer === "undefined") { layer = 1 /* Default */; }
         if (typeof width === "undefined") { width = this.sprite.width; }
         if (typeof height === "undefined") { height = this.sprite.height; }
-        if (typeof offset === "undefined") { offset = new TSM.vec2([-this.sprite.width / 2, -this.sprite.height / 2]); }
+        if (typeof offset === "undefined") { offset = new TSM.vec2([-this.sprite.width, -this.sprite.height2]); }
         var rect = new RectangleCollider(this, width, height, offset, layer);
         this.addCollider(rect);
     };

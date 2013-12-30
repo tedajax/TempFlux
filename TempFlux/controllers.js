@@ -259,6 +259,7 @@ var LocalPlayerController = (function (_super) {
 
         game.gameObjects.add(go);
         go.addCircleCollider();
+        //go.collider.continuousCollision = true;
     };
     return LocalPlayerController;
 })(Controller);
@@ -320,6 +321,7 @@ var PlayerRecordingController = (function (_super) {
 
         game.gameObjects.add(go);
         go.addCircleCollider();
+        go.collider.continuousCollision = true;
     };
     return PlayerRecordingController;
 })(Controller);
