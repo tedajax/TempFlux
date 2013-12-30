@@ -13,6 +13,10 @@ var EnemySpawnerController = (function (_super) {
         this.spawnDelayTimer = this.spawnDelay;
 
         this.enableSpawning = true;
+
+        this.enemyMap = [];
+        this.enemyMap[0] = "red_square";
+        this.enemyMap[1] = "green_triangle";
     }
     EnemySpawnerController.prototype.update = function (dt) {
         if (game.input.getKeyDown(Keys.E)) {
@@ -27,11 +31,19 @@ var EnemySpawnerController = (function (_super) {
             this.spawnDelay = Util.randomRangeF(0, 5);
             this.spawnDelayTimer = this.spawnDelay;
 
-            var x = Util.randomRange(-400, 400);
-            var y = Util.randomRange(-300, 300);
-
-            game.enemies.createEnemy("green_triangle", new TSM.vec3([x, y, 0]));
+            game.enemies.createEnemy(this.enemyMap[Util.randomRange(0, 1)], this.getRandomSpawnPosition());
         }
+    };
+
+    EnemySpawnerController.prototype.getRandomSpawnPosition = function () {
+        var x = Util.randomRange(-game.worldWidth / 2, game.worldWidth / 2);
+        var y = Util.randomRange(-game.worldHeight / 2, game.worldHeight / 2);
+
+        return new TSM.vec3([x, y, 0]);
+    };
+
+    EnemySpawnerController.prototype.spawnLocationValid = function (position) {
+        return true;
     };
     return EnemySpawnerController;
 })(Controller);
@@ -64,18 +76,10 @@ var AIController = (function (_super) {
         this.gameObject.rotation = this.rotation;
     };
 
-    AIController.prototype.nudgeAway = function (other, amount) {
-        if (typeof amount === "undefined") { amount = 1; }
-        var dir = new TSM.vec2([
-            this.position.x - other.position.x,
-            this.position.y - other.position.y]);
-        this.nudge(dir.normalize(), amount);
-    };
-
-    AIController.prototype.nudge = function (direction, amount) {
-        if (typeof amount === "undefined") { amount = 1; }
-        this.position.x += direction.x * amount;
-        this.position.y += direction.y * amount;
+    AIController.prototype.turnToFace = function (point, maxDegreesPerSecond) {
+        if (typeof maxDegreesPerSecond === "undefined") { maxDegreesPerSecond = 10; }
+        var angleDiff = Util.wrapRadians(Util.angleTo(this.position, point));
+        this.rotation.z = Util.lerpRadians(this.rotation.z, angleDiff, 0.1);
     };
 
     AIController.prototype.stateMachine = function (dt) {
@@ -186,7 +190,7 @@ var AIRedSquareController = (function (_super) {
 
     AIRedSquareController.prototype.stateAggressive = function (dt) {
         var direction = Util.direction2D(AIController.player.position, this.position);
-        var speed = 50;
+        var speed = 100;
         this.velocity.x = direction.x * speed;
         this.velocity.y = direction.y * speed;
 
@@ -208,15 +212,13 @@ var AIGreenTriangleController = (function (_super) {
         this.defensiveRadius = Util.randomRangeF(250, 300);
         this.defensiveAngle = 0;
         this.defensiveAngleTimer = Util.randomRange(2, 5);
-        this.aggressivePauseTime = 0.5;
+        this.aggressivePauseTime = 0.25;
         this.aggressivePauseTimer = this.aggressivePauseTime;
         this.aggressiveSpeed = 0;
-        this.aggressiveMaxSpeed = 600;
-        this.aggressiveMaxDistance = 750;
+        this.aggressiveMaxSpeed = 700;
     }
     AIGreenTriangleController.prototype.stateIdle = function (dt) {
-        var angle = Math.atan2(this.position.y - AIController.player.position.y, this.position.x - AIController.player.position.x);
-        this.rotation.z = angle - Math.PI / 2;
+        this.turnToFace(AIController.player.position, 2);
 
         this.idleTimer -= dt;
     };
@@ -245,8 +247,7 @@ var AIGreenTriangleController = (function (_super) {
             this.defensiveAngle += Util.randomRangeF(-30 * Util.deg2Rad, 30 * Util.deg2Rad);
         }
 
-        var angle = Math.atan2(this.position.y - AIController.player.position.y, this.position.x - AIController.player.position.x);
-        this.rotation.z = angle - Math.PI / 2;
+        this.turnToFace(AIController.player.position, 2);
 
         this.targetPosition.xyz = AIController.player.position.xyz;
         this.targetPosition.x += Math.cos(this.defensiveAngle) * this.defensiveRadius;
@@ -267,11 +268,10 @@ var AIGreenTriangleController = (function (_super) {
 
     AIGreenTriangleController.prototype.stateStartAggressive = function () {
         var _this = this;
-        var angle = Math.atan2(this.position.y - AIController.player.position.y, this.position.x - AIController.player.position.x);
-        this.rotation.z = angle - Math.PI / 2;
+        var angle = Util.angleTo(this.position, AIController.player.position);
+        this.turnToFace(AIController.player.position, 2);
 
-        this.aggressiveDirection = new TSM.vec3([Math.cos(angle + Math.PI), Math.sin(angle + Math.PI), 0]);
-        this.aggressiveDistanceTraveled = 0;
+        this.aggressiveDirection = new TSM.vec3([Math.cos(angle - Math.PI / 2), Math.sin(angle - Math.PI / 2), 0]);
         this.aggressivePauseTimer = this.aggressivePauseTime;
 
         this.aggressiveSpeed = 0;

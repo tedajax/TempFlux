@@ -35,13 +35,58 @@
     };
 
     Util.direction2D = function (v1, v2) {
-        var v1flat = new TSM.vec3([v1.x, v1.y, 0]);
-        var v2flat = new TSM.vec3([v2.x, v2.y, 0]);
-        return TSM.vec3.direction(v1flat, v2flat);
+        var l = Util.distance2D(v1, v2);
+        return new TSM.vec3([(v1.x - v2.x) / l, (v1.y - v2.y) / l, 0]);
+    };
+
+    Util.distance2D = function (v1, v2) {
+        return Math.sqrt(Util.distanceSqr2D(v1, v2));
+    };
+
+    Util.distanceSqr2D = function (v1, v2) {
+        return Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2);
+    };
+
+    Util.angleTo = function (from, to) {
+        return Util.wrapRadians((Math.atan2(to.y - from.y, to.x - from.x) + Util.PiOver2));
+    };
+
+    Util.lerpDegrees = function (a, b, t) {
+        var diff = Math.abs(b - a);
+        if (diff > 180) {
+            if (b > a) {
+                a += 360;
+            } else {
+                b += 360;
+            }
+        }
+
+        return Util.wrapDegrees(Util.lerp(a, b, t));
+    };
+
+    Util.lerpRadians = function (a, b, t) {
+        var diff = Math.abs(b - a);
+        if (diff > Math.PI) {
+            if (b > a) {
+                a += Util.TwoPi;
+            } else {
+                b += Util.TwoPi;
+            }
+        }
+
+        return Util.wrapRadians(Util.lerp(a, b, t));
+    };
+
+    Util.wrapDegrees = function (degrees) {
+        return degrees % 360;
+    };
+
+    Util.wrapRadians = function (radians) {
+        return radians % Util.TwoPi;
     };
 
     Util.randomRange = function (min, max) {
-        return Math.floor(Math.random() * (max - min) + min);
+        return Math.floor(Math.random() * ((max + 1) - min) + min);
     };
 
     Util.randomRangeF = function (min, max) {
@@ -67,6 +112,8 @@
     };
     Util.deg2Rad = 0.0174532925;
     Util.rad2Deg = 57.2957795;
+    Util.PiOver2 = Math.PI / 2;
+    Util.TwoPi = Math.PI * 2;
     return Util;
 })();
 

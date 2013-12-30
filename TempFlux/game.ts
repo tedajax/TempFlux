@@ -13,6 +13,9 @@ class Game {
     elapsedTime: number;
     config: Object;
 
+    worldWidth: number;
+    worldHeight: number;
+
     renderer: RenderManager;
     textures: TextureManager;
     gameObjects: GameObjectManager;
@@ -102,6 +105,8 @@ class Game {
         var go = this.gameObjects.add(new GameObject("bit", ["idle"], "Player"));
         go.playAnimation("idle", true);
         go.sprite.alpha = true;
+        go.position.x = go.sprite.width / 2;
+        go.position.y = go.sprite.height / 2;
         this.camera.gameObjectToFollow = go;
         this.playerController = new LocalPlayerController(go);
         this.recordingControllers = [];
@@ -132,36 +137,38 @@ class Game {
         var tilesY = game.config["world_height"];
         var worldWidth = tileWidth * tilesX;
         var worldHeight = tileHeight * tilesY;
+        this.worldWidth = worldWidth;
+        this.worldHeight = worldHeight;
         this.worldBoundary = new Rectangle(new TSM.vec2([-worldWidth / 2, -worldHeight / 2]), worldWidth, worldHeight);
 
         var gridBG = new Sprite(worldWidth, worldHeight, tilesX, tilesY);
         gridBG.setShader(this.spriteShader);
         gridBG.setTexture(this.textures.getTexture("grid1"));
-        gridBG.position.xyz = [0, 0, -1];
+        gridBG.position.xyz = [worldWidth / 2, worldHeight / 2, -1];
         this.gameObjects.add(new GameObject("ignore", [], "GridBG", gridBG));
 
         var gridTop = new Sprite(worldWidth, tileHeight, tilesX, 1);
         gridTop.setShader(this.spriteShader);
         gridTop.setTexture(this.textures.getTexture("gridedge_top"));
-        gridTop.position.xyz = [0, -worldHeight / 2 - tileHeight / 2, -1];
+        gridTop.position.xyz = [worldWidth / 2, -worldHeight / 2, -1];
         this.gameObjects.add(new GameObject("ignore", [], "GridBGTop", gridTop));
 
         var gridBottom = new Sprite(worldWidth, tileHeight, tilesX, 1);
         gridBottom.setShader(this.spriteShader);
         gridBottom.setTexture(this.textures.getTexture("gridedge_bottom"));
-        gridBottom.position.xyz = [0, worldHeight / 2 + tileHeight / 2, -1];
+        gridBottom.position.xyz = [worldWidth / 2, worldHeight / 2 + tileHeight, -1];
         this.gameObjects.add(new GameObject("ignore", [], "GridBGBottom", gridBottom));
 
         var gridRight = new Sprite(tileWidth, worldHeight, 1, tilesY);
         gridRight.setShader(this.spriteShader);
         gridRight.setTexture(this.textures.getTexture("gridedge_right"));
-        gridRight.position.xyz = [worldWidth / 2 + tileWidth / 2, 0, -1];
+        gridRight.position.xyz = [worldWidth / 2 + tileWidth, worldHeight / 2, -1];
         this.gameObjects.add(new GameObject("ignore", [], "GridBGRight", gridRight));
 
         var gridLeft = new Sprite(tileWidth, worldHeight, 1, tilesY);
         gridLeft.setShader(this.spriteShader);
         gridLeft.setTexture(this.textures.getTexture("gridedge_left"));
-        gridLeft.position.xyz = [-worldWidth / 2 - tileWidth / 2, 0, -1];
+        gridLeft.position.xyz = [-worldWidth / 2, worldHeight / 2, -1];
         this.gameObjects.add(new GameObject("ignore", [], "GridLeft", gridLeft));
     }
 

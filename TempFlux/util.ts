@@ -1,6 +1,8 @@
 class Util {
     static deg2Rad: number = 0.0174532925;
     static rad2Deg: number = 57.2957795;
+    static PiOver2: number = Math.PI / 2;
+    static TwoPi: number = Math.PI * 2;
 
     static toDegrees(radians: number) {
         return radians * Util.rad2Deg;
@@ -36,13 +38,58 @@ class Util {
     }
 
     static direction2D(v1: TSM.vec3, v2: TSM.vec3) {
-        var v1flat = new TSM.vec3([v1.x, v1.y, 0]);
-        var v2flat = new TSM.vec3([v2.x, v2.y, 0]);
-        return TSM.vec3.direction(v1flat, v2flat);
+        var l = Util.distance2D(v1, v2);
+        return new TSM.vec3([(v1.x - v2.x) / l, (v1.y - v2.y) / l, 0]);
+    }
+
+    static distance2D(v1: TSM.vec3, v2: TSM.vec3): number {
+        return Math.sqrt(Util.distanceSqr2D(v1, v2));
+    }
+
+    static distanceSqr2D(v1: TSM.vec3, v2: TSM.vec3): number {
+        return Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2);
+    }
+
+    static angleTo(from: TSM.vec3, to: TSM.vec3): number {
+        return Util.wrapRadians((Math.atan2(to.y - from.y, to.x - from.x) + Util.PiOver2));
+    }
+
+    static lerpDegrees(a: number, b: number, t: number): number {
+        var diff = Math.abs(b - a);
+        if (diff > 180) {
+            if (b > a) {
+                a += 360;
+            } else {
+                b += 360;
+            }
+        }
+
+        return Util.wrapDegrees(Util.lerp(a, b, t));
+    }
+
+    static lerpRadians(a: number, b: number, t: number): number {
+        var diff = Math.abs(b - a);
+        if (diff > Math.PI) {
+            if (b > a) {
+                a += Util.TwoPi;
+            } else {
+                b += Util.TwoPi;
+            }
+        }
+
+        return Util.wrapRadians(Util.lerp(a, b, t));
+    }
+
+    static wrapDegrees(degrees: number): number {
+        return degrees % 360;
+    }
+
+    static wrapRadians(radians: number): number {
+        return radians % Util.TwoPi;
     }
 
     static randomRange(min: number, max: number) {
-        return Math.floor(Math.random() * (max - min) + min);
+        return Math.floor(Math.random() * ((max + 1) - min) + min);
     }
 
     static randomRangeF(min: number, max: number) {

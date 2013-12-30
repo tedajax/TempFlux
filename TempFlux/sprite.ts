@@ -1,6 +1,7 @@
 class Sprite extends Renderable {
     texture: ImageTexture;
     alpha: boolean;
+    tintColor: Float32Array;
     width: number;
     height: number;
     bindTexture: boolean;
@@ -8,12 +9,13 @@ class Sprite extends Renderable {
     static defaultWidth: number = 1;
     static defaultHeight: number = 1;
 
-    constructor(width: number = Sprite.defaultWidth, height: number = Sprite.defaultHeight, tx: number = 1, ty: number = 1) {
+    constructor(width: number = Sprite.defaultWidth, height: number = Sprite.defaultHeight, tx: number = 1, ty: number = 1, ox: number = 0.5, oy: number = 0.5) {
         super();
 
         this.mesh = game.meshFactory.createQuad(width, height, tx, ty);
 
         this.alpha = false;
+        this.tintColor = new Float32Array([1, 1, 1, 1]);
 
         this.width = width;
         this.height = height;
@@ -21,7 +23,7 @@ class Sprite extends Renderable {
         this.scale.x = 1;
         this.scale.y = 1;
 
-        this.origin = new TSM.vec2([this.width / 2, this.height / 2]);
+        this.origin = new TSM.vec2([this.width * ox, this.height * oy]);
 
         this.bindTexture = true;
     }
@@ -36,6 +38,7 @@ class Sprite extends Renderable {
 
     render() {
         var spriteShader = <SpriteShader>this.shader;
+        spriteShader.tintColor = this.tintColor;
         spriteShader.worldMatrix = this.buildWorldMatrix();
         spriteShader.objectDrawSetup();
         if (this.bindTexture) {

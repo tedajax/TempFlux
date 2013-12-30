@@ -41,7 +41,7 @@ class TweenFunctions {
         t -= 2;
         return c / 2 * (t * t * t + 2) + b;
     }
-    
+
     static easeInQuart(t: number, b: number, c: number, d: number) {
         t /= d;
         return c * t * t * t * t + b;
@@ -52,7 +52,7 @@ class TweenFunctions {
         t--;
         return -c * (t * t * t * t - 1) + b;
     }
-    
+
     static easeInOutQuart(t: number, b: number, c: number, d: number) {
         t /= d / 2;
         if (t < 1) return c / 2 * t * t * t * t + b;
@@ -76,15 +76,15 @@ class TweenFunctions {
     static easeInSine(t: number, b: number, c: number, d: number) {
         return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;
     }
-    
+
     static easeOutSine(t: number, b: number, c: number, d: number) {
         return c * Math.sin(t / d * (Math.PI / 2)) + b;
     }
-    
+
     static easeInOutSine(t: number, b: number, c: number, d: number) {
         return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
     }
-    
+
     static easeInExpo(t: number, b: number, c: number, d: number) {
         return c * Math.pow(2, 10 * (t / d - 1)) + b;
     }
@@ -120,6 +120,30 @@ class TweenFunctions {
 
     static parabolic(t: number, b: number, c: number, d: number) {
         return ((-4 * (b + c)) / (d * d)) * t * (t - d);
+    }
+
+    static bounceIn(t: number, b: number, c: number, d: number) {
+        return c - TweenFunctions.bounceOut(d - t, 0, c, d) + b;
+    }
+
+    static bounceOut(t: number, b: number, c: number, d: number) {
+        if ((t /= d) < (1 / 2.75)) {
+            return c * (7.5625 * t * t) + b;
+        } else if (t < (2 / 2.75)) {
+            return c * (7.5625 * (t -= (1.5 / 2.75)) * t + .75) + b;
+        } else if (t < (2.5 / 2.75)) {
+            return c * (7.5625 * (t -= (2.25 / 2.75)) * t + .9375) + b;
+        } else {
+            return c * (7.5625 * (t -= (2.625 / 2.75)) * t + .984375) + b;
+        }
+    }
+
+    static bounceInOut(t: number, b: number, c: number, d: number) {
+        if (t < d / 2) {
+            return TweenFunctions.bounceIn(t * 2, 0, c, d) * 0.5 + b;
+        } else {
+            return TweenFunctions.bounceOut(t * 2 - d, 0, c, d) * 0.5 + c * 0.5 + b;
+        }
     }
 }
 

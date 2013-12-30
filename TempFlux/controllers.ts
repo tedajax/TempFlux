@@ -28,8 +28,8 @@ class Controller {
 
         this.worldBoundary = new Rectangle();
         this.worldBoundary.position.xy = game.worldBoundary.position.xy;
-        this.worldBoundary.position.x += this.gameObject.sprite.width / 2;
-        this.worldBoundary.position.y += this.gameObject.sprite.height / 2;
+        this.worldBoundary.position.x += this.gameObject.sprite.width;
+        this.worldBoundary.position.y += this.gameObject.sprite.height;
         this.worldBoundary.width = game.worldBoundary.width - this.gameObject.sprite.width;
         this.worldBoundary.height = game.worldBoundary.height - this.gameObject.sprite.height;
     }
@@ -97,6 +97,17 @@ class Controller {
     hitWall() {
 
     }
+
+    nudgeAway(other: Controller, amount: number = 1) {
+        var dir = new TSM.vec2([this.position.x - other.position.x,
+            this.position.y - other.position.y]);
+        this.nudge(dir.normalize(), amount);
+    }
+
+    nudge(direction: TSM.vec2, amount: number = 1) {
+        this.position.x += direction.x * amount;
+        this.position.y += direction.y * amount;
+    }
 }
 
 class MouseCursorController extends Controller {
@@ -156,6 +167,8 @@ class LocalPlayerController extends Controller {
 
     stateRecord: LocalPlayerState[];
 
+    testTween: Tween;
+
     constructor(gameObject: GameObject) {
         super(gameObject);
 
@@ -166,6 +179,8 @@ class LocalPlayerController extends Controller {
         this.firedThisFrame = false;
 
         this.stateRecord = [];
+
+        this.testTween = new Tween(TweenFunctions.bounceIn, 1, 5, 1, TweenLoopMode.PingPong, 0);
     }
 
     update(dt) {
@@ -189,6 +204,9 @@ class LocalPlayerController extends Controller {
 
         this.position.x += this.velocity.x * dt;
         this.position.y += this.velocity.y * dt;
+
+        //this.gameObject.sprite.scale.x = this.testTween.evaluate();
+        //this.gameObject.sprite.scale.y = this.testTween.evaluate();
 
         var mx = game.input.getMouseX() + game.camera.position.x;
         var my = game.input.getMouseY() + game.camera.position.y;
@@ -229,7 +247,7 @@ class LocalPlayerController extends Controller {
     shoot() {
         this.firedThisFrame = true;
 
-        var startPos = new TSM.vec2([this.position.x, this.position.y]);
+        var startPos = new TSM.vec2([this.position.x - this.gameObject.sprite.origin.x + 4, this.position.y - this.gameObject.sprite.origin.y + 4]);
         startPos.x += Math.cos(this.rotation.z) * 16;
         startPos.y += Math.sin(this.rotation.z) * 16;
 
@@ -264,10 +282,18 @@ class PlayerRecordingController extends Controller {
 
     rewind() {
         this.recordIndex = 0;
+        this.gameObject.sprite.tintColor[0] = 1;
+        this.gameObject.sprite.tintColor[1] = 1;
+        this.gameObject.sprite.tintColor[2] = 1;
+        this.gameObject.sprite.tintColor[3] = 1;
     }
 
     update(dt) {
         if (this.recordIndex >= this.recording.length) {
+            this.gameObject.sprite.tintColor[0] = 0.5;
+            this.gameObject.sprite.tintColor[1] = 0.5;
+            this.gameObject.sprite.tintColor[2] = 0.5;
+            this.gameObject.sprite.tintColor[3] = 0.5;
             return;
         }
 
@@ -286,7 +312,7 @@ class PlayerRecordingController extends Controller {
     }
 
     shoot() {
-        var startPos = new TSM.vec2([this.position.x, this.position.y]);
+        var startPos = new TSM.vec2([this.position.x - this.gameObject.sprite.origin.x + 4, this.position.y - this.gameObject.sprite.origin.y + 4]);
         startPos.x += Math.cos(this.rotation.z) * 16;
         startPos.y += Math.sin(this.rotation.z) * 16;
 

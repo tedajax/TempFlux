@@ -128,6 +128,30 @@ var TweenFunctions = (function () {
     TweenFunctions.parabolic = function (t, b, c, d) {
         return ((-4 * (b + c)) / (d * d)) * t * (t - d);
     };
+
+    TweenFunctions.bounceIn = function (t, b, c, d) {
+        return c - TweenFunctions.bounceOut(d - t, 0, c, d) + b;
+    };
+
+    TweenFunctions.bounceOut = function (t, b, c, d) {
+        if ((t /= d) < (1 / 2.75)) {
+            return c * (7.5625 * t * t) + b;
+        } else if (t < (2 / 2.75)) {
+            return c * (7.5625 * (t -= (1.5 / 2.75)) * t + .75) + b;
+        } else if (t < (2.5 / 2.75)) {
+            return c * (7.5625 * (t -= (2.25 / 2.75)) * t + .9375) + b;
+        } else {
+            return c * (7.5625 * (t -= (2.625 / 2.75)) * t + .984375) + b;
+        }
+    };
+
+    TweenFunctions.bounceInOut = function (t, b, c, d) {
+        if (t < d / 2) {
+            return TweenFunctions.bounceIn(t * 2, 0, c, d) * 0.5 + b;
+        } else {
+            return TweenFunctions.bounceOut(t * 2 - d, 0, c, d) * 0.5 + c * 0.5 + b;
+        }
+    };
     return TweenFunctions;
 })();
 

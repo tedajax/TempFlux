@@ -100,20 +100,11 @@ class SpriteShader extends Shader {
     projectionMatrix: TSM.mat4;
     texture: ImageTexture;
     lastBoundTexture: ImageTexture;
-
-    fogEnabled: boolean;
-    fogStart: number;
-    fogEnd: number;
-    fogColor: Float32Array;
+    tintColor: Float32Array;
 
     constructor() {
         super();
         this.name = "sprite";
-
-        this.fogEnabled = true;
-        this.fogStart = 13;
-        this.fogEnd = 20;
-        this.fogColor = new Float32Array([1, 1, 1, 1]);
     }
 
     initLocales() {
@@ -129,11 +120,7 @@ class SpriteShader extends Shader {
         this.addUniform("view", "uView");
         this.addUniform("projection", "uProjection");
         this.addUniform("texture", "uTexture");
-        this.addUniform("cameraPosition", "uCameraPosition");
-        this.addUniform("fogColor", "uFogColor");
-        this.addUniform("fogStart", "uFogStart");
-        this.addUniform("fogEnd", "uFogEnd");
-        this.addUniform("fogEnabled", "uFogEnabled");
+        this.addUniform("tintColor", "uTintColor");
     }
 
     frameDrawSetup() {
@@ -148,10 +135,6 @@ class SpriteShader extends Shader {
         game.gl.uniformMatrix4fv(this.uniforms["view"], false, this.viewMatrix.all());
 
         game.gl.uniform3fv(this.uniforms["cameraPosition"], game.camera.position.xyz);
-        game.gl.uniform4fv(this.uniforms["fogColor"], this.fogColor);
-        game.gl.uniform1f(this.uniforms["fogStart"], this.fogStart);
-        game.gl.uniform1f(this.uniforms["fogEnd"], this.fogEnd);
-        game.gl.uniform1i(this.uniforms["fogEnabled"], (this.fogEnabled) ? 1 : 0);
     }
 
     bindTexture() {
@@ -169,5 +152,6 @@ class SpriteShader extends Shader {
         //game.gl.useProgram(this.program);
 
         game.gl.uniformMatrix4fv(this.uniforms["world"], false, this.worldMatrix.all());
+        game.gl.uniform4fv(this.uniforms["tintColor"], this.tintColor);
     }
 }

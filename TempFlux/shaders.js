@@ -98,11 +98,6 @@ var SpriteShader = (function (_super) {
     function SpriteShader() {
         _super.call(this);
         this.name = "sprite";
-
-        this.fogEnabled = true;
-        this.fogStart = 13;
-        this.fogEnd = 20;
-        this.fogColor = new Float32Array([1, 1, 1, 1]);
     }
     SpriteShader.prototype.initLocales = function () {
         _super.prototype.initLocales.call(this);
@@ -117,11 +112,7 @@ var SpriteShader = (function (_super) {
         this.addUniform("view", "uView");
         this.addUniform("projection", "uProjection");
         this.addUniform("texture", "uTexture");
-        this.addUniform("cameraPosition", "uCameraPosition");
-        this.addUniform("fogColor", "uFogColor");
-        this.addUniform("fogStart", "uFogStart");
-        this.addUniform("fogEnd", "uFogEnd");
-        this.addUniform("fogEnabled", "uFogEnabled");
+        this.addUniform("tintColor", "uTintColor");
     };
 
     SpriteShader.prototype.frameDrawSetup = function () {
@@ -135,10 +126,6 @@ var SpriteShader = (function (_super) {
         game.gl.uniformMatrix4fv(this.uniforms["view"], false, this.viewMatrix.all());
 
         game.gl.uniform3fv(this.uniforms["cameraPosition"], game.camera.position.xyz);
-        game.gl.uniform4fv(this.uniforms["fogColor"], this.fogColor);
-        game.gl.uniform1f(this.uniforms["fogStart"], this.fogStart);
-        game.gl.uniform1f(this.uniforms["fogEnd"], this.fogEnd);
-        game.gl.uniform1i(this.uniforms["fogEnabled"], (this.fogEnabled) ? 1 : 0);
     };
 
     SpriteShader.prototype.bindTexture = function () {
@@ -155,6 +142,7 @@ var SpriteShader = (function (_super) {
 
         //game.gl.useProgram(this.program);
         game.gl.uniformMatrix4fv(this.uniforms["world"], false, this.worldMatrix.all());
+        game.gl.uniform4fv(this.uniforms["tintColor"], this.tintColor);
     };
     return SpriteShader;
 })(Shader);

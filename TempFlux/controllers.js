@@ -1,4 +1,4 @@
-var __extends = this.__extends || function (d, b) {
+﻿var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -24,8 +24,8 @@ var Controller = (function () {
 
         this.worldBoundary = new Rectangle();
         this.worldBoundary.position.xy = game.worldBoundary.position.xy;
-        this.worldBoundary.position.x += this.gameObject.sprite.width / 2;
-        this.worldBoundary.position.y += this.gameObject.sprite.height / 2;
+        this.worldBoundary.position.x += this.gameObject.sprite.width;
+        this.worldBoundary.position.y += this.gameObject.sprite.height;
         this.worldBoundary.width = game.worldBoundary.width - this.gameObject.sprite.width;
         this.worldBoundary.height = game.worldBoundary.height - this.gameObject.sprite.height;
     };
@@ -91,6 +91,20 @@ var Controller = (function () {
     };
 
     Controller.prototype.hitWall = function () {
+    };
+
+    Controller.prototype.nudgeAway = function (other, amount) {
+        if (typeof amount === "undefined") { amount = 1; }
+        var dir = new TSM.vec2([
+            this.position.x - other.position.x,
+            this.position.y - other.position.y]);
+        this.nudge(dir.normalize(), amount);
+    };
+
+    Controller.prototype.nudge = function (direction, amount) {
+        if (typeof amount === "undefined") { amount = 1; }
+        this.position.x += direction.x * amount;
+        this.position.y += direction.y * amount;
     };
     return Controller;
 })();
@@ -158,6 +172,8 @@ var LocalPlayerController = (function (_super) {
         this.firedThisFrame = false;
 
         this.stateRecord = [];
+
+        this.testTween = new Tween(TweenFunctions.bounceIn, 1, 5, 1, 2 /* PingPong */, 0);
     }
     LocalPlayerController.prototype.update = function (dt) {
         _super.prototype.update.call(this, dt);
@@ -181,6 +197,8 @@ var LocalPlayerController = (function (_super) {
         this.position.x += this.velocity.x * dt;
         this.position.y += this.velocity.y * dt;
 
+        //this.gameObject.sprite.scale.x = this.testTween.evaluate();
+        //this.gameObject.sprite.scale.y = this.testTween.evaluate();
         var mx = game.input.getMouseX() + game.camera.position.x;
         var my = game.input.getMouseY() + game.camera.position.y;
 
@@ -220,7 +238,7 @@ var LocalPlayerController = (function (_super) {
     LocalPlayerController.prototype.shoot = function () {
         this.firedThisFrame = true;
 
-        var startPos = new TSM.vec2([this.position.x, this.position.y]);
+        var startPos = new TSM.vec2([this.position.x - this.gameObject.sprite.origin.x + 4, this.position.y - this.gameObject.sprite.origin.y + 4]);
         startPos.x += Math.cos(this.rotation.z) * 16;
         startPos.y += Math.sin(this.rotation.z) * 16;
 
@@ -253,10 +271,18 @@ var PlayerRecordingController = (function (_super) {
     }
     PlayerRecordingController.prototype.rewind = function () {
         this.recordIndex = 0;
+        this.gameObject.sprite.tintColor[0] = 1;
+        this.gameObject.sprite.tintColor[1] = 1;
+        this.gameObject.sprite.tintColor[2] = 1;
+        this.gameObject.sprite.tintColor[3] = 1;
     };
 
     PlayerRecordingController.prototype.update = function (dt) {
         if (this.recordIndex >= this.recording.length) {
+            this.gameObject.sprite.tintColor[0] = 0.5;
+            this.gameObject.sprite.tintColor[1] = 0.5;
+            this.gameObject.sprite.tintColor[2] = 0.5;
+            this.gameObject.sprite.tintColor[3] = 0.5;
             return;
         }
 
@@ -275,7 +301,7 @@ var PlayerRecordingController = (function (_super) {
     };
 
     PlayerRecordingController.prototype.shoot = function () {
-        var startPos = new TSM.vec2([this.position.x, this.position.y]);
+        var startPos = new TSM.vec2([this.position.x - this.gameObject.sprite.origin.x + 4, this.position.y - this.gameObject.sprite.origin.y + 4]);
         startPos.x += Math.cos(this.rotation.z) * 16;
         startPos.y += Math.sin(this.rotation.z) * 16;
 

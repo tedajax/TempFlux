@@ -54,6 +54,7 @@
     <TypeScriptCompile Include="util.ts" />
     <TypeScriptCompile Include="enemyfactory.ts" />
     <TypeScriptCompile Include="physics.ts" />
+    <TypeScriptCompile Include="tween.ts" />
     <Content Include="web.config" />
     <TypeScriptCompile Include="WebGL.d.ts" />
   </ItemGroup>

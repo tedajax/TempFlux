@@ -62,8 +62,8 @@
         "mode": "clamp"
       }
     },
-    "world_width": 16,
-    "world_height": 9,
+    "world_width": 24,
+    "world_height": 14,
     "player": {
       "speed": 300,
       "fire_delay": 0.2,

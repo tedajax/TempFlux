@@ -50,11 +50,11 @@ class Renderable {
         rotation.rotate(this.rotation.z, TSM.vec3.forward);
 
         var translation = new TSM.mat4().setIdentity();
-        translation.translate(new TSM.vec3([this.position.x, this.position.y, this.position.z]));
+        translation.translate(new TSM.vec3([this.position.x - this.origin.x, this.position.y - this.origin.y, this.position.z]));
 
         var origin = new TSM.mat4().setIdentity();
         origin.translate(new TSM.vec3([-this.origin.x, -this.origin.y, 0]));
         
-        return translation.multiply(rotation.multiply(origin.multiply(scale)));
+        return translation.multiply(rotation.multiply(scale.multiply(origin)));
     }
 } 
