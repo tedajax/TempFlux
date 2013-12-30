@@ -1,16 +1,16 @@
 class RenderManager {
-    lastBoundVertexBuffer: RenderBuffer;
-    lastBoundColorBuffer: RenderBuffer;
-    lastBoundTexCoordBuffer: RenderBuffer;
-    lastBoundIndexBuffer: RenderBuffer;
+    lastVertexBuffer: RenderBuffer;
+    lastColorBuffer: RenderBuffer;
+    lastTexCoordBuffer: RenderBuffer;
+    lastIndexBuffers: RenderBuffer;
 
     alphaEnabled: boolean;
 
     constructor() {
-        this.lastBoundVertexBuffer = null;
-        this.lastBoundColorBuffer = null;
-        this.lastBoundTexCoordBuffer = null;
-        this.lastBoundIndexBuffer = null;
+        this.lastVertexBuffer = null;
+        this.lastColorBuffer = null;
+        this.lastTexCoordBuffer = null;
+        this.lastIndexBuffer = null;
 
         this.alphaEnabled = false;
         game.gl.blendEquation(game.gl.FUNC_ADD);
@@ -35,39 +35,39 @@ class RenderManager {
     }
 
     render(shader: Shader, verts: RenderBuffer, colors: RenderBuffer, texCoords: RenderBuffer, indices: RenderBuffer) {
-        if (this.lastBoundVertexBuffer == null || this.lastBoundVertexBuffer.id != verts.id) {
+        if (this.lastVertexBuffer == null || this.lastVertexBuffer.id != verts.id) {
             game.gl.bindBuffer(game.gl.ARRAY_BUFFER, verts.glBuffer);
             game.gl.vertexAttribPointer(shader.attribs["position"],
                 verts.itemSize,
                 game.gl.FLOAT,
                 false,
                 0, 0);
-            this.lastBoundVertexBuffer = verts;
+            this.lastVertexBuffer = verts;
         }
 
-        if (this.lastBoundColorBuffer == null || this.lastBoundColorBuffer.id != colors.id) {
+        if (this.lastColorBuffer == null || this.lastColorBuffer.id != colors.id) {
             game.gl.bindBuffer(game.gl.ARRAY_BUFFER, colors.glBuffer);
             game.gl.vertexAttribPointer(shader.attribs["color"],
                 colors.itemSize,
                 game.gl.FLOAT,
                 false,
                 0, 0);
-            this.lastBoundColorBuffer = colors;
+            this.lastColorBuffer = colors;
         }
 
-        if (this.lastBoundTexCoordBuffer == null || this.lastBoundTexCoordBuffer.id != texCoords.id) {
+        if (this.lastTexCoordBuffer == null || this.lastTexCoordBuffer.id != texCoords.id) {
             game.gl.bindBuffer(game.gl.ARRAY_BUFFER, texCoords.glBuffer);
             game.gl.vertexAttribPointer(shader.attribs["uv"],
                 texCoords.itemSize,
                 game.gl.FLOAT,
                 false,
                 0, 0);
-            this.lastBoundTexCoordBuffer = texCoords;
+            this.lastTexCoordBuffer = texCoords;
         }
 
-        if (this.lastBoundIndexBuffer == null || this.lastBoundIndexBuffer.id != indices.id) {
+        if (this.lastIndexBuffer == null || this.lastIndexBuffer.id != indices.id) {
             game.gl.bindBuffer(game.gl.ELEMENT_ARRAY_BUFFER, indices.glBuffer);
-            this.lastBoundIndexBuffer = indices;
+            this.lastIndexBuffer = indices;
         }
 
         game.gl.drawElements(game.gl.TRIANGLES, indices.count, game.gl.UNSIGNED_SHORT, 0);

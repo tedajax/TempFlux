@@ -63,6 +63,10 @@ class AIController extends Controller {
 
         this.aiState = AIState.Idle;
         this.stateStarted = false;
+
+        this.health.onDeath = () => {
+            this.gameObject.destroy();
+        };
     }
 
     update(dt: number) {
@@ -168,13 +172,13 @@ class AIController extends Controller {
 
     onCollisionEnter(collider: Collider) {
         if (collider.parent.tag == "bullet") {
-            this.gameObject.destroy();
+            this.health.damage(1);
         }
     }
 
     onCollisionStay(collider: Collider) {
         if (collider.parent.tag == "enemy") {
-            this.nudgeAway(collider.parent.controller);
+            this.nudgeAway(collider.parent.controller, 2);
         }
     }
 }
@@ -205,7 +209,7 @@ class AIGreenTriangleController extends AIController {
     
     defensiveRadius: number = Util.randomRangeF(250, 300);
     defensiveAngle: number = 0;
-    defensiveAngleTimer: number = Util.randomRange(2, 5);
+    defensiveAngleVelocity: number = 0;
 
     aggressivePauseTime: number = 0.25;
     aggressivePauseTimer: number = this.aggressivePauseTime;
@@ -235,14 +239,11 @@ class AIGreenTriangleController extends AIController {
 
     stateStartDefensive() {
         this.defensiveAngle = Math.atan2(this.position.y - AIController.player.position.y, this.position.x - AIController.player.position.x);
+        this.defensiveAngleVelocity = Util.randomRangeF(-1, 1) * Util.deg2Rad;
     }
 
     stateDefensive(dt: number) {
-        this.defensiveAngleTimer -= dt;
-        if (this.defensiveAngleTimer < 0) {
-            this.defensiveAngleTimer = Util.randomRange(2, 5);
-            this.defensiveAngle += Util.randomRangeF(-30 * Util.deg2Rad, 30 * Util.deg2Rad);
-        }
+        this.defensiveAngle += this.defensiveAngleVelocity;
 
         this.turnToFace(AIController.player.position, 2);
 
@@ -264,10 +265,6 @@ class AIGreenTriangleController extends AIController {
     }
 
     stateStartAggressive() {
-        var angle = Util.angleTo(this.position, AIController.player.position);
-        this.turnToFace(AIController.player.position, 2);
-
-        this.aggressiveDirection = new TSM.vec3([Math.cos(angle - Math.PI / 2), Math.sin(angle - Math.PI / 2), 0]);
         this.aggressivePauseTimer = this.aggressivePauseTime;
 
         this.aggressiveSpeed = 0;
@@ -281,6 +278,12 @@ class AIGreenTriangleController extends AIController {
     stateAggressive(dt: number) {
         if (this.aggressivePauseTimer > 0) {
             this.aggressivePauseTimer -= dt;
+
+            var angle = Util.angleTo(this.position, AIController.player.position);
+            this.turnToFace(AIController.player.position, 2);
+
+            this.aggressiveDirection = new TSM.vec3([Math.cos(angle - Math.PI / 2), Math.sin(angle - Math.PI / 2), 0]);
+
             return;
         }
 

@@ -1,5 +1,6 @@
 class Controller {
     gameObject: GameObject;
+    health: Health;
 
     position: TSM.vec3;
     velocity: TSM.vec3;
@@ -19,6 +20,8 @@ class Controller {
         this.velocity = new TSM.vec3([0, 0, 0]);
         this.rotation = new TSM.vec3([0, 0, 0]);
         this.angularVelocity = new TSM.vec3([0, 0, 0]);
+
+        this.health = new Health(3);
     }
 
     generateWorldBoundary() {
@@ -285,15 +288,13 @@ class PlayerRecordingController extends Controller {
         this.gameObject.sprite.tintColor[0] = 1;
         this.gameObject.sprite.tintColor[1] = 1;
         this.gameObject.sprite.tintColor[2] = 1;
-        this.gameObject.sprite.tintColor[3] = 1;
     }
 
     update(dt) {
         if (this.recordIndex >= this.recording.length) {
-            this.gameObject.sprite.tintColor[0] = 0.5;
-            this.gameObject.sprite.tintColor[1] = 0.5;
-            this.gameObject.sprite.tintColor[2] = 0.5;
-            this.gameObject.sprite.tintColor[3] = 0.5;
+            this.gameObject.sprite.tintColor[0] = 0.25;
+            this.gameObject.sprite.tintColor[1] = 0.25;
+            this.gameObject.sprite.tintColor[2] = 0.25;
             return;
         }
 

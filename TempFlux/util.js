@@ -1,4 +1,4 @@
-﻿var Util = (function () {
+var Util = (function () {
     function Util() {
     }
     Util.toDegrees = function (radians) {
