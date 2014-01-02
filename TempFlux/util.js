@@ -1,4 +1,4 @@
-﻿var Util = (function () {
+var Util = (function () {
     function Util() {
     }
     Util.toDegrees = function (radians) {
@@ -113,6 +113,10 @@
             Util.lerp(a.x, b.x, t),
             Util.lerp(a.y, b.y, t),
             a.z]);
+    };
+
+    Util.flattenVec3 = function (a) {
+        return new TSM.vec2([a.x, a.y]);
     };
     Util.deg2Rad = 0.0174532925;
     Util.rad2Deg = 57.2957795;
@@ -286,4 +290,12 @@ var Circle = (function () {
     };
     return Circle;
 })();
+
+var Side2D;
+(function (Side2D) {
+    Side2D[Side2D["Left"] = 0] = "Left";
+    Side2D[Side2D["Right"] = 1] = "Right";
+    Side2D[Side2D["Top"] = 2] = "Top";
+    Side2D[Side2D["Bottom"] = 3] = "Bottom";
+})(Side2D || (Side2D = {}));
 //# sourceMappingURL=util.js.map

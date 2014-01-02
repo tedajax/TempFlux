@@ -58,6 +58,9 @@ var Keys = (function () {
     Keys.F10 = 121;
     Keys.F11 = 122;
     Keys.F12 = 123;
+
+    Keys.HYPEN = 189;
+    Keys.EQUALS = 187;
     return Keys;
 })();
 

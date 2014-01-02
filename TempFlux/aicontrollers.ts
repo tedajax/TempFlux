@@ -1,49 +1,199 @@
 class EnemySpawnerController extends Controller {
     enableSpawning: boolean;
-    spawnDelayTimer: number;
-    spawnDelay: number;
 
-    enemyMap: {};
+    minPlayerDistance: number = 200;
+    minPlayerDistanceSqr: number = this.minPlayerDistance * this.minPlayerDistance;
+
+    spawners: SpawnWorker[];
+    freeSpawners: number[];
+
+    spawnPoints: TSM.vec3[];
+
+    enemyMap: string[];
+
+    player: GameObject;
 
     constructor() {
         super(null);
-
-        this.spawnDelay = Util.randomRangeF(0, 5);
-        this.spawnDelayTimer = this.spawnDelay;
 
         this.enableSpawning = true;
 
         this.enemyMap = [];
         this.enemyMap[0] = "red_square";
         this.enemyMap[1] = "green_triangle";
+        this.enemyMap[2] = "starburst";
+
+        this.spawnPoints = [];
+        for (var i = 0; i < 5; ++i) {
+            for (var j = 0; j < 5; ++j) {
+                var sx = i - 2;
+                var sy = j - 2;
+                this.spawnPoints.push(new TSM.vec3([sx * game.worldWidth / 6, sy * game.worldHeight / 6, 0]));
+            }
+        }
+
+        this.spawners = [];
+        this.freeSpawners = [];
+        for (var i = 0; i < 10; ++i) {
+            this.spawners.push(new SpawnWorker(this, i));
+            this.freeSpawners.push(i);
+        }
+
+        
     }
 
     update(dt: number) {
+        if (this.player == null && game.playerController.gameObject != null) {
+            this.player = game.playerController.gameObject;
+        }
+
+        if (!this.enableSpawning) {
+            return;
+        }
+
+        if (game.input.getKeyDown(Keys.ONE)) {
+            this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
+            this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
+            this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
+        }
+        if (game.input.getKeyDown(Keys.TWO)) {
+            game.enemies.createEnemy(this.enemyMap[1], this.getRandomSpawnPosition());
+        }
+        if (game.input.getKey(Keys.THREE)) {
+            game.enemies.createEnemy(this.enemyMap[2], this.getRandomSpawnPosition());
+        }
+
         if (game.input.getKeyDown(Keys.E)) {
             this.enableSpawning = !this.enableSpawning;
         }
 
-        if (this.spawnDelay > 0.0 && this.enableSpawning) {
-            this.spawnDelay -= dt;
-        }
-
-        if (this.spawnDelay <= 0.0) {
-            this.spawnDelay = Util.randomRangeF(0, 5);
-            this.spawnDelayTimer = this.spawnDelay;
-
-            game.enemies.createEnemy(this.enemyMap[Util.randomRange(0, 1)], this.getRandomSpawnPosition());
+        for (var i = 0, len = this.spawners.length; i < len; ++i) {
+            this.spawners[i].update(dt);
         }
     }
 
+    startSpawnRun(amount: number, enemyType: number, spawnerIndex: number, spawnDelay: number, enemiesPerSpawn: number = 1, randomizeEnemy: boolean = false, randomizeSpawner: boolean = false): boolean {
+        if (this.freeSpawners.length <= 0) {
+            return false;
+        }
+
+        var s = this.freeSpawners.pop();
+        this.spawners[s].spawnRun(amount, enemyType, spawnerIndex, spawnDelay, enemiesPerSpawn, randomizeEnemy, randomizeSpawner);
+
+        return true;
+    }
+
+    spawnerComplete(index: number) {
+        this.freeSpawners.push(index);
+    }
+
+    chooseSpawnPoint(): number {
+        var s: number;
+        do {
+            s = Util.randomRange(0, this.spawnPoints.length - 1)
+        } while (!this.spawnPointValid(this.spawnPoints[s]));
+        return s;
+    }
+
+    spawnPointValid(spawnPosition: TSM.vec3): boolean {
+        if (TSM.vec3.squaredDistance(spawnPosition, this.player.position) < this.minPlayerDistanceSqr) {
+            return false;
+        }
+
+        return true;
+    }
+
     getRandomSpawnPosition(): TSM.vec3 {
-        var x = Util.randomRange(-game.worldWidth / 2, game.worldWidth / 2);
-        var y = Util.randomRange(-game.worldHeight / 2, game.worldHeight / 2);
+        var x = Util.randomRange(-game.worldWidth / 2 + 64, game.worldWidth / 2 - 64);
+        var y = Util.randomRange(-game.worldHeight / 2 + 64, game.worldHeight / 2 - 64);
 
         return new TSM.vec3([x, y, 0]);
     }
 
     spawnLocationValid(position: TSM.vec3): boolean {
         return true;
+    }
+}
+
+class SpawnWorker {
+    enabled: boolean;
+
+    enemyType: number;
+    spawnerIndex: number;
+    spawnController: EnemySpawnerController;
+    spawnWorkerIndex: number;
+
+    spawnDelay: number;
+    spawnTimer: number;
+
+    spawnRunCount: number;
+    spawnCounter: number;
+    enemiesPerSpawn: number;
+    randomizeEnemy: boolean;
+    randomizeSpawner: boolean;
+
+    constructor(spawnController: EnemySpawnerController, index: number) {
+        this.spawnController = spawnController;
+        this.spawnWorkerIndex = index;
+        this.enemyType = 0;
+        this.spawnerIndex = 0;
+        this.enabled = false;
+        this.spawnDelay = 0;
+        this.enemiesPerSpawn = 0;
+        this.spawnTimer = this.spawnDelay;
+    }
+
+    on() {
+        this.enabled = true;
+    }
+
+    off() {
+        this.enabled = false;
+    }
+
+    spawnRun(amount: number, enemyType: number, spawnerIndex: number, spawnDelay: number, enemiesPerSpawn: number = 1, randomizeEnemy: boolean = false, randomizeSpawner: boolean = false) {
+        this.spawnCounter = 0;
+        this.spawnRunCount = amount;
+        this.randomizeEnemy = randomizeEnemy;
+        this.randomizeSpawner = randomizeSpawner;
+        this.enemyType = enemyType;
+        this.spawnerIndex = spawnerIndex;
+        this.spawnDelay = spawnDelay;
+        this.enemiesPerSpawn = enemiesPerSpawn;
+
+        this.enabled = true;
+    }
+
+    update(dt: number) {
+        if (!this.enabled) {
+            return;
+        }
+
+        this.spawnTimer -= dt;
+        if (this.spawnTimer <= 0) {
+            for (var i = 0; i < this.enemiesPerSpawn; ++i) {
+                var pos = this.spawnController.spawnPoints[this.spawnerIndex].copy();
+                pos.x += Util.randomRange(-50, 50);
+                pos.y += Util.randomRange(-50, 50);
+                game.enemies.createEnemy(this.spawnController.enemyMap[this.enemyType], pos);
+                this.spawnCounter++;
+            }
+
+            this.spawnTimer = this.spawnDelay;           
+
+            if (this.spawnCounter >= this.spawnRunCount) {
+                this.enabled = false;
+                this.spawnController.spawnerComplete(this.spawnWorkerIndex);
+            }
+
+            if (this.randomizeEnemy) {
+                this.enemyType = Util.randomRange(0, this.spawnController.enemyMap.length - 1);
+            }
+
+            if (this.randomizeSpawner) {
+                this.spawnerIndex = this.spawnController.chooseSpawnPoint();
+            }
+        }
     }
 }
 
@@ -68,12 +218,20 @@ class AIController extends Controller {
         this.stateStarted = false;
 
         this.health.onDeath = () => {
-            this.gameObject.destroy();
+            this.onDeath();
         };
 
         this.health.onDamage = () => {
-            this.damageColorFlash();
+            this.onDamage();
         }
+    }
+
+    onDeath() {
+        this.gameObject.destroy();
+    }
+
+    onDamage() {
+        this.damageColorFlash();
     }
 
     update(dt: number) {
@@ -148,6 +306,13 @@ class AIController extends Controller {
         }
     }
 
+    setState(state: AIState) {
+        if (this.aiState != state) {
+            this.aiState = state;
+            this.stateStarted = false;
+        }        
+    }
+
     stateStartIdle() {
     }
 
@@ -179,33 +344,26 @@ class AIController extends Controller {
     }
 
     onCollisionEnter(collider: Collider) {
-        if (collider.parent.tag == "bullet") {
+        if (collider.parent.tag == GameObjectTag.Bullet) {
             this.health.damage(1);
+        } else if (collider.parent.tag == GameObjectTag.Player) {
+            this.health.damage(100);
         }
     }
-
-    onCollisionStay(collider: Collider) {
-        if (collider.parent.tag == "enemy") {
-            this.nudgeAway(collider.parent.controller, 2);
-        }
-    }
-
+    
     damageFlashUpdate(dt: number) {
         if (this.damageFlashTimer > 0) {
             this.damageFlashTimer -= dt;
+            this.gameObject.sprite.invertColor = !this.gameObject.sprite.invertColor;
             if (this.damageFlashTimer <= 0) {
-                this.gameObject.sprite.addColor[0] = 0;
-                this.gameObject.sprite.addColor[1] = 0;
-                this.gameObject.sprite.addColor[2] = 0;
+                this.gameObject.sprite.invertColor = false;
             }
         }
     }
 
     damageColorFlash() {
         this.damageFlashTimer = this.damageFlashTime;
-        this.gameObject.sprite.addColor[0] = 1;
-        this.gameObject.sprite.addColor[1] = 1;
-        this.gameObject.sprite.addColor[2] = 1;
+        this.gameObject.sprite.invertColor = true;
     }
 }
 
@@ -332,5 +490,181 @@ class AIGreenTriangleController extends AIController {
         if (this.aiState == AIState.Aggressive) {
             this.aiState = AIState.Idle;
         }
+    }
+}
+
+class AIStarburstController extends AIController {
+    children: AIStarburstPointController[];
+
+    targetPosition: TSM.vec3;
+    distanceThreshold: number = 200;
+    distanceThresholdSqr: number = this.distanceThreshold * this.distanceThreshold;
+    chargeTime: number = 1;
+    chargeTween: Tween;
+
+    constructor(gameObject: GameObject) {
+        super(gameObject);
+
+        this.health.setMax(8);
+        
+        this.children = [];
+    }
+
+    onDeath() {
+        super.onDeath();
+
+        for (var i = 0, len = this.children.length; i < len; ++i) {
+            this.children[i].gameObject.sprite.invertColor = false;
+        }
+    }
+    
+    onDamage() {
+        super.onDamage();
+
+        this.setState(AIState.Aggressive);
+
+        if (this.health.isDead) {
+            for (var i = 0, len = this.children.length; i < len; ++i) {
+                this.children[i].gameObject.destroy();
+            }
+        }
+    }
+
+    registerChild(child: AIStarburstPointController) {
+        this.children.push(child);
+    }
+
+    stateStartIdle() {
+        this.targetPosition = this.getRandomLocation();
+    }
+
+    getRandomLocation(): TSM.vec3 {
+        var x = Util.randomRange(-game.worldWidth / 2 + 32, game.worldWidth / 2 - 32);
+        var y = Util.randomRange(-game.worldHeight / 2 + 32, game.worldHeight / 2 - 32);
+
+        return new TSM.vec3([x, y, 0]);
+    }
+
+    stateIdle(dt: number) {
+        var dir = TSM.vec3.difference(this.targetPosition, this.position).normalize();
+        var mx = dir.x * 50 * dt;
+        var my = dir.y * 50 * dt;
+        this.position.x += mx;
+        this.position.y += my;
+        this.moveChildren(mx, my);
+
+        if (TSM.vec3.difference(this.targetPosition, this.position).length() < 2) {
+            this.targetPosition = this.getRandomLocation();
+        }
+    }
+
+    moveChildren(mx: number, my: number) {
+        for (var i = 0, len = this.children.length; i < len; ++i) {
+            this.children[i].position.x += mx;
+            this.children[i].position.y += my;
+        }
+    }
+
+    stateTransitionIdle(): AIState {
+        if (Util.distanceSqr2D(AIController.player.position, this.position) < this.distanceThresholdSqr) {
+            return AIState.Aggressive;
+        }
+        return AIState.Idle;
+    }
+
+    stateStartAggressive() {
+        this.chargeTween = TweenManager.register(new Tween(TweenFunctions.sineWave, 1, 1.5, this.chargeTime, TweenLoopMode.Repeat));
+    }
+
+    stateAggressive(dt: number) {
+        this.chargeTime -= dt;
+
+        var s = this.chargeTween.evaluate();
+        this.gameObject.sprite.scale.x = s;
+        this.gameObject.sprite.scale.y = s;
+
+        if (this.chargeTime <= 0) {
+            this.gameObject.destroy();
+
+            for (var i = 0, len = this.children.length; i < len; ++i) {
+                this.children[i].gameObject.sprite.invertColor = false;
+                this.children[i].setState(AIState.Aggressive);
+            }
+        }
+    }
+
+    damageFlashUpdate(dt: number) {
+        if (this.damageFlashTimer > 0) {
+            this.damageFlashTimer -= dt;
+            this.gameObject.sprite.invertColor = !this.gameObject.sprite.invertColor;
+            for (var i = 0, len = this.children.length; i < len; ++i) {
+                this.children[i].gameObject.sprite.invertColor = !this.children[i].gameObject.sprite.invertColor;
+            }
+            if (this.damageFlashTimer <= 0) {
+                this.gameObject.sprite.invertColor = false;
+                for (var i = 0, len = this.children.length; i < len; ++i) {
+                    this.children[i].gameObject.sprite.invertColor = false;
+                }
+            }
+        }
+    }
+
+    damageColorFlash() {
+        this.damageFlashTimer = this.damageFlashTime;
+        this.gameObject.sprite.invertColor = true;
+        for (var i = 0, len = this.children.length; i < len; ++i) {
+            this.children[i].gameObject.sprite.invertColor = true;
+        }
+    }
+}
+
+class AIStarburstPointController extends AIController {
+    parent: AIStarburstController;
+    side: Side2D;
+    speed: number = 400;
+
+    constructor(gameObject: GameObject, parent: AIStarburstController, side: Side2D) {
+        super(gameObject);
+
+        this.parent = parent;
+        this.parent.registerChild(this);
+
+        this.health.setMax(1);
+
+        this.side = side;
+    }
+
+    stateStartIdle() {
+        this.gameObject.collider.enabled = false;
+    }
+
+    stateStartAggressive() {
+        this.gameObject.collider.enabled = true;
+        switch (this.side) {
+            case Side2D.Left:
+                this.velocity.x = -this.speed;
+                break;
+
+            case Side2D.Right:
+                this.velocity.x = this.speed;
+                break;
+
+            case Side2D.Top:
+                this.velocity.y = -this.speed;
+                break;
+
+            case Side2D.Bottom:
+                this.velocity.y = this.speed;
+                break;
+        }
+    }
+
+    stateAggressive(dt: number) {
+        this.position.x += this.velocity.x * dt;
+        this.position.y += this.velocity.y * dt;
+    }
+
+    hitWall() {
+        this.gameObject.destroy();
     }
 }

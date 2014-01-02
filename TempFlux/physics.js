@@ -26,12 +26,21 @@ var Collider = (function () {
         if (typeof layer === "undefined") { layer = 1 /* Default */; }
         this.parent = parent;
         this.layer = layer;
+        this.enabled = true;
         this.offset = offset;
         this.type = 0 /* None */;
         this.continuousCollision = false;
         this.previousPosition = new TSM.vec2([0, 0]);
     }
     Collider.prototype.updatePosition = function () {
+    };
+
+    Collider.prototype.getPositionX = function () {
+        return 0;
+    };
+
+    Collider.prototype.getPositionY = function () {
+        return 0;
     };
 
     Collider.prototype.intersects = function (other) {
@@ -62,6 +71,14 @@ var CircleCollider = (function (_super) {
         this.previousPosition.y = this.circle.position.y;
         this.circle.position.x = this.parent.position.x + this.offset.x;
         this.circle.position.y = this.parent.position.y + this.offset.y;
+    };
+
+    CircleCollider.prototype.getPositionX = function () {
+        return this.circle.position.x;
+    };
+
+    CircleCollider.prototype.getPositionY = function () {
+        return this.circle.position.y;
     };
 
     CircleCollider.prototype.intersects = function (other) {
@@ -138,6 +155,14 @@ var RectangleCollider = (function (_super) {
         this.rectangle.position.y = this.parent.position.y + this.offset.y;
     };
 
+    RectangleCollider.prototype.getPositionX = function () {
+        return this.rectangle.position.x;
+    };
+
+    RectangleCollider.prototype.getPositionY = function () {
+        return this.rectangle.position.y;
+    };
+
     RectangleCollider.prototype.intersects = function (other) {
         if (!_super.prototype.intersects.call(this, other)) {
             return false;
@@ -211,6 +236,7 @@ var CollisionManager = (function () {
 
     CollisionManager.prototype.release = function (entityId) {
         if (this.colliders[entityId] != null) {
+            this.clearColliderCollisions(this.colliders[entityId]);
             delete this.colliders[entityId];
         }
     };
@@ -224,11 +250,9 @@ var CollisionManager = (function () {
         if (collState == null || collState == 2 /* Exit */) {
             this.collisions[a.parent.entityId][b.parent.entityId] = 0 /* Enter */;
             a.parent.onCollisionEnter(b);
-            b.parent.onCollisionEnter(a);
         } else if (collState == 0 /* Enter */ || collState == 1 /* Stay */) {
             this.collisions[a.parent.entityId][b.parent.entityId] = 1 /* Stay */;
             a.parent.onCollisionStay(b);
-            b.parent.onCollisionStay(a);
         }
     };
 
@@ -247,13 +271,32 @@ var CollisionManager = (function () {
         } else {
             this.collisions[a.parent.entityId][b.parent.entityId] = 2 /* Exit */;
             a.parent.onCollisionExit(b);
-            b.parent.onCollisionExit(a);
+        }
+    };
+
+    CollisionManager.prototype.clearColliderCollisions = function (a) {
+        if (this.collisions[a.parent.entityId] == null) {
+            return;
+        }
+
+        for (var i in this.collisions[a.parent.entityId]) {
+            var c = this.collisions[a.parent.entityId][i];
+            if (c == 0 /* Enter */ || c == 1 /* Stay */) {
+                this.collisions[a.parent.entityId][i] = 2 /* Exit */;
+                var go = game.gameObjects.gameObjects[i];
+                if (go != null) {
+                    go.onCollisionExit(a);
+                }
+            }
         }
     };
 
     CollisionManager.prototype.update = function (dt) {
         for (var key1 in this.colliders) {
             var a = this.colliders[key1];
+            if (!a.enabled) {
+                continue;
+            }
             a.updatePosition();
             for (var key2 in this.colliders) {
                 if (key2 <= key1) {
@@ -261,11 +304,29 @@ var CollisionManager = (function () {
                 }
 
                 var b = this.colliders[key2];
+                if (!b.enabled) {
+                    continue;
+                }
+
+                if (a.parent.tag == b.parent.tag) {
+                    continue;
+                }
+
                 b.updatePosition();
+
+                if (Math.abs(a.getPositionX() - b.getPositionX()) > 100) {
+                    continue;
+                }
+                if (Math.abs(a.getPositionY() - b.getPositionY()) > 100) {
+                    continue;
+                }
+
                 if (a.intersects(b) || b.intersects(a)) {
                     this.registerCollision(a, b);
+                    this.registerCollision(b, a);
                 } else {
                     this.collisionComplete(a, b);
+                    this.collisionComplete(b, a);
                 }
             }
         }

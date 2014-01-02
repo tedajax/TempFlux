@@ -10,7 +10,7 @@ class Health {
         this.current = max;
     }
 
-    isDead() {
+    get isDead(): boolean {
         return !(this.current > 0);
     }
 
@@ -19,7 +19,7 @@ class Health {
             return;
         }
 
-        if (!this.isDead()) {
+        if (!this.isDead) {
             this.current -= amount;
             this.current = Math.max(this.current, 0);
             if (this.onDamage != null) {
@@ -39,7 +39,7 @@ class Health {
             return;
         }
 
-        if (!this.isDead()) {
+        if (!this.isDead) {
             this.current += amount;
             this.current = Math.min(this.current, this.max);
             if (this.onHeal != null) {

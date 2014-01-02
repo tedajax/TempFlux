@@ -5,9 +5,12 @@ var prevTime;
 window.onload = initialize;
 
 var FPSElement;
+var InfoElement;
 var FPS = 60;
 var framesThisSecond = 0;
 var lastTick;
+
+var timeScale = 1;
 
 function initialize() {
     var canvas = document.getElementById('canvas');
@@ -20,6 +23,7 @@ function initialize() {
     game = new Game(canvas);
 
     FPSElement = document.getElementById("fps");
+    InfoElement = document.getElementById("info");
 
     game.initialize();
 
@@ -33,7 +37,7 @@ function initialize() {
 function update() {
     prevTime = (currTime != null) ? currTime : performance.now();
     currTime = performance.now();
-    var dt = (currTime - prevTime) / 1000.0;
+    var dt = (currTime - prevTime) / 1000.0 * timeScale;
     game.update(dt);
 
     setTimeout(update, 1000 / FPS);
@@ -49,6 +53,8 @@ function render() {
         framesThisSecond = 0;
         lastTick = now;
     }
+
+    InfoElement.textContent = "Entities: " + game.gameObjects.entityCount;
 
     requestAnimationFrame(render);
 }

@@ -5,7 +5,6 @@ class Controller {
     position: TSM.vec3;
     velocity: TSM.vec3;
     rotation: TSM.vec3;
-    angularVelocity: TSM.vec3;
 
     worldBoundary: Rectangle;
 
@@ -19,22 +18,21 @@ class Controller {
         this.position = new TSM.vec3([0, 0, 0]);
         this.velocity = new TSM.vec3([0, 0, 0]);
         this.rotation = new TSM.vec3([0, 0, 0]);
-        this.angularVelocity = new TSM.vec3([0, 0, 0]);
 
         this.health = new Health(3);
     }
 
-    generateWorldBoundary() {
+    generateWorldBoundary(w: number = this.gameObject.sprite.width, h: number = this.gameObject.sprite.height) {
         if (this.gameObject == null) {
             return;
         }
 
         this.worldBoundary = new Rectangle();
         this.worldBoundary.position.xy = game.worldBoundary.position.xy;
-        this.worldBoundary.position.x += this.gameObject.sprite.width;
-        this.worldBoundary.position.y += this.gameObject.sprite.height;
-        this.worldBoundary.width = game.worldBoundary.width - this.gameObject.sprite.width;
-        this.worldBoundary.height = game.worldBoundary.height - this.gameObject.sprite.height;
+        this.worldBoundary.position.x += w;
+        this.worldBoundary.position.y += w;
+        this.worldBoundary.width = game.worldBoundary.width - w;
+        this.worldBoundary.height = game.worldBoundary.height - w;
     }
 
     posess(gameObject: GameObject) {
@@ -127,22 +125,45 @@ class MouseCursorController extends Controller {
 
 class BulletController extends Controller {
     speed: number = 100;
+    angle: number = 0;
+    platformVelocity: TSM.vec2 = TSM.vec2.zero;
+    angularVelocity: number = 0;
     worldBoundary: Rectangle;
-    
+    lifetime: number;
+        
     update(dt) {
         super.update(dt);
 
-        this.position.x += this.velocity.x * this.speed * dt;
-        this.position.y += this.velocity.y * this.speed * dt;
+        this.angle += this.angularVelocity * dt;
+
+        this.velocity.x = Math.cos(this.angle * Util.deg2Rad) * this.speed;
+        this.velocity.y = Math.sin(this.angle * Util.deg2Rad) * this.speed;
+        this.velocity.x += this.platformVelocity.x;
+        this.velocity.y += this.platformVelocity.y;
+
+        this.position.x += this.velocity.x * dt;
+        this.position.y += this.velocity.y * dt;
 
         if (!this.worldBoundary.pointInside(this.position.xy)) {
             this.gameObject.destroy();
         }
 
+        this.lifetime -= dt;
+        if (this.lifetime < 0) {
+            this.gameObject.destroy();
+        }        
+
         this.gameObject.position = this.position;
     }
 
     onCollisionEnter(collider: Collider) {
+        if (collider.parent.tag != GameObjectTag.Enemy) {
+            return;
+        }
+
+        if (!this.gameObject.shouldDestroy) {
+            game.audio.playSound("hit_enemy");
+        }
         this.gameObject.destroy();
     }
 }
@@ -162,28 +183,26 @@ class LocalPlayerState {
 class LocalPlayerController extends Controller {
     attacking: boolean;
     speed: number;
-    fireDelay: number;
     fireTimer: number;
     firedThisFrame: boolean;
+    weapon: number;
 
     playerConfig: any;
 
     stateRecord: LocalPlayerState[];
-
-    testTween: Tween;
 
     constructor(gameObject: GameObject) {
         super(gameObject);
 
         this.playerConfig = game.config["player"];
         this.speed = this.playerConfig["speed"];
-        this.fireDelay = this.playerConfig["fire_delay"];
-        this.fireTimer = this.fireDelay;
         this.firedThisFrame = false;
+        this.fireTimer = 0;
+        this.weapon = 0;
+
+        this.health.setMax(100);
 
         this.stateRecord = [];
-
-        this.testTween = new Tween(TweenFunctions.bounceIn, 1, 5, 1, TweenLoopMode.PingPong, 0);
     }
 
     update(dt) {
@@ -193,28 +212,47 @@ class LocalPlayerController extends Controller {
         this.velocity.x = 0;
         this.velocity.y = 0;
         if (game.input.getKey(Keys.A)) {
-            this.velocity.x = -this.speed;
+            this.velocity.x = -1;
         }
         if (game.input.getKey(Keys.D)) {
-            this.velocity.x = this.speed;
+            this.velocity.x = 1;
         }
         if (game.input.getKey(Keys.W)) {
-            this.velocity.y = -this.speed;
+            this.velocity.y = -1;
         }
         if (game.input.getKey(Keys.S)) {
-            this.velocity.y = this.speed;
+            this.velocity.y = 1;
+        }
+        this.velocity.normalize();
+        this.velocity.x *= this.speed;
+        this.velocity.y *= this.speed;
+
+        if (game.input.getKey(Keys.Z)) {
+            this.weapon--;
+            if (this.weapon < 0) {
+                this.weapon = 0;
+            }
+        }
+        if (game.input.getKey(Keys.X)) {
+            this.weapon++;
+            if (this.weapon >= game.armory.patterns.length) {
+                this.weapon = game.armory.patterns.length - 1;
+            }
+        }
+
+        if (game.input.getMouseButton(MouseButtons.RIGHT)) {
+            timeScale = 0.25;
+        } else {
+            timeScale = 1;
         }
 
         this.position.x += this.velocity.x * dt;
         this.position.y += this.velocity.y * dt;
 
-        //this.gameObject.sprite.scale.x = this.testTween.evaluate();
-        //this.gameObject.sprite.scale.y = this.testTween.evaluate();
-
         var mx = game.input.getMouseX() + game.camera.position.x;
         var my = game.input.getMouseY() + game.camera.position.y;
 
-        this.rotation.z = Math.atan2(this.position.y - my, this.position.x - mx) + Math.PI;
+        this.rotation.z = Math.atan2(this.position.y - this.gameObject.sprite.height / 2 - my, this.position.x - this.gameObject.sprite.width / 2 - mx) + Math.PI;
         
         this.constrainToBoundaries();
 
@@ -227,7 +265,6 @@ class LocalPlayerController extends Controller {
 
         if (game.input.getMouseButton(MouseButtons.LEFT)) {            
             if (this.fireTimer <= 0) {
-                this.fireTimer = this.fireDelay;
                 this.shoot();
             }
         }
@@ -254,22 +291,23 @@ class LocalPlayerController extends Controller {
         startPos.x += Math.cos(this.rotation.z) * 16;
         startPos.y += Math.sin(this.rotation.z) * 16;
 
-        var sprite = new Sprite(8, 8);
-        sprite.position.xy = startPos.xy;
-        sprite.setShader(game.spriteShader);
-        sprite.setTexture(game.textures.getTexture("player_bullet"));
-        sprite.alpha = true;
-        var go = new GameObject(null, null, "Bullet", sprite);
-        go.tag = "bullet";
-        var bulletController = new BulletController(null);
-        bulletController.position.xy = startPos.xy;
-        bulletController.speed = this.playerConfig["bullet_speed"];
-        bulletController.velocity = new TSM.vec3([Math.cos(this.rotation.z), Math.sin(this.rotation.z), 0]);
-        bulletController.posess(go);
+        this.fireTimer = game.armory.shoot(this.weapon, startPos, this.rotation.z * Util.rad2Deg, TSM.vec2.zero);
+        game.audio.playSound("shoot");
         
-        game.gameObjects.add(go);
-        go.addCircleCollider();
         //go.collider.continuousCollision = true;
+    }
+
+    onCollisionEnter(collider: Collider) {
+        if (collider.parent.tag == GameObjectTag.Enemy) {
+            this.gameObject.sprite.invertColor = true;
+            this.health.damage(5);
+        }
+    }
+
+    onCollisionExit(collider: Collider) {
+        if (collider.parent.tag == GameObjectTag.Enemy) {
+            this.gameObject.sprite.invertColor = false;
+        }
     }
 }
 
@@ -318,21 +356,6 @@ class PlayerRecordingController extends Controller {
         startPos.x += Math.cos(this.rotation.z) * 16;
         startPos.y += Math.sin(this.rotation.z) * 16;
 
-        var sprite = new Sprite(8, 8);
-        sprite.position.xy = startPos.xy;
-        sprite.setShader(game.spriteShader);
-        sprite.setTexture(game.textures.getTexture("player_bullet"));
-        sprite.alpha = true;
-        var go = new GameObject(null, null, "Bullet", sprite);
-        go.tag = "bullet";
-        var bulletController = new BulletController(null);
-        bulletController.position.xy = startPos.xy;
-        bulletController.speed = game.config["player"]["bullet_speed"];
-        bulletController.velocity = new TSM.vec3([Math.cos(this.rotation.z), Math.sin(this.rotation.z), 0]);
-        bulletController.posess(go);
-
-        game.gameObjects.add(go);
-        go.addCircleCollider();
-        go.collider.continuousCollision = true;
+        //go.collider.continuousCollision = true;
     }
 }

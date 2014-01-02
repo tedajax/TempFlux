@@ -12,6 +12,12 @@ var Camera2D = (function () {
             this.positionToFollow.xyz = this.gameObjectToFollow.position.xyz;
             this.positionToFollow.x -= game.width / 2;
             this.positionToFollow.y -= game.height / 2;
+
+            var mx = game.input.getMouseX() - game.width / 2;
+            var my = game.input.getMouseY() - game.height / 2;
+
+            this.positionToFollow.x += mx / 4;
+            this.positionToFollow.y += my / 4;
         }
 
         this.position.xy = this.positionToFollow.xy;
@@ -25,6 +31,10 @@ var Camera2D = (function () {
 
     Camera2D.prototype.getViewMatrix = function () {
         return TSM.mat4.lookAt(this.position, this.lookAt, this.up);
+    };
+
+    Camera2D.prototype.getFrozenViewMatrix = function () {
+        return TSM.mat4.lookAt(TSM.vec3.forward, TSM.vec3.zero, this.up);
     };
     return Camera2D;
 })();

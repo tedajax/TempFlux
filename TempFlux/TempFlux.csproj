@@ -25,8 +25,10 @@
     <TypeScriptCompile Include="camera.ts" />
     <TypeScriptCompile Include="controllers.ts" />
     <Content Include="assets\bit\bitIdle00.png" />
+    <Content Include="assets\enemies\greentriangle.png" />
     <Content Include="assets\enemies\redsquare.png" />
     <Content Include="assets\game\bullet.png" />
+    <Content Include="assets\sounds\sfx\hitenemy.wav" />
     <Content Include="assets\tiles\grid0.png" />
     <Content Include="assets\tiles\grid1.png" />
     <Content Include="assets\tiles\gridcorner_bottomleft.png" />
@@ -38,6 +40,8 @@
     <Content Include="assets\tiles\gridedge_right.png" />
     <Content Include="assets\tiles\gridedge_top.png" />
     <Content Include="assets\tiles\grid_blank.png" />
+    <TypeScriptCompile Include="armory.ts" />
+    <TypeScriptCompile Include="audio.ts" />
     <Content Include="default.htm" />
     <TypeScriptCompile Include="game.ts" />
     <TypeScriptCompile Include="gameobject.ts" />
@@ -56,6 +60,11 @@
     <TypeScriptCompile Include="physics.ts" />
     <TypeScriptCompile Include="tween.ts" />
     <TypeScriptCompile Include="health.ts" />
+    <TypeScriptCompile Include="particles.ts" />
+    <Content Include="Scripts\typings\threejs\three.d.ts" />
+    <Content Include="Scripts\typings\webaudioapi\waa-20120802.d.ts" />
+    <Content Include="Scripts\typings\webaudioapi\waa-nightly.d.ts" />
+    <Content Include="Scripts\typings\webaudioapi\waa.d.ts" />
     <Content Include="web.config" />
     <TypeScriptCompile Include="WebGL.d.ts" />
   </ItemGroup>
@@ -67,12 +76,16 @@
     <Content Include="assets\shaders\sprite.vert" />
     <Content Include="assets\tiles\.DS_Store" />
     <Content Include="config.json" />
+    <Content Include="packages.config" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
     <None Include="web.Release.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="assets\sounds\music\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

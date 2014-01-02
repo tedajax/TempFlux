@@ -39,6 +39,15 @@ class TextureManager {
 
     constructor() {
         this.textures = [];
+
+        var resourceMap = game.config["resource_map"]["textures"];
+        for (var key in resourceMap) {
+            var value = resourceMap[key];
+            var url: string = value["url"]
+            var mode: string = value["mode"]
+            var texMode: TextureWrapMode = (mode == "wrap") ? TextureWrapMode.Wrap : TextureWrapMode.Clamp;
+            this.loadTexture(key, url, texMode);
+        }
     }
 
     loadTexture(name, url, wrapMode: TextureWrapMode = TextureWrapMode.Wrap) {

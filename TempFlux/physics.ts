@@ -14,6 +14,7 @@ enum ColliderType {
 
 class Collider {
     layer: number;
+    enabled: boolean;
     type: ColliderType; 
     parent: GameObject
     offset: TSM.vec2;
@@ -23,6 +24,7 @@ class Collider {
     constructor(parent: GameObject, offset: TSM.vec2 = TSM.vec2.zero, layer: number = CollisionLayer.Default) {
         this.parent = parent;
         this.layer = layer;
+        this.enabled = true;
         this.offset = offset;
         this.type = ColliderType.None;
         this.continuousCollision = false;
@@ -31,6 +33,14 @@ class Collider {
 
     updatePosition() {
 
+    }
+
+    getPositionX(): number {
+        return 0;
+    }
+
+    getPositionY(): number {
+        return 0;
     }
 
     intersects(other: Collider): boolean {
@@ -60,6 +70,14 @@ class CircleCollider extends Collider {
         this.previousPosition.y = this.circle.position.y;
         this.circle.position.x = this.parent.position.x + this.offset.x;
         this.circle.position.y = this.parent.position.y + this.offset.y;
+    }
+
+    getPositionX(): number {
+        return this.circle.position.x;
+    }
+
+    getPositionY(): number {
+        return this.circle.position.y;
     }
 
     intersects(other: Collider): boolean {
@@ -133,6 +151,14 @@ class RectangleCollider extends Collider {
         this.previousPosition.y = this.rectangle.position.y;
         this.rectangle.position.x = this.parent.position.x + this.offset.x;
         this.rectangle.position.y = this.parent.position.y + this.offset.y;
+    }
+
+    getPositionX() {
+        return this.rectangle.position.x;
+    }
+
+    getPositionY() {
+        return this.rectangle.position.y;
     }
 
     intersects(other: Collider): boolean {
@@ -210,6 +236,7 @@ class CollisionManager {
 
     release(entityId: number) {
         if (this.colliders[entityId] != null) {
+            this.clearColliderCollisions(this.colliders[entityId]);
             delete this.colliders[entityId];
         }
     }
@@ -223,11 +250,9 @@ class CollisionManager {
         if (collState == null || collState == CollisionState.Exit) {
             this.collisions[a.parent.entityId][b.parent.entityId] = CollisionState.Enter;
             a.parent.onCollisionEnter(b);
-            b.parent.onCollisionEnter(a);
         } else if (collState == CollisionState.Enter || collState == CollisionState.Stay) {
             this.collisions[a.parent.entityId][b.parent.entityId] = CollisionState.Stay;
             a.parent.onCollisionStay(b);
-            b.parent.onCollisionStay(a);
         }
     }
 
@@ -246,7 +271,23 @@ class CollisionManager {
         } else {
             this.collisions[a.parent.entityId][b.parent.entityId] = CollisionState.Exit;
             a.parent.onCollisionExit(b);
-            b.parent.onCollisionExit(a);
+        }
+    }
+
+    clearColliderCollisions(a: Collider) {
+        if (this.collisions[a.parent.entityId] == null) {
+            return;
+        }
+
+        for (var i in this.collisions[a.parent.entityId]) {
+            var c = this.collisions[a.parent.entityId][i];
+            if (c == CollisionState.Enter || c == CollisionState.Stay) {
+                this.collisions[a.parent.entityId][i] = CollisionState.Exit;
+                var go = game.gameObjects.gameObjects[i];
+                if (go != null) {
+                    go.onCollisionExit(a);
+                }
+            }
         }
     }
 
@@ -254,6 +295,9 @@ class CollisionManager {
         //for now no broadphase just compare everything to everything
         for (var key1 in this.colliders) {
             var a: Collider = this.colliders[key1];
+            if (!a.enabled) {
+                continue;
+            }
             a.updatePosition();
             for (var key2 in this.colliders) {
                 if (key2 <= key1) {
@@ -261,11 +305,29 @@ class CollisionManager {
                 }
 
                 var b = this.colliders[key2];
+                if (!b.enabled) {
+                    continue;
+                }
+
+                if (a.parent.tag == b.parent.tag) {
+                    continue;
+                }
+
                 b.updatePosition();
+
+                if (Math.abs(a.getPositionX() - b.getPositionX()) > 100) {
+                    continue;
+                }
+                if (Math.abs(a.getPositionY() - b.getPositionY()) > 100) {
+                    continue;
+                }                
+
                 if (a.intersects(b) || b.intersects(a)) {
                     this.registerCollision(a, b);
+                    this.registerCollision(b, a);
                 } else {
                     this.collisionComplete(a, b);
+                    this.collisionComplete(b, a);
                 }
             }
         }

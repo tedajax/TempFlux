@@ -1,18 +1,22 @@
-var Health = (function () {
+﻿var Health = (function () {
     function Health(max) {
         this.max = max;
         this.current = max;
     }
-    Health.prototype.isDead = function () {
-        return !(this.current > 0);
-    };
+    Object.defineProperty(Health.prototype, "isDead", {
+        get: function () {
+            return !(this.current > 0);
+        },
+        enumerable: true,
+        configurable: true
+    });
 
     Health.prototype.damage = function (amount) {
         if (amount <= 0) {
             return;
         }
 
-        if (!this.isDead()) {
+        if (!this.isDead) {
             this.current -= amount;
             this.current = Math.max(this.current, 0);
             if (this.onDamage != null) {
@@ -32,7 +36,7 @@ var Health = (function () {
             return;
         }
 
-        if (!this.isDead()) {
+        if (!this.isDead) {
             this.current += amount;
             this.current = Math.min(this.current, this.max);
             if (this.onHeal != null) {

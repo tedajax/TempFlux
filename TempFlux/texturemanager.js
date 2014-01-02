@@ -36,6 +36,15 @@ var TextureWrapMode;
 var TextureManager = (function () {
     function TextureManager() {
         this.textures = [];
+
+        var resourceMap = game.config["resource_map"]["textures"];
+        for (var key in resourceMap) {
+            var value = resourceMap[key];
+            var url = value["url"];
+            var mode = value["mode"];
+            var texMode = (mode == "wrap") ? 1 /* Wrap */ : 0 /* Clamp */;
+            this.loadTexture(key, url, texMode);
+        }
     }
     TextureManager.prototype.loadTexture = function (name, url, wrapMode) {
         if (typeof wrapMode === "undefined") { wrapMode = 1 /* Wrap */; }

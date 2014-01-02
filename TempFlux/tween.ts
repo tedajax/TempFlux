@@ -145,6 +145,16 @@ class TweenFunctions {
             return TweenFunctions.bounceOut(t * 2 - d, 0, c, d) * 0.5 + c * 0.5 + b;
         }
     }
+
+    static sineWave(t: number, b: number, c: number, d: number) {
+        t /= d;
+        return Math.sin(t * Util.TwoPi) * (c / 2) + b + (c / 2);
+    }
+
+    static cosineWave(t: number, b: number, c: number, d: number) {
+        t /= d;
+        return Math.cos(t * Util.TwoPi) * (c / 2) + b + (c / 2);
+    }
 }
 
 enum TweenDirection {
@@ -274,10 +284,11 @@ class TweenManager {
     static destroyQueue: {} = {};
     static currentId: number = 0;
 
-    static register(tween: Tween) {
+    static register(tween: Tween): Tween {
         var id = TweenManager.currentId++;
         tween.tweenId = id;
         TweenManager.tweens[id] = tween;
+        return tween;
     }
 
     static update(dt: number) {

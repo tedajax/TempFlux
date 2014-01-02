@@ -152,6 +152,16 @@ var TweenFunctions = (function () {
             return TweenFunctions.bounceOut(t * 2 - d, 0, c, d) * 0.5 + c * 0.5 + b;
         }
     };
+
+    TweenFunctions.sineWave = function (t, b, c, d) {
+        t /= d;
+        return Math.sin(t * Util.TwoPi) * (c / 2) + b + (c / 2);
+    };
+
+    TweenFunctions.cosineWave = function (t, b, c, d) {
+        t /= d;
+        return Math.cos(t * Util.TwoPi) * (c / 2) + b + (c / 2);
+    };
     return TweenFunctions;
 })();
 
@@ -275,6 +285,7 @@ var TweenManager = (function () {
         var id = TweenManager.currentId++;
         tween.tweenId = id;
         TweenManager.tweens[id] = tween;
+        return tween;
     };
 
     TweenManager.update = function (dt) {

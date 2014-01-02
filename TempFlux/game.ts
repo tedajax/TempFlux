@@ -18,6 +18,7 @@ class Game {
 
     renderer: RenderManager;
     textures: TextureManager;
+    audio: AudioManager;
     gameObjects: GameObjectManager;
     playerController: LocalPlayerController;
     recordingControllers: PlayerRecordingController[];
@@ -26,11 +27,14 @@ class Game {
     enemies: EnemyFactory;
     aiDirector: EnemySpawnerController;
     collision: CollisionManager;
+    armory: Armory;
+    hud: GameHUD;
 
     spriteShader: SpriteShader;
     worldBoundary: Rectangle;
 
-    reticule: GameObject;
+    gridBG: Sprite;
+    gridGlow: Tween;
 
     constructor(canvas: HTMLCanvasElement) {
         this.useFullWindow = false;
@@ -74,6 +78,9 @@ class Game {
                     }
                 });
             }
+            if (e.keyCode == Keys.P) {
+                this.audio.playSound("hit_enemy");
+            }
         });
     }
 
@@ -84,13 +91,11 @@ class Game {
 
         this.renderer = new RenderManager();
 
-        this.initializeTextures();
+        this.textures = new TextureManager();
+        this.audio = new AudioManager();
         this.initializeAnimations();
 
         this.meshFactory = new MeshFactory();
-
-        this.enemies = new EnemyFactory();
-        this.aiDirector = new EnemySpawnerController();
         
         this.spriteShader = new SpriteShader();
         this.spriteShader.initialize();
@@ -101,27 +106,27 @@ class Game {
         this.collision = new CollisionManager();
 
         this.initializeBackground();
+
+        this.enemies = new EnemyFactory();
+        this.aiDirector = new EnemySpawnerController();
+
+        game.armory = buildStandardArmory();
                 
         var go = this.gameObjects.add(new GameObject("bit", ["idle"], "Player"));
         go.playAnimation("idle", true);
         go.sprite.alpha = true;
         go.position.x = go.sprite.width / 2;
         go.position.y = go.sprite.height / 2;
+        go.tag = GameObjectTag.Player;
+        go.addCircleCollider();
+        
         this.camera.gameObjectToFollow = go;
         this.playerController = new LocalPlayerController(go);
         this.recordingControllers = [];
-    }
 
-    initializeTextures() {
-        this.textures = new TextureManager();
-        var resourceMap = this.config["resource_map"];
-        for (var key in resourceMap) {
-            var value = resourceMap[key];
-            var url: string = value["url"]
-            var mode: string = value["mode"]
-            var texMode: TextureWrapMode = (mode == "wrap") ? TextureWrapMode.Wrap : TextureWrapMode.Clamp;
-            this.textures.loadTexture(key, url, texMode);
-        }
+        this.hud = new GameHUD();
+
+        this.audio.playMusic("awake");
     }
 
     initializeAnimations() {
@@ -146,26 +151,27 @@ class Game {
         gridBG.setTexture(this.textures.getTexture("grid1"));
         gridBG.position.xyz = [worldWidth / 2, worldHeight / 2, -1];
         this.gameObjects.add(new GameObject("ignore", [], "GridBG", gridBG));
+        this.gridBG = gridBG;
 
-        var gridTop = new Sprite(worldWidth, tileHeight, tilesX, 1);
+        var gridTop = new Sprite(worldWidth, 8, tilesX, 1);
         gridTop.setShader(this.spriteShader);
         gridTop.setTexture(this.textures.getTexture("gridedge_top"));
         gridTop.position.xyz = [worldWidth / 2, -worldHeight / 2, -1];
         this.gameObjects.add(new GameObject("ignore", [], "GridBGTop", gridTop));
 
-        var gridBottom = new Sprite(worldWidth, tileHeight, tilesX, 1);
+        var gridBottom = new Sprite(worldWidth, 8, tilesX, 1);
         gridBottom.setShader(this.spriteShader);
         gridBottom.setTexture(this.textures.getTexture("gridedge_bottom"));
-        gridBottom.position.xyz = [worldWidth / 2, worldHeight / 2 + tileHeight, -1];
+        gridBottom.position.xyz = [worldWidth / 2, worldHeight / 2 + 8, -1];
         this.gameObjects.add(new GameObject("ignore", [], "GridBGBottom", gridBottom));
 
-        var gridRight = new Sprite(tileWidth, worldHeight, 1, tilesY);
+        var gridRight = new Sprite(8, worldHeight, 1, tilesY);
         gridRight.setShader(this.spriteShader);
         gridRight.setTexture(this.textures.getTexture("gridedge_right"));
-        gridRight.position.xyz = [worldWidth / 2 + tileWidth, worldHeight / 2, -1];
+        gridRight.position.xyz = [worldWidth / 2 + 8, worldHeight / 2, -1];
         this.gameObjects.add(new GameObject("ignore", [], "GridBGRight", gridRight));
 
-        var gridLeft = new Sprite(tileWidth, worldHeight, 1, tilesY);
+        var gridLeft = new Sprite(8, worldHeight, 1, tilesY);
         gridLeft.setShader(this.spriteShader);
         gridLeft.setTexture(this.textures.getTexture("gridedge_left"));
         gridLeft.position.xyz = [-worldWidth / 2, worldHeight / 2, -1];
@@ -188,6 +194,14 @@ class Game {
             this.playerController = new LocalPlayerController(go);
         }
 
+        if (game.input.getKey(Keys.HYPEN)) {
+            game.audio.musicGain.gain.value -= 0.25 * dt;
+        }
+        if (game.input.getKey(Keys.EQUALS)) {
+            game.audio.musicGain.gain.value += 0.25 * dt;
+        }
+        game.audio.musicGain.gain.value = Util.clamp(game.audio.musicGain.gain.value, 0, 1);
+
         this.gameObjects.update(dt);
         this.aiDirector.update(dt);
         this.collision.update(dt);
@@ -195,6 +209,8 @@ class Game {
         this.camera.update(dt);
 
         TweenManager.update(dt);
+
+        this.hud.update(dt);
 
         this.input.update();
 
@@ -205,6 +221,7 @@ class Game {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         this.spriteShader.frameDrawSetup();
         this.gameObjects.render();
+        this.hud.render();
         ++this.renderedFrames;
     }
 

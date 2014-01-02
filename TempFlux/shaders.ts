@@ -102,6 +102,7 @@ class SpriteShader extends Shader {
     lastBoundTexture: ImageTexture;
     tintColor: Float32Array;
     addColor: Float32Array;
+    invertColor: boolean;
 
     constructor() {
         super();
@@ -123,6 +124,7 @@ class SpriteShader extends Shader {
         this.addUniform("texture", "uTexture");
         this.addUniform("tintColor", "uTintColor");
         this.addUniform("addColor", "uAddColor");
+        this.addUniform("invertColor", "uInvert");
     }
 
     frameDrawSetup() {
@@ -135,8 +137,10 @@ class SpriteShader extends Shader {
 
         game.gl.uniformMatrix4fv(this.uniforms["projection"], false, this.projectionMatrix.all());
         game.gl.uniformMatrix4fv(this.uniforms["view"], false, this.viewMatrix.all());
+    }
 
-        game.gl.uniform3fv(this.uniforms["cameraPosition"], game.camera.position.xyz);
+    unlockFromCamera() {
+        game.gl.uniformMatrix4fv(this.uniforms["view"], false, game.camera.getFrozenViewMatrix().all());
     }
 
     bindTexture() {
@@ -156,5 +160,6 @@ class SpriteShader extends Shader {
         game.gl.uniformMatrix4fv(this.uniforms["world"], false, this.worldMatrix.all());
         game.gl.uniform4fv(this.uniforms["tintColor"], this.tintColor);
         game.gl.uniform4fv(this.uniforms["addColor"], this.addColor);
+        game.gl.uniform1i(this.uniforms["invertColor"], Number(this.invertColor));
     }
 }

@@ -56,6 +56,9 @@ class Keys {
     static F10 = 121;
     static F11 = 122;
     static F12 = 123;
+
+    static HYPEN = 189;
+    static EQUALS = 187;
 } 
 
 class MouseButtons {

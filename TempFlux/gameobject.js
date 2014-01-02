@@ -1,9 +1,18 @@
+var GameObjectTag;
+(function (GameObjectTag) {
+    GameObjectTag[GameObjectTag["Default"] = 0] = "Default";
+    GameObjectTag[GameObjectTag["Player"] = 1] = "Player";
+    GameObjectTag[GameObjectTag["Bullet"] = 2] = "Bullet";
+    GameObjectTag[GameObjectTag["Enemy"] = 3] = "Enemy";
+})(GameObjectTag || (GameObjectTag = {}));
+
 var GameObject = (function () {
     function GameObject(klass, animations, name, sprite) {
         if (typeof name === "undefined") { name = "default"; }
         this.name = name;
-        this.tag = "default";
+        this.tag = 0 /* Default */;
         this.shouldDestroy = false;
+        this.entityId = -1;
 
         if (sprite != null) {
             this.sprite = sprite;
@@ -23,6 +32,9 @@ var GameObject = (function () {
     }
     GameObject.prototype.destroy = function () {
         this.shouldDestroy = true;
+    };
+
+    GameObject.prototype.onDestroy = function () {
         game.collision.release(this.entityId);
     };
 
@@ -34,7 +46,7 @@ var GameObject = (function () {
     GameObject.prototype.addCircleCollider = function (layer, radius, offset) {
         if (typeof layer === "undefined") { layer = 1 /* Default */; }
         if (typeof radius === "undefined") { radius = this.sprite.width / 2; }
-        if (typeof offset === "undefined") { offset = TSM.vec2.zero; }
+        if (typeof offset === "undefined") { offset = new TSM.vec2([-this.sprite.width / 2, -this.sprite.height / 2]); }
         var circ = new CircleCollider(this, radius, offset, layer);
         this.addCollider(circ);
     };
@@ -43,7 +55,7 @@ var GameObject = (function () {
         if (typeof layer === "undefined") { layer = 1 /* Default */; }
         if (typeof width === "undefined") { width = this.sprite.width; }
         if (typeof height === "undefined") { height = this.sprite.height; }
-        if (typeof offset === "undefined") { offset = new TSM.vec2([-this.sprite.width, -this.sprite.height2]); }
+        if (typeof offset === "undefined") { offset = new TSM.vec2([-this.sprite.width, -this.sprite.height]); }
         var rect = new RectangleCollider(this, width, height, offset, layer);
         this.addCollider(rect);
     };

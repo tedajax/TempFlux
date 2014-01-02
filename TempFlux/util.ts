@@ -115,6 +115,10 @@ class Util {
             Util.lerp(a.y, b.y, t),
             a.z]);
     }
+
+    static flattenVec3(a: TSM.vec3): TSM.vec2 {
+        return new TSM.vec2([a.x, a.y]);
+    }
 }
 
 class PoolArray<T> {
@@ -287,3 +291,9 @@ class Circle {
     }
 }
 
+enum Side2D {
+    Left,
+    Right,
+    Top,
+    Bottom
+}

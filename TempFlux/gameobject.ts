@@ -1,6 +1,13 @@
+enum GameObjectTag {
+    Default,
+    Player,
+    Bullet,
+    Enemy
+}
+
 class GameObject {
     name: string;
-    tag: string;
+    tag: GameObjectTag;
     sprite: Sprite;
     position: TSM.vec3;
     rotation: TSM.vec3;
@@ -16,8 +23,9 @@ class GameObject {
 
     constructor(klass?: string, animations?: string[], name: string = "default", sprite?: Sprite) {
         this.name = name;
-        this.tag = "default";
+        this.tag = GameObjectTag.Default;
         this.shouldDestroy = false;
+        this.entityId = -1;
 
         if (sprite != null) {
             this.sprite = sprite;
@@ -38,6 +46,9 @@ class GameObject {
 
     destroy() {
         this.shouldDestroy = true;
+    }
+
+    onDestroy() {
         game.collision.release(this.entityId);
     }
 
@@ -46,7 +57,7 @@ class GameObject {
         game.collision.register(this.collider);
     }
 
-    addCircleCollider(layer: CollisionLayer = CollisionLayer.Default, radius: number = this.sprite.width / 2, offset: TSM.vec2 = TSM.vec2.zero) {
+    addCircleCollider(layer: CollisionLayer = CollisionLayer.Default, radius: number = this.sprite.width / 2, offset: TSM.vec2 = new TSM.vec2([-this.sprite.width / 2, -this.sprite.height / 2])) {
         var circ = new CircleCollider(this, radius, offset, layer);
         this.addCollider(circ);
     }
@@ -54,7 +65,7 @@ class GameObject {
     addRectangleCollider(layer: CollisionLayer = CollisionLayer.Default,
         width: number = this.sprite.width,
         height: number = this.sprite.height,
-        offset: TSM.vec2 = new TSM.vec2([-this.sprite.width, -this.sprite.height2])) {
+        offset: TSM.vec2 = new TSM.vec2([-this.sprite.width, -this.sprite.height])) {
             var rect = new RectangleCollider(this, width, height, offset, layer);
             this.addCollider(rect);
     }

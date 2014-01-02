@@ -13,12 +13,12 @@ span {
     z-index: 2147483647;
 }*/
 
-#info {
+/*#info {
     position: absolute;
     text-align: center;
     top: 15px;
     width: 100%;
-}
+}*/
 
 #canvas {
     cursor: crosshair;
