@@ -111,7 +111,7 @@
       "fire_delay": 0.2,
       "bullet_speed": 800
     },
-    "music_volume": 0,
+    "music_volume": 1,
     "sfx_volume": 1
   }
 }

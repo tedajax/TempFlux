@@ -127,6 +127,7 @@ class Game {
         this.hud = new GameHUD();
 
         this.audio.playMusic("awake");
+        this.aiDirector.initialize();
     }
 
     initializeAnimations() {

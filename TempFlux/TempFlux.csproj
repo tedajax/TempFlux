@@ -61,6 +61,7 @@
     <TypeScriptCompile Include="tween.ts" />
     <TypeScriptCompile Include="health.ts" />
     <TypeScriptCompile Include="particles.ts" />
+    <TypeScriptCompile Include="hud.ts" />
     <Content Include="Scripts\typings\threejs\three.d.ts" />
     <Content Include="Scripts\typings\webaudioapi\waa-20120802.d.ts" />
     <Content Include="Scripts\typings\webaudioapi\waa-nightly.d.ts" />

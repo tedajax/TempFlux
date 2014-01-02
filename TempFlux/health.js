@@ -1,4 +1,4 @@
-﻿var Health = (function () {
+var Health = (function () {
     function Health(max) {
         this.max = max;
         this.current = max;

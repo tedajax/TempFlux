@@ -1,4 +1,4 @@
-/// <reference path="WebGL.d.ts" />
+﻿/// <reference path="WebGL.d.ts" />
 var Game = (function () {
     function Game(canvas) {
         var _this = this;
@@ -103,6 +103,7 @@ var Game = (function () {
         this.hud = new GameHUD();
 
         this.audio.playMusic("awake");
+        this.aiDirector.initialize();
     };
 
     Game.prototype.initializeAnimations = function () {

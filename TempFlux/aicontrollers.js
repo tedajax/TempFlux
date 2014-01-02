@@ -34,29 +34,17 @@ var EnemySpawnerController = (function (_super) {
             this.freeSpawners.push(i);
         }
     }
-    EnemySpawnerController.prototype.update = function (dt) {
-        if (this.player == null && game.playerController.gameObject != null) {
-            this.player = game.playerController.gameObject;
-        }
+    EnemySpawnerController.prototype.initialize = function () {
+        this.player = game.playerController.gameObject;
 
+        this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
+        this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
+        this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
+    };
+
+    EnemySpawnerController.prototype.update = function (dt) {
         if (!this.enableSpawning) {
             return;
-        }
-
-        if (game.input.getKeyDown(Keys.ONE)) {
-            this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
-            this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
-            this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
-        }
-        if (game.input.getKeyDown(Keys.TWO)) {
-            game.enemies.createEnemy(this.enemyMap[1], this.getRandomSpawnPosition());
-        }
-        if (game.input.getKey(Keys.THREE)) {
-            game.enemies.createEnemy(this.enemyMap[2], this.getRandomSpawnPosition());
-        }
-
-        if (game.input.getKeyDown(Keys.E)) {
-            this.enableSpawning = !this.enableSpawning;
         }
 
         for (var i = 0, len = this.spawners.length; i < len; ++i) {
@@ -86,6 +74,7 @@ var EnemySpawnerController = (function (_super) {
         var s;
         do {
             s = Util.randomRange(0, this.spawnPoints.length - 1);
+            console.log(s);
         } while(!this.spawnPointValid(this.spawnPoints[s]));
         return s;
     };

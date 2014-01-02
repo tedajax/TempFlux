@@ -1,4 +1,4 @@
-﻿/// <reference path="tsm-0.7.d.ts" />
+/// <reference path="tsm-0.7.d.ts" />
 /// <reference path="WebGL.d.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];

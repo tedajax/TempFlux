@@ -38,34 +38,36 @@ class EnemySpawnerController extends Controller {
             this.spawners.push(new SpawnWorker(this, i));
             this.freeSpawners.push(i);
         }
+    }
 
-        
+    initialize() {
+        this.player = game.playerController.gameObject;
+
+        this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
+        this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
+        this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
     }
 
     update(dt: number) {
-        if (this.player == null && game.playerController.gameObject != null) {
-            this.player = game.playerController.gameObject;
-        }
-
         if (!this.enableSpawning) {
             return;
         }
 
-        if (game.input.getKeyDown(Keys.ONE)) {
-            this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
-            this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
-            this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
-        }
-        if (game.input.getKeyDown(Keys.TWO)) {
-            game.enemies.createEnemy(this.enemyMap[1], this.getRandomSpawnPosition());
-        }
-        if (game.input.getKey(Keys.THREE)) {
-            game.enemies.createEnemy(this.enemyMap[2], this.getRandomSpawnPosition());
-        }
+        //if (game.input.getKeyDown(Keys.ONE)) {
+        //    this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
+        //    this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
+        //    this.startSpawnRun(100, 0, this.chooseSpawnPoint(), 1, 1, true, true);
+        //}
+        //if (game.input.getKeyDown(Keys.TWO)) {
+        //    game.enemies.createEnemy(this.enemyMap[1], this.getRandomSpawnPosition());
+        //}
+        //if (game.input.getKey(Keys.THREE)) {
+        //    game.enemies.createEnemy(this.enemyMap[2], this.getRandomSpawnPosition());
+        //}
 
-        if (game.input.getKeyDown(Keys.E)) {
-            this.enableSpawning = !this.enableSpawning;
-        }
+        //if (game.input.getKeyDown(Keys.E)) {
+        //    this.enableSpawning = !this.enableSpawning;
+        //}
 
         for (var i = 0, len = this.spawners.length; i < len; ++i) {
             this.spawners[i].update(dt);
@@ -90,7 +92,8 @@ class EnemySpawnerController extends Controller {
     chooseSpawnPoint(): number {
         var s: number;
         do {
-            s = Util.randomRange(0, this.spawnPoints.length - 1)
+            s = Util.randomRange(0, this.spawnPoints.length - 1);
+            console.log(s);
         } while (!this.spawnPointValid(this.spawnPoints[s]));
         return s;
     }
