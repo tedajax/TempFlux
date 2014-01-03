@@ -196,7 +196,7 @@ var AIController = (function (_super) {
 
     AIController.prototype.onDamage = function () {
         _super.prototype.onDamage.call(this);
-        sleep(20);
+        sleep(5);
         game.camera.shake(0.1, 5);
         this.damageColorFlash();
     };

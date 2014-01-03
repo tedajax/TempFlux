@@ -230,7 +230,7 @@ class AIController extends Controller {
 
     onDamage() {
         super.onDamage();
-        sleep(20);
+        sleep(5);
         game.camera.shake(0.1, 5);
         this.damageColorFlash();
     }
