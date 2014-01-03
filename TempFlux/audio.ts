@@ -2,6 +2,7 @@
 
 class SoundEffect {
     buffer: AudioBuffer;
+    filter: BiquadFilterNode;
     loaded: boolean;
     gain: number;
     onload: Function;
@@ -24,6 +25,9 @@ class AudioManager {
     sounds: SoundEffect[];
     music: SoundEffect[];
     audio: AudioContext;
+
+    filter: BiquadFilterNode;
+    DEFAULT_FREQUENCY: number = 10000;
 
     sfxGain: GainNode;
     musicGain: GainNode;
@@ -48,9 +52,6 @@ class AudioManager {
         this.sfxGain.gain.value = game.config["sfx_volume"];
         this.musicGain.gain.value = game.config["music_volume"];
 
-        this.sfxGain.connect(this.audio.destination);
-        this.musicGain.connect(this.audio.destination);
-
         this.sounds = [];
         this.music = [];
 
@@ -69,6 +70,14 @@ class AudioManager {
             var gain: number = value["gain"] || 1;
             this.loadMusic(key, url, gain);
         }
+
+        this.filter = this.audio.createBiquadFilter();
+        this.filter.type = 0; //LOWPASS filter
+        this.filter.frequency.value = 5000;
+        this.filter.connect(this.audio.destination);
+
+        this.sfxGain.connect(this.filter);
+        this.musicGain.connect(this.filter);
     }
 
     playSound(name: string) {
@@ -91,6 +100,7 @@ class AudioManager {
             console.error("Music \'" + name + "\' not found");
             return;
         }
+
 
         if (this.music[name].loaded == false) {
             this.music[name].onload = () => {
@@ -153,5 +163,9 @@ class AudioManager {
         };
 
         request.send();
+    }
+
+    update(dt: number) {
+        this.filter.frequency.value = this.DEFAULT_FREQUENCY * timeScale * timeScale;
     }
 }

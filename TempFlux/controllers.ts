@@ -20,6 +20,12 @@ class Controller {
         this.rotation = new TSM.vec3([0, 0, 0]);
 
         this.health = new Health(3);
+        this.health.onDamage = () => {
+            this.onDamage();
+        }
+    }
+
+    onDamage() {
     }
 
     generateWorldBoundary(w: number = this.gameObject.sprite.width, h: number = this.gameObject.sprite.height) {
@@ -272,6 +278,12 @@ class LocalPlayerController extends Controller {
         this.recordCurrentState();
     }
 
+    onDamage() {
+        super.onDamage();
+
+        game.camera.shake(0.2, 10);
+    }
+
     recordCurrentState() {
         var record = new LocalPlayerState();
         record.position.xyz = this.position.xyz;
@@ -286,6 +298,8 @@ class LocalPlayerController extends Controller {
 
     shoot() {
         this.firedThisFrame = true;
+
+        game.camera.kick(this.rotation.z, 2);
 
         var startPos = new TSM.vec2([this.position.x - this.gameObject.sprite.origin.x + 4, this.position.y - this.gameObject.sprite.origin.y + 4]);
         startPos.x += Math.cos(this.rotation.z) * 16;

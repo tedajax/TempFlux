@@ -74,7 +74,6 @@ var EnemySpawnerController = (function (_super) {
         var s;
         do {
             s = Util.randomRange(0, this.spawnPoints.length - 1);
-            console.log(s);
         } while(!this.spawnPointValid(this.spawnPoints[s]));
         return s;
     };
@@ -190,16 +189,15 @@ var AIController = (function (_super) {
         this.health.onDeath = function () {
             _this.onDeath();
         };
-
-        this.health.onDamage = function () {
-            _this.onDamage();
-        };
     }
     AIController.prototype.onDeath = function () {
         this.gameObject.destroy();
     };
 
     AIController.prototype.onDamage = function () {
+        _super.prototype.onDamage.call(this);
+        sleep(20);
+        game.camera.shake(0.1, 5);
         this.damageColorFlash();
     };
 

@@ -1,4 +1,4 @@
-﻿/// <reference path="WebGL.d.ts" />
+/// <reference path="WebGL.d.ts" />
 var Game = (function () {
     function Game(canvas) {
         var _this = this;
@@ -188,6 +188,7 @@ var Game = (function () {
         TweenManager.update(dt);
 
         this.hud.update(dt);
+        this.audio.update(dt);
 
         this.input.update();
 

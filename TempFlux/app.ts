@@ -12,7 +12,14 @@ var FPS = 60;
 var framesThisSecond = 0;
 var lastTick;
 
+var normalTimeScale = 1;
+var slowedTimeScale = 0.25;
 var timeScale = 1;
+
+function sleep(time: number) {
+    var start = performance.now();
+    while (performance.now() < start + time);
+}
 
 function initialize() {
     var canvas = <HTMLCanvasElement>document.getElementById('canvas');

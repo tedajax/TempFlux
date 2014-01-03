@@ -1,4 +1,4 @@
-var __extends = this.__extends || function (d, b) {
+﻿var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -6,6 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 var Controller = (function () {
     function Controller(gameObject) {
+        var _this = this;
         this.gameObject = gameObject;
         if (this.gameObject != null) {
             this.gameObject.setController(this);
@@ -17,7 +18,13 @@ var Controller = (function () {
         this.rotation = new TSM.vec3([0, 0, 0]);
 
         this.health = new Health(3);
+        this.health.onDamage = function () {
+            _this.onDamage();
+        };
     }
+    Controller.prototype.onDamage = function () {
+    };
+
     Controller.prototype.generateWorldBoundary = function (w, h) {
         if (typeof w === "undefined") { w = this.gameObject.sprite.width; }
         if (typeof h === "undefined") { h = this.gameObject.sprite.height; }
@@ -267,6 +274,12 @@ var LocalPlayerController = (function (_super) {
         this.recordCurrentState();
     };
 
+    LocalPlayerController.prototype.onDamage = function () {
+        _super.prototype.onDamage.call(this);
+
+        game.camera.shake(0.2, 10);
+    };
+
     LocalPlayerController.prototype.recordCurrentState = function () {
         var record = new LocalPlayerState();
         record.position.xyz = this.position.xyz;
@@ -281,6 +294,8 @@ var LocalPlayerController = (function (_super) {
 
     LocalPlayerController.prototype.shoot = function () {
         this.firedThisFrame = true;
+
+        game.camera.kick(this.rotation.z, 2);
 
         var startPos = new TSM.vec2([this.position.x - this.gameObject.sprite.origin.x + 4, this.position.y - this.gameObject.sprite.origin.y + 4]);
         startPos.x += Math.cos(this.rotation.z) * 16;

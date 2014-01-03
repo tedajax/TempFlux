@@ -212,6 +212,7 @@ class Game {
         TweenManager.update(dt);
 
         this.hud.update(dt);
+        this.audio.update(dt);
 
         this.input.update();
 

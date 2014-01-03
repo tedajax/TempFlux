@@ -93,7 +93,6 @@ class EnemySpawnerController extends Controller {
         var s: number;
         do {
             s = Util.randomRange(0, this.spawnPoints.length - 1);
-            console.log(s);
         } while (!this.spawnPointValid(this.spawnPoints[s]));
         return s;
     }
@@ -223,10 +222,6 @@ class AIController extends Controller {
         this.health.onDeath = () => {
             this.onDeath();
         };
-
-        this.health.onDamage = () => {
-            this.onDamage();
-        }
     }
 
     onDeath() {
@@ -234,6 +229,9 @@ class AIController extends Controller {
     }
 
     onDamage() {
+        super.onDamage();
+        sleep(20);
+        game.camera.shake(0.1, 5);
         this.damageColorFlash();
     }
 

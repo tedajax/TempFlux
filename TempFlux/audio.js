@@ -1,4 +1,4 @@
-/// <reference path="Scripts/typings/webaudioapi/waa.d.ts" />
+﻿/// <reference path="Scripts/typings/webaudioapi/waa.d.ts" />
 var SoundEffect = (function () {
     function SoundEffect(buffer, gain) {
         if (typeof gain === "undefined") { gain = 1; }
@@ -17,6 +17,7 @@ var SoundEffect = (function () {
 
 var AudioManager = (function () {
     function AudioManager() {
+        this.DEFAULT_FREQUENCY = 10000;
         try  {
             this.audio = new webkitAudioContext();
         } catch (error) {
@@ -36,9 +37,6 @@ var AudioManager = (function () {
         this.sfxGain.gain.value = game.config["sfx_volume"];
         this.musicGain.gain.value = game.config["music_volume"];
 
-        this.sfxGain.connect(this.audio.destination);
-        this.musicGain.connect(this.audio.destination);
-
         this.sounds = [];
         this.music = [];
 
@@ -57,6 +55,14 @@ var AudioManager = (function () {
             var gain = value["gain"] || 1;
             this.loadMusic(key, url, gain);
         }
+
+        this.filter = this.audio.createBiquadFilter();
+        this.filter.type = 0; //LOWPASS filter
+        this.filter.frequency.value = 5000;
+        this.filter.connect(this.audio.destination);
+
+        this.sfxGain.connect(this.filter);
+        this.musicGain.connect(this.filter);
     }
     AudioManager.prototype.playSound = function (name) {
         if (this.sounds[name] == null) {
@@ -143,6 +149,10 @@ var AudioManager = (function () {
         };
 
         request.send();
+    };
+
+    AudioManager.prototype.update = function (dt) {
+        this.filter.frequency.value = this.DEFAULT_FREQUENCY * timeScale * timeScale;
     };
     return AudioManager;
 })();
