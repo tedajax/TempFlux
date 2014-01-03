@@ -28,6 +28,7 @@ class Game {
     aiDirector: EnemySpawnerController;
     collision: CollisionManager;
     armory: Armory;
+    particles: ParticleEmitterManager;
     hud: GameHUD;
 
     spriteShader: SpriteShader;
@@ -128,6 +129,8 @@ class Game {
 
         this.audio.playMusic("awake");
         this.aiDirector.initialize();
+
+        this.particles = new ParticleEmitterManager();
     }
 
     initializeAnimations() {
@@ -206,16 +209,12 @@ class Game {
         this.gameObjects.update(dt);
         this.aiDirector.update(dt);
         this.collision.update(dt);
-
         this.camera.update(dt);
-
+        this.particles.update(dt);
         TweenManager.update(dt);
-
         this.hud.update(dt);
         this.audio.update(dt);
-
         this.input.update();
-
         this.elapsedTime += dt;
     }
 
@@ -223,6 +222,7 @@ class Game {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         this.spriteShader.frameDrawSetup();
         this.gameObjects.render();
+        this.particles.render();
         this.hud.render();
         ++this.renderedFrames;
     }
@@ -238,4 +238,12 @@ class Game {
             this.gl.viewport(0, 0, this.width, this.height);
         }
     }
+}
+
+function musicOn() {
+    game.audio.musicGain.gain.value = 1;
+}
+
+function musicOff() {
+    game.audio.musicGain.gain.value = 0;
 }

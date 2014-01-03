@@ -1,4 +1,4 @@
-﻿var __extends = this.__extends || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -158,6 +158,8 @@ var BulletController = (function (_super) {
         this.position.x += this.velocity.x * dt;
         this.position.y += this.velocity.y * dt;
 
+        this.rotation.z = this.angle * Util.deg2Rad;
+
         if (!this.worldBoundary.pointInside(this.position.xy)) {
             this.gameObject.destroy();
         }
@@ -168,6 +170,7 @@ var BulletController = (function (_super) {
         }
 
         this.gameObject.position = this.position;
+        this.gameObject.rotation = this.rotation;
     };
 
     BulletController.prototype.onCollisionEnter = function (collider) {
@@ -277,6 +280,7 @@ var LocalPlayerController = (function (_super) {
     LocalPlayerController.prototype.onDamage = function () {
         _super.prototype.onDamage.call(this);
 
+        game.audio.playSound("get_hit");
         game.camera.shake(0.2, 10);
     };
 

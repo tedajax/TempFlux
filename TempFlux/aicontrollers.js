@@ -189,9 +189,18 @@ var AIController = (function (_super) {
         this.health.onDeath = function () {
             _this.onDeath();
         };
+
+        this.spawnTween = TweenManager.register(new Tween(TweenFunctions.easeOutQuad, 0, 1, 0.5));
     }
     AIController.prototype.onDeath = function () {
+        game.audio.playSound("enemy_death");
         this.gameObject.destroy();
+
+        var emitter = game.particles.createEmitter(5, game.textures.getTexture("smoke"));
+        emitter.position.xyz = this.position.xyz;
+        emitter.position.x += this.gameObject.sprite.width;
+        emitter.position.y += this.gameObject.sprite.height;
+        emitter.lifetime = 0.5;
     };
 
     AIController.prototype.onDamage = function () {
@@ -205,6 +214,9 @@ var AIController = (function (_super) {
         if (game.playerController.gameObject != null) {
             AIController.player = game.playerController.gameObject;
         }
+
+        this.gameObject.sprite.scale.x = this.spawnTween.evaluate();
+        this.gameObject.sprite.scale.y = this.spawnTween.evaluate();
 
         this.stateMachine(dt);
 

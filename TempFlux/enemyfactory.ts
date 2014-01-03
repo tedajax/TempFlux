@@ -22,6 +22,8 @@ class EnemyFactory {
         sprite.setShader(game.spriteShader);
         sprite.setTexture(game.textures.getTexture("redsquare"));
         sprite.alpha = true;
+        sprite.scale.x = 0;
+        sprite.scale.y = 0;
 
         var go = new GameObject(null, null, "RedSquare", sprite);
         go.tag = GameObjectTag.Enemy;
@@ -39,6 +41,8 @@ class EnemyFactory {
         sprite.setShader(game.spriteShader);
         sprite.setTexture(game.textures.getTexture("greentriangle"));
         sprite.alpha = true;
+        sprite.scale.x = 0;
+        sprite.scale.y = 0;
 
         var go = new GameObject(null, null, "GreenTriangle", sprite);
         go.tag = GameObjectTag.Enemy;
@@ -79,6 +83,8 @@ class EnemyFactory {
         sprite.setShader(game.spriteShader);
         sprite.setTexture(game.textures.getTexture((vertical) ? "starburst_vertical" : "starburst_horizontal"));
         sprite.alpha = true;
+        sprite.scale.x = 0;
+        sprite.scale.y = 0;
 
         var go = new GameObject(null, null, "StarBurstPoint_" + side, sprite);
         go.tag = GameObjectTag.Enemy;
@@ -96,6 +102,8 @@ class EnemyFactory {
         sprite.setShader(game.spriteShader);
         sprite.setTexture(game.textures.getTexture("starburst_center"));
         sprite.alpha = true;
+        sprite.scale.x = 0;
+        sprite.scale.y = 0;
 
         var go = new GameObject(null, null, "StarburstCenter", sprite);
         go.tag = GameObjectTag.Enemy;

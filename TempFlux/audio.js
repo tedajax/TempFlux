@@ -1,4 +1,4 @@
-﻿/// <reference path="Scripts/typings/webaudioapi/waa.d.ts" />
+/// <reference path="Scripts/typings/webaudioapi/waa.d.ts" />
 var SoundEffect = (function () {
     function SoundEffect(buffer, gain) {
         if (typeof gain === "undefined") { gain = 1; }

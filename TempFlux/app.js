@@ -1,4 +1,4 @@
-﻿var game;
+var game;
 var currTime;
 var prevTime;
 

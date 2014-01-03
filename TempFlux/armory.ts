@@ -16,8 +16,11 @@ class BulletStream {
     shoot(position: TSM.vec2, angle: number, platformVelocity: TSM.vec2) {
         
         setTimeout(() => {
-            var sprite = new Sprite(8, 8);
+            var sprite = new Sprite(24, 12);
             sprite.position.xy = position.xy;
+            sprite.position.x += 6;
+            sprite.position.y += 3;
+            sprite.rotation.z = (angle + this.angleOffset) * Util.rad2Deg;
             sprite.setShader(game.spriteShader);
             sprite.setTexture(game.textures.getTexture("player_bullet"));
             sprite.alpha = true;
@@ -26,6 +29,8 @@ class BulletStream {
             var bulletController = new BulletController(null);
             bulletController.platformVelocity = platformVelocity;
             bulletController.position.xy = position.xy;
+            bulletController.position.x += 6;
+            bulletController.position.y += 3;
             bulletController.speed = this.speed;
             bulletController.angle = angle + this.angleOffset;
             bulletController.angularVelocity = this.angularVelocity;

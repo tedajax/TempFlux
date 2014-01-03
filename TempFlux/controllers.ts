@@ -150,6 +150,8 @@ class BulletController extends Controller {
         this.position.x += this.velocity.x * dt;
         this.position.y += this.velocity.y * dt;
 
+        this.rotation.z = this.angle * Util.deg2Rad;
+
         if (!this.worldBoundary.pointInside(this.position.xy)) {
             this.gameObject.destroy();
         }
@@ -160,6 +162,7 @@ class BulletController extends Controller {
         }        
 
         this.gameObject.position = this.position;
+        this.gameObject.rotation = this.rotation;
     }
 
     onCollisionEnter(collider: Collider) {
@@ -281,6 +284,7 @@ class LocalPlayerController extends Controller {
     onDamage() {
         super.onDamage();
 
+        game.audio.playSound("get_hit");
         game.camera.shake(0.2, 10);
     }
 

@@ -85,6 +85,14 @@
         "grid_blank": {
           "url": "assets/tiles/grid_blank.png",
           "mode": "clamp"
+        },
+        "explosion": {
+          "url": "assets/game/explosion.png",
+          "mode": "clamp"
+        },
+        "smoke": {
+          "url": "assets/game/smoke.png",
+          "mode": "clamp"
         }
       },
       "sounds": {
@@ -95,6 +103,14 @@
         "shoot": {
           "url": "assets/audio/sfx/shoot.wav",
           "gain": 0.75
+        },
+        "get_hit": {
+          "url": "assets/audio/sfx/gethit.wav",
+          "gain": 1.0
+        },
+        "enemy_death": {
+          "url": "assets/audio/sfx/enemydeath.wav",
+          "gain": 1.0
         }
       },
       "music": {
@@ -111,7 +127,7 @@
       "fire_delay": 0.2,
       "bullet_speed": 800
     },
-    "music_volume": 1,
+    "music_volume": 0,
     "sfx_volume": 1
   }
 }

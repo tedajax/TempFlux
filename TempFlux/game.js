@@ -104,6 +104,8 @@ var Game = (function () {
 
         this.audio.playMusic("awake");
         this.aiDirector.initialize();
+
+        this.particles = new ParticleEmitterManager();
     };
 
     Game.prototype.initializeAnimations = function () {
@@ -182,16 +184,12 @@ var Game = (function () {
         this.gameObjects.update(dt);
         this.aiDirector.update(dt);
         this.collision.update(dt);
-
         this.camera.update(dt);
-
+        this.particles.update(dt);
         TweenManager.update(dt);
-
         this.hud.update(dt);
         this.audio.update(dt);
-
         this.input.update();
-
         this.elapsedTime += dt;
     };
 
@@ -199,6 +197,7 @@ var Game = (function () {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         this.spriteShader.frameDrawSetup();
         this.gameObjects.render();
+        this.particles.render();
         this.hud.render();
         ++this.renderedFrames;
     };
@@ -216,4 +215,12 @@ var Game = (function () {
     };
     return Game;
 })();
+
+function musicOn() {
+    game.audio.musicGain.gain.value = 1;
+}
+
+function musicOff() {
+    game.audio.musicGain.gain.value = 0;
+}
 //# sourceMappingURL=game.js.map
