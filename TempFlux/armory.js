@@ -1,8 +1,10 @@
-var BulletStream = (function () {
-    function BulletStream(speed, angleOffset, angularVelocity, delay, lifetime) {
+﻿var BulletStream = (function () {
+    function BulletStream(speed, angleOffset, angularVelocity, angleOscillation, angleOscillationRate, delay, lifetime) {
         this.speed = speed;
         this.angleOffset = angleOffset;
         this.angularVelocity = angularVelocity;
+        this.angleOscillation = angleOscillation;
+        this.angleOscillationRate = angleOscillationRate;
         this.delay = delay;
         this.lifetime = lifetime;
     }
@@ -25,7 +27,7 @@ var BulletStream = (function () {
             bulletController.position.x += 6;
             bulletController.position.y += 3;
             bulletController.speed = _this.speed;
-            bulletController.angle = angle + _this.angleOffset;
+            bulletController.angle = angle + _this.angleOffset + Math.sin(game.elapsedTime * _this.angleOscillationRate) * _this.angleOscillation;
             bulletController.angularVelocity = _this.angularVelocity;
             bulletController.lifetime = _this.lifetime;
             bulletController.posess(go);
@@ -42,9 +44,9 @@ var BulletPattern = (function () {
         this.streams = [];
         this.fireDelay = fireDelay;
     }
-    BulletPattern.prototype.addStream = function (speed, angleOffset, angularVelocity, delay, lifetime) {
+    BulletPattern.prototype.addStream = function (speed, angleOffset, angularVelocity, angleOscillation, angleOscillationRate, delay, lifetime) {
         if (typeof lifetime === "undefined") { lifetime = 120; }
-        this.streams.push(new BulletStream(speed, angleOffset, angularVelocity, delay, lifetime));
+        this.streams.push(new BulletStream(speed, angleOffset, angularVelocity, angleOscillation, angleOscillationRate, delay, lifetime));
         return this;
     };
 
@@ -75,6 +77,6 @@ var Armory = (function () {
 })();
 
 function buildStandardArmory() {
-    return new Armory().addPattern(new BulletPattern(0.1).addStream(900, 0, 0, 0).addStream(900, -2, -1, 0.025).addStream(900, 2, 1, 0.025)).addPattern(new BulletPattern(0.05).addStream(900, 0, 0, 0).addStream(500, -2, -100, 0, 2).addStream(500, 2, 100, 0, 2));
+    return new Armory().addPattern(new BulletPattern(0.1).addStream(900, 0, 0, 8, 10, 0).addStream(900, -2, 0, 8, 10, 0.025).addStream(900, 2, 0, 8, 10, 0.025)).addPattern(new BulletPattern(0.05).addStream(900, 0, 0, 0, 0, 0).addStream(500, -2, -100, 0, 0, 0, 2).addStream(500, 2, 100, 0, 0, 0, 2)).addPattern(new BulletPattern(0.05).addStream(900, -2, -300, 0, 0, 0, 0.5).addStream(900, 2, 300, 0, 0, 0, 0.5).addStream(900, -4, -600, 0, 0, 0, 0.5).addStream(900, 4, 600, 0, 0, 0, 0.5));
 }
 //# sourceMappingURL=armory.js.map

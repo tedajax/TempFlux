@@ -1,4 +1,4 @@
-var __extends = this.__extends || function (d, b) {
+﻿var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -69,6 +69,9 @@ var Controller = (function () {
     };
 
     Controller.prototype.update = function (dt) {
+    };
+
+    Controller.prototype.render = function () {
     };
 
     Controller.prototype.onCollisionEnter = function (collider) {
@@ -162,11 +165,13 @@ var BulletController = (function (_super) {
 
         if (!this.worldBoundary.pointInside(this.position.xy)) {
             this.gameObject.destroy();
+            this.spark();
         }
 
         this.lifetime -= dt;
         if (this.lifetime < 0) {
             this.gameObject.destroy();
+            this.spark();
         }
 
         this.gameObject.position = this.position;
@@ -182,6 +187,16 @@ var BulletController = (function (_super) {
             game.audio.playSound("hit_enemy");
         }
         this.gameObject.destroy();
+        this.spark();
+    };
+
+    BulletController.prototype.spark = function () {
+        var emitter = game.particles.createEmitter(0.1, game.textures.getTexture("spark"));
+        emitter.emissionRate = 100;
+        emitter.particlesPerEmission = 1;
+        emitter.startLifetime = 0.1;
+        emitter.startSpeed = 250;
+        emitter.position.xyz = this.position.xyz;
     };
     return BulletController;
 })(Controller);
@@ -209,9 +224,17 @@ var LocalPlayerController = (function (_super) {
         this.health.setMax(100);
 
         this.stateRecord = [];
+
+        this.muzzleFlash = new Sprite(32, 32);
+        this.muzzleFlash.setTexture(game.textures.getTexture("muzzle_flash"));
+        this.muzzleFlash.setShader(game.spriteShader);
+        this.muzzleFlash.alpha = true;
+        this.muzzleFlash.position.z = 0.5;
+        this.muzzleFlash.hidden = true;
     }
     LocalPlayerController.prototype.update = function (dt) {
         _super.prototype.update.call(this, dt);
+        this.muzzleFlash.hidden = true;
 
         this.firedThisFrame = false;
         this.velocity.x = 0;
@@ -232,13 +255,13 @@ var LocalPlayerController = (function (_super) {
         this.velocity.x *= this.speed;
         this.velocity.y *= this.speed;
 
-        if (game.input.getKey(Keys.Z)) {
+        if (game.input.getKeyDown(Keys.Z)) {
             this.weapon--;
             if (this.weapon < 0) {
                 this.weapon = 0;
             }
         }
-        if (game.input.getKey(Keys.X)) {
+        if (game.input.getKeyDown(Keys.X)) {
             this.weapon++;
             if (this.weapon >= game.armory.patterns.length) {
                 this.weapon = game.armory.patterns.length - 1;
@@ -259,6 +282,13 @@ var LocalPlayerController = (function (_super) {
 
         this.rotation.z = Math.atan2(this.position.y - this.gameObject.sprite.height / 2 - my, this.position.x - this.gameObject.sprite.width / 2 - mx) + Math.PI;
 
+        var muzzlePos = new TSM.vec2([this.position.x - this.gameObject.sprite.origin.x + 16, this.position.y - this.gameObject.sprite.origin.y + 16]);
+        muzzlePos.x += Math.cos(this.rotation.z) * 32;
+        muzzlePos.y += Math.sin(this.rotation.z) * 32;
+        this.muzzleFlash.position.x = muzzlePos.x;
+        this.muzzleFlash.position.y = muzzlePos.y;
+        this.muzzleFlash.rotation.z = this.rotation.z;
+
         this.constrainToBoundaries();
 
         this.gameObject.position = this.position;
@@ -275,6 +305,10 @@ var LocalPlayerController = (function (_super) {
         }
 
         this.recordCurrentState();
+    };
+
+    LocalPlayerController.prototype.render = function () {
+        this.muzzleFlash.render();
     };
 
     LocalPlayerController.prototype.onDamage = function () {
@@ -299,6 +333,7 @@ var LocalPlayerController = (function (_super) {
     LocalPlayerController.prototype.shoot = function () {
         this.firedThisFrame = true;
 
+        //this.muzzleFlash.hidden = false;
         game.camera.kick(this.rotation.z, 2);
 
         var startPos = new TSM.vec2([this.position.x - this.gameObject.sprite.origin.x + 4, this.position.y - this.gameObject.sprite.origin.y + 4]);

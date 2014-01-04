@@ -36,7 +36,9 @@ var Particle = (function (_super) {
 })(Sprite);
 
 var ParticleEmitter = (function () {
-    function ParticleEmitter(lifetime, texture) {
+    function ParticleEmitter(lifetime, texture, sx, sy) {
+        if (typeof sx === "undefined") { sx = 1; }
+        if (typeof sy === "undefined") { sy = 1; }
         this.emitterId = 0;
         this.currentParticleId = 0;
         this.emissionRate = 2;
@@ -45,13 +47,14 @@ var ParticleEmitter = (function () {
         this.emissionAngle = 0;
         this.emissionAngleWidth = 360;
         this.emissionRadius = 0;
+        this.particleStartAngle = 0;
         this.startSpeed = 50;
         this.startLifetime = 1;
         this.lifetime = 0;
         this.shouldDestroy = false;
         this.particleCount = 0;
         this.position = new TSM.vec3([0, 0, 0]);
-        this.scale = new TSM.vec2([0.5, 0.5]);
+        this.scale = new TSM.vec2([sx, sy]);
         this.particleTexture = texture;
         this.particles = {};
         this.removeQueue = [];
@@ -66,6 +69,7 @@ var ParticleEmitter = (function () {
         particle.texture = this.particleTexture;
         particle.position = this.getParticleStartPosition();
         particle.direction = this.getParticleStartDirection();
+        particle.rotation.z = this.particleStartAngle;
         particle.speed = this.startSpeed;
         particle.lifetime = this.startLifetime;
         particle.angularVelocity = Util.randomRangeF(-50, 50);

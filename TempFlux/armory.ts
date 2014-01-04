@@ -2,13 +2,17 @@ class BulletStream {
     speed: number;
     angleOffset: number;
     angularVelocity: number;
+    angleOscillation: number;
+    angleOscillationRate: number;
     delay: number;
     lifetime: number;
     
-    constructor(speed: number, angleOffset: number, angularVelocity: number, delay: number, lifetime: number) {
+    constructor(speed: number, angleOffset: number, angularVelocity: number, angleOscillation: number, angleOscillationRate: number, delay: number, lifetime: number) {
         this.speed = speed;
         this.angleOffset = angleOffset;
         this.angularVelocity = angularVelocity;
+        this.angleOscillation = angleOscillation;
+        this.angleOscillationRate = angleOscillationRate;
         this.delay = delay;
         this.lifetime = lifetime;
     }
@@ -32,7 +36,7 @@ class BulletStream {
             bulletController.position.x += 6;
             bulletController.position.y += 3;
             bulletController.speed = this.speed;
-            bulletController.angle = angle + this.angleOffset;
+            bulletController.angle = angle + this.angleOffset + Math.sin(game.elapsedTime * this.angleOscillationRate) * this.angleOscillation;
             bulletController.angularVelocity = this.angularVelocity;
             bulletController.lifetime = this.lifetime;
             bulletController.posess(go);
@@ -52,8 +56,8 @@ class BulletPattern {
         this.fireDelay = fireDelay;
     }
 
-    addStream(speed: number, angleOffset: number, angularVelocity: number, delay: number, lifetime: number = 120) {
-        this.streams.push(new BulletStream(speed, angleOffset, angularVelocity, delay, lifetime));
+    addStream(speed: number, angleOffset: number, angularVelocity: number, angleOscillation: number, angleOscillationRate: number, delay: number, lifetime: number = 120) {
+        this.streams.push(new BulletStream(speed, angleOffset, angularVelocity, angleOscillation, angleOscillationRate, delay, lifetime));
         return this;
     }
 
@@ -86,12 +90,17 @@ class Armory {
 
 function buildStandardArmory() {
     return new Armory().addPattern(
-        new BulletPattern(0.1).addStream(900, 0, 0, 0).
-            addStream(900, -2, -1, 0.025).
-            addStream(900, 2, 1, 0.025)
+        new BulletPattern(0.1).addStream(900, 0, 0, 8, 10, 0).
+            addStream(900, -2, 0, 8, 10, 0.025).
+            addStream(900, 2, 0, 8, 10, 0.025)
         ).addPattern(
-        new BulletPattern(0.05).addStream(900, 0, 0, 0).
-            addStream(500, -2, -100, 0, 2).
-            addStream(500, 2, 100, 0, 2)
+        new BulletPattern(0.05).addStream(900, 0, 0, 0, 0, 0).
+            addStream(500, -2, -100, 0, 0, 0, 2).
+            addStream(500, 2, 100, 0, 0, 0, 2)
+        ).addPattern(
+        new BulletPattern(0.05).addStream(900, -2, -300, 0, 0, 0, 0.5).
+            addStream(900, 2, 300, 0, 0, 0, 0.5).
+            addStream(900, -4, -600, 0, 0, 0, 0.5).
+            addStream(900, 4, 600, 0, 0, 0, 0.5)
         );
 }

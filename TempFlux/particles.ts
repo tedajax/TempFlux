@@ -48,6 +48,8 @@ class ParticleEmitter {
     emissionAngleWidth: number = 360;
     emissionRadius: number = 0;
 
+    particleStartAngle: number = 0;
+
     startSpeed: number = 50;
 
     startLifetime: number = 1;
@@ -57,9 +59,9 @@ class ParticleEmitter {
 
     particleCount: number = 0;
 
-    constructor(lifetime: number, texture: ImageTexture) {
+    constructor(lifetime: number, texture: ImageTexture, sx: number = 1, sy: number = 1) {
         this.position = new TSM.vec3([0, 0, 0]);
-        this.scale = new TSM.vec2([0.5, 0.5]);
+        this.scale = new TSM.vec2([sx, sy]);
         this.particleTexture = texture;
         this.particles = {};
         this.removeQueue = [];
@@ -75,6 +77,7 @@ class ParticleEmitter {
         particle.texture = this.particleTexture;
         particle.position = this.getParticleStartPosition();
         particle.direction = this.getParticleStartDirection();
+        particle.rotation.z = this.particleStartAngle;
         particle.speed = this.startSpeed;
         particle.lifetime = this.startLifetime;
         particle.angularVelocity = Util.randomRangeF(-50, 50);

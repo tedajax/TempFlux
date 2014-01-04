@@ -11,7 +11,7 @@ var EnemySpawnerController = (function (_super) {
         this.minPlayerDistance = 200;
         this.minPlayerDistanceSqr = this.minPlayerDistance * this.minPlayerDistance;
 
-        this.enableSpawning = true;
+        this.enableSpawning = false;
 
         this.enemyMap = [];
         this.enemyMap[0] = "red_square";
@@ -195,12 +195,11 @@ var AIController = (function (_super) {
     AIController.prototype.onDeath = function () {
         game.audio.playSound("enemy_death");
         this.gameObject.destroy();
-
-        var emitter = game.particles.createEmitter(5, game.textures.getTexture("smoke"));
-        emitter.position.xyz = this.position.xyz;
-        emitter.position.x += this.gameObject.sprite.width;
-        emitter.position.y += this.gameObject.sprite.height;
-        emitter.lifetime = 0.5;
+        //var emitter = game.particles.createEmitter(5, game.textures.getTexture("smoke"));
+        //emitter.position.xyz = this.position.xyz;
+        //emitter.position.x += this.gameObject.sprite.width;
+        //emitter.position.y += this.gameObject.sprite.height;
+        //emitter.lifetime = 0.5;
     };
 
     AIController.prototype.onDamage = function () {
@@ -353,6 +352,10 @@ var AIRedSquareController = (function (_super) {
     function AIRedSquareController() {
         _super.apply(this, arguments);
     }
+    AIRedSquareController.prototype.stateStartIdle = function () {
+        this.health.setMax(8);
+    };
+
     AIRedSquareController.prototype.stateTransitionIdle = function (dt) {
         return 2 /* Aggressive */;
     };
@@ -386,7 +389,7 @@ var AIGreenTriangleController = (function (_super) {
         this.aggressiveSpeed = 0;
         this.aggressiveMaxSpeed = 700;
 
-        this.health.setMax(1);
+        this.health.setMax(3);
     }
     AIGreenTriangleController.prototype.stateIdle = function (dt) {
         this.turnToFace(AIController.player.position, 2);
@@ -483,7 +486,7 @@ var AIStarburstController = (function (_super) {
         this.distanceThresholdSqr = this.distanceThreshold * this.distanceThreshold;
         this.chargeTime = 1;
 
-        this.health.setMax(8);
+        this.health.setMax(14);
 
         this.children = [];
     }

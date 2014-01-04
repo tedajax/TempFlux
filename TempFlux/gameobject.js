@@ -1,4 +1,4 @@
-var GameObjectTag;
+﻿var GameObjectTag;
 (function (GameObjectTag) {
     GameObjectTag[GameObjectTag["Default"] = 0] = "Default";
     GameObjectTag[GameObjectTag["Player"] = 1] = "Player";
@@ -88,9 +88,11 @@ var GameObject = (function () {
     };
 
     GameObject.prototype.render = function () {
-        //        if (game.camera.inRenderRange(this.position)) {
+        if (this.controller != null) {
+            this.controller.render();
+        }
+
         this.sprite.render();
-        //        }
     };
 
     GameObject.prototype.onCollisionEnter = function (collider) {

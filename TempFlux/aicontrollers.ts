@@ -16,7 +16,7 @@ class EnemySpawnerController extends Controller {
     constructor() {
         super(null);
 
-        this.enableSpawning = true;
+        this.enableSpawning = false;
 
         this.enemyMap = [];
         this.enemyMap[0] = "red_square";
@@ -232,11 +232,11 @@ class AIController extends Controller {
         game.audio.playSound("enemy_death");
         this.gameObject.destroy();
 
-        var emitter = game.particles.createEmitter(5, game.textures.getTexture("smoke"));
-        emitter.position.xyz = this.position.xyz;
-        emitter.position.x += this.gameObject.sprite.width;
-        emitter.position.y += this.gameObject.sprite.height;
-        emitter.lifetime = 0.5;
+        //var emitter = game.particles.createEmitter(5, game.textures.getTexture("smoke"));
+        //emitter.position.xyz = this.position.xyz;
+        //emitter.position.x += this.gameObject.sprite.width;
+        //emitter.position.y += this.gameObject.sprite.height;
+        //emitter.lifetime = 0.5;
     }
     
     onDamage() {
@@ -383,6 +383,10 @@ class AIController extends Controller {
 }
 
 class AIRedSquareController extends AIController {
+    stateStartIdle() {
+        this.health.setMax(8);
+    }
+
     stateTransitionIdle(dt: number): AIState {
         return AIState.Aggressive;
     }
@@ -420,7 +424,7 @@ class AIGreenTriangleController extends AIController {
     constructor(gameObject: GameObject) {
         super(gameObject);
 
-        this.health.setMax(1);
+        this.health.setMax(3);
     }
     
     stateIdle(dt: number) {
@@ -520,7 +524,7 @@ class AIStarburstController extends AIController {
     constructor(gameObject: GameObject) {
         super(gameObject);
 
-        this.health.setMax(8);
+        this.health.setMax(14);
         
         this.children = [];
     }

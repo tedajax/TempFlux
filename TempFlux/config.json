@@ -93,6 +93,14 @@
         "smoke": {
           "url": "assets/game/smoke.png",
           "mode": "clamp"
+        },
+        "spark": {
+          "url": "assets/game/spark.png",
+          "mode": "clamp"
+        },
+        "muzzle_flash": {
+          "url": "assets/game/muzzleflash.png",
+          "mode": "clamp"
         }
       },
       "sounds": {
@@ -128,6 +136,6 @@
       "bullet_speed": 800
     },
     "music_volume": 0,
-    "sfx_volume": 1
+    "sfx_volume": 0
   }
 }

@@ -40,6 +40,10 @@ class Sprite extends Renderable {
     }
 
     render() {
+        if (this.hidden) {
+            return;
+        }
+
         var spriteShader = <SpriteShader>this.shader;
         spriteShader.tintColor = this.tintColor;
         spriteShader.addColor = this.addColor;

@@ -97,9 +97,11 @@ class GameObject {
     }
 
     render() {
-//        if (game.camera.inRenderRange(this.position)) {
+        if (this.controller != null) {
+            this.controller.render();
+        }
+
         this.sprite.render();
-//        }
     }
 
     onCollisionEnter(collider: Collider) {

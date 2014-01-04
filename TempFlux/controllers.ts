@@ -72,6 +72,9 @@ class Controller {
     update(dt) {
     }
 
+    render() {
+    }
+
     onCollisionEnter(collider: Collider) {
     }
 
@@ -154,11 +157,13 @@ class BulletController extends Controller {
 
         if (!this.worldBoundary.pointInside(this.position.xy)) {
             this.gameObject.destroy();
+            this.spark();
         }
 
         this.lifetime -= dt;
         if (this.lifetime < 0) {
             this.gameObject.destroy();
+            this.spark();
         }        
 
         this.gameObject.position = this.position;
@@ -174,6 +179,16 @@ class BulletController extends Controller {
             game.audio.playSound("hit_enemy");
         }
         this.gameObject.destroy();
+        this.spark();
+    }
+
+    spark() {
+        var emitter = game.particles.createEmitter(0.1, game.textures.getTexture("spark"));
+        emitter.emissionRate = 100;
+        emitter.particlesPerEmission = 1;
+        emitter.startLifetime = 0.1;
+        emitter.startSpeed = 250;
+        emitter.position.xyz = this.position.xyz;
     }
 }
 
@@ -200,6 +215,8 @@ class LocalPlayerController extends Controller {
 
     stateRecord: LocalPlayerState[];
 
+    muzzleFlash: Sprite;
+
     constructor(gameObject: GameObject) {
         super(gameObject);
 
@@ -212,10 +229,18 @@ class LocalPlayerController extends Controller {
         this.health.setMax(100);
 
         this.stateRecord = [];
+
+        this.muzzleFlash = new Sprite(32, 32);
+        this.muzzleFlash.setTexture(game.textures.getTexture("muzzle_flash"));
+        this.muzzleFlash.setShader(game.spriteShader);
+        this.muzzleFlash.alpha = true;
+        this.muzzleFlash.position.z = 0.5;
+        this.muzzleFlash.hidden = true;
     }
 
     update(dt) {
         super.update(dt);
+        this.muzzleFlash.hidden = true;
 
         this.firedThisFrame = false;
         this.velocity.x = 0;
@@ -236,13 +261,13 @@ class LocalPlayerController extends Controller {
         this.velocity.x *= this.speed;
         this.velocity.y *= this.speed;
 
-        if (game.input.getKey(Keys.Z)) {
+        if (game.input.getKeyDown(Keys.Z)) {
             this.weapon--;
             if (this.weapon < 0) {
                 this.weapon = 0;
             }
         }
-        if (game.input.getKey(Keys.X)) {
+        if (game.input.getKeyDown(Keys.X)) {
             this.weapon++;
             if (this.weapon >= game.armory.patterns.length) {
                 this.weapon = game.armory.patterns.length - 1;
@@ -262,6 +287,13 @@ class LocalPlayerController extends Controller {
         var my = game.input.getMouseY() + game.camera.position.y;
 
         this.rotation.z = Math.atan2(this.position.y - this.gameObject.sprite.height / 2 - my, this.position.x - this.gameObject.sprite.width / 2 - mx) + Math.PI;
+
+        var muzzlePos = new TSM.vec2([this.position.x - this.gameObject.sprite.origin.x + 16, this.position.y - this.gameObject.sprite.origin.y + 16]);
+        muzzlePos.x += Math.cos(this.rotation.z) * 32;
+        muzzlePos.y += Math.sin(this.rotation.z) * 32;
+        this.muzzleFlash.position.x = muzzlePos.x;
+        this.muzzleFlash.position.y = muzzlePos.y;
+        this.muzzleFlash.rotation.z = this.rotation.z;
         
         this.constrainToBoundaries();
 
@@ -279,6 +311,10 @@ class LocalPlayerController extends Controller {
         }
 
         this.recordCurrentState();
+    }
+
+    render() {
+        this.muzzleFlash.render();
     }
 
     onDamage() {
@@ -302,6 +338,7 @@ class LocalPlayerController extends Controller {
 
     shoot() {
         this.firedThisFrame = true;
+        //this.muzzleFlash.hidden = false;
 
         game.camera.kick(this.rotation.z, 2);
 
