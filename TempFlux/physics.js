@@ -291,6 +291,26 @@ var CollisionManager = (function () {
         }
     };
 
+    CollisionManager.prototype.overlapCircle = function (position, radius) {
+        var collider = new CircleCollider(game.gameObjects.root, radius, position);
+        var result = [];
+
+        for (var key in this.colliders) {
+            var c = this.colliders[key];
+
+            if (!c.enabled) {
+                continue;
+            }
+            c.updatePosition();
+
+            if (collider.intersects(c)) {
+                result.push(c.parent);
+            }
+        }
+
+        return result;
+    };
+
     CollisionManager.prototype.update = function (dt) {
         for (var key1 in this.colliders) {
             var a = this.colliders[key1];

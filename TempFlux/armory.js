@@ -134,6 +134,6 @@ var Armory = (function () {
 })();
 
 function buildStandardArmory() {
-    return new Armory().addPattern(new BulletPattern(0.1).addStream(900, 0, 0, 8, 10, 0, 100, 0 /* Bullet */).addStream(900, -2, 0, 8, 10, 0.025).addStream(900, 2, 0, 8, 10, 0.025)).addPattern(new BulletPattern(0.05).addStream(900, 0, 0, 0, 0, 0).addStream(500, -2, -100, 0, 0, 0, 2).addStream(500, 2, 100, 0, 0, 0, 2)).addPattern(new BulletPattern(0.05).addStream(900, -2, -300, 0, 0, 0, 0.5).addStream(900, 2, 300, 0, 0, 0, 0.5).addStream(900, -4, -600, 0, 0, 0, 0.5).addStream(900, 4, 600, 0, 0, 0, 0.5));
+    return new Armory().addPattern(new BulletPattern(0.1).addStream(900, 0, 0, 8, 10, 0, 100, 0 /* Bullet */).addStream(900, -2, 0, 8, 10, 0.025).addStream(900, 2, 0, 8, 10, 0.025).addStream(500, 4, 0, 0, 0, 0, 10, 1 /* Missile */, 5).addStream(500, -4, 0, 0, 0, 0, 10, 1 /* Missile */, 5)).addPattern(new BulletPattern(0.05).addStream(900, 0, 0, 0, 0, 0).addStream(500, -2, -100, 0, 0, 0, 2).addStream(500, 2, 100, 0, 0, 0, 2)).addPattern(new BulletPattern(0.05).addStream(900, -2, -300, 0, 0, 0, 0.5).addStream(900, 2, 300, 0, 0, 0, 0.5).addStream(900, -4, -600, 0, 0, 0, 0.5).addStream(900, 4, 600, 0, 0, 0, 0.5));
 }
 //# sourceMappingURL=armory.js.map

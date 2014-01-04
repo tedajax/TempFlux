@@ -16,7 +16,7 @@ class EnemySpawnerController extends Controller {
     constructor() {
         super(null);
 
-        this.enableSpawning = false;
+        this.enableSpawning = true;
 
         this.enemyMap = [];
         this.enemyMap[0] = "red_square";

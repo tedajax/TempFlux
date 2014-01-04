@@ -112,7 +112,7 @@ class Game {
         this.aiDirector = new EnemySpawnerController();
 
         game.armory = buildStandardArmory();
-                
+
         var go = this.gameObjects.add(new GameObject("bit", ["idle"], "Player"));
         go.playAnimation("idle", true);
         go.sprite.alpha = true;

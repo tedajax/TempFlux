@@ -193,14 +193,22 @@ class BulletController extends Controller {
 }
 
 class MissileController extends Controller {
-    hasTarget: boolean;
     target: GameObject;
+    trackTimer: number = 0.5; //time before seeking a target
     speed: number = 100;
     angle: number = 0;
     lifetime: number;
 
     update(dt) {
         super.update(dt);
+
+        if (this.trackTimer > 0) {
+            this.trackTimer -= dt;
+        } else {
+            this.getTarget();
+        }
+
+        this.trackTarget(dt);
 
         this.velocity.x = Math.cos(this.angle * Util.deg2Rad) * this.speed;
         this.velocity.y = Math.sin(this.angle * Util.deg2Rad) * this.speed;
@@ -221,6 +229,39 @@ class MissileController extends Controller {
 
         this.gameObject.position = this.position;
         this.gameObject.rotation = this.rotation;
+    }
+
+    get hasTarget() {
+        return this.target != null;
+    }
+
+    trackTarget(dt: number) {
+        if (this.hasTarget) {
+            var angleDiff = Util.wrapRadians(Util.angleTo(this.position, this.target.position));
+            this.angle = Util.lerpDegrees(this.angle, angleDiff * Util.rad2Deg, 0.1);
+        }
+    }
+
+    getTarget() {
+        if (this.target != null) {
+            return;
+        }
+
+        var potentials = game.collision.overlapCircle(new TSM.vec2([this.position.x, this.position.y]), 300);
+        var filtered: GameObject[] = [];
+
+        for (var i = 0, len = potentials.length; i < len; ++i) {
+            if (potentials[i].tag != GameObjectTag.Enemy) {
+                continue;
+            }
+            filtered.push(potentials[i]);
+        }
+
+        if (filtered.length > 0) {
+            this.target = filtered[Util.randomRange(0, filtered.length - 1)];
+        } else {
+            this.trackTimer = 0.2;
+        }
     }
 
     onCollisionEnter(collider: Collider) {

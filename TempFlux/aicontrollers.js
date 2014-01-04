@@ -11,7 +11,7 @@ var EnemySpawnerController = (function (_super) {
         this.minPlayerDistance = 200;
         this.minPlayerDistanceSqr = this.minPlayerDistance * this.minPlayerDistance;
 
-        this.enableSpawning = false;
+        this.enableSpawning = true;
 
         this.enemyMap = [];
         this.enemyMap[0] = "red_square";

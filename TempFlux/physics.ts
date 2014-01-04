@@ -291,6 +291,26 @@ class CollisionManager {
         }
     }
 
+    overlapCircle(position: TSM.vec2, radius: number) {
+        var collider = new CircleCollider(game.gameObjects.root, radius, position);
+        var result: GameObject[] = [];
+
+        for (var key in this.colliders) {
+            var c: Collider = this.colliders[key];
+
+            if (!c.enabled) {
+                continue;
+            }
+            c.updatePosition();
+
+            if (collider.intersects(c)) {
+                result.push(c.parent);
+            }
+        }
+
+        return result;
+    }
+
     update(dt) {
         //for now no broadphase just compare everything to everything
         for (var key1 in this.colliders) {

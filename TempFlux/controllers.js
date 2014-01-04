@@ -205,11 +205,20 @@ var MissileController = (function (_super) {
     __extends(MissileController, _super);
     function MissileController() {
         _super.apply(this, arguments);
+        this.trackTimer = 0.5;
         this.speed = 100;
         this.angle = 0;
     }
     MissileController.prototype.update = function (dt) {
         _super.prototype.update.call(this, dt);
+
+        if (this.trackTimer > 0) {
+            this.trackTimer -= dt;
+        } else {
+            this.getTarget();
+        }
+
+        this.trackTarget(dt);
 
         this.velocity.x = Math.cos(this.angle * Util.deg2Rad) * this.speed;
         this.velocity.y = Math.sin(this.angle * Util.deg2Rad) * this.speed;
@@ -230,6 +239,43 @@ var MissileController = (function (_super) {
 
         this.gameObject.position = this.position;
         this.gameObject.rotation = this.rotation;
+    };
+
+    Object.defineProperty(MissileController.prototype, "hasTarget", {
+        get: function () {
+            return this.target != null;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    MissileController.prototype.trackTarget = function (dt) {
+        if (this.hasTarget) {
+            var angleDiff = Util.wrapRadians(Util.angleTo(this.position, this.target.position));
+            this.angle = Util.lerpDegrees(this.angle, angleDiff * Util.rad2Deg, 0.1);
+        }
+    };
+
+    MissileController.prototype.getTarget = function () {
+        if (this.target != null) {
+            return;
+        }
+
+        var potentials = game.collision.overlapCircle(new TSM.vec2([this.position.x, this.position.y]), 300);
+        var filtered = [];
+
+        for (var i = 0, len = potentials.length; i < len; ++i) {
+            if (potentials[i].tag != 3 /* Enemy */) {
+                continue;
+            }
+            filtered.push(potentials[i]);
+        }
+
+        if (filtered.length > 0) {
+            this.target = filtered[Util.randomRange(0, filtered.length - 1)];
+        } else {
+            this.trackTimer = 0.2;
+        }
     };
 
     MissileController.prototype.onCollisionEnter = function (collider) {

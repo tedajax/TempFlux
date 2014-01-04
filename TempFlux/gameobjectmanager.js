@@ -4,6 +4,9 @@ var GameObjectManager = (function () {
         this.destroyQueue = [];
         this.addQueue = [];
         this.currentId = 0;
+
+        this.root = this.add(new GameObject(null, null, "Root", null));
+        this.root.sprite.hidden = true;
     }
     GameObjectManager.prototype.add = function (gameObject) {
         if (!this.addLock) {

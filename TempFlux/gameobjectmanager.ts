@@ -7,11 +7,16 @@ class GameObjectManager {
     currentId: number;
     entityCount: number;
 
+    root: GameObject;
+
     constructor() {
         this.gameObjects = {};
         this.destroyQueue = [];
         this.addQueue = [];
         this.currentId = 0;
+
+        this.root = this.add(new GameObject(null, null, "Root", null));
+        this.root.sprite.hidden = true;
     }
 
     add(gameObject: GameObject) {
