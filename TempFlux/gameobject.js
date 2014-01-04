@@ -1,4 +1,4 @@
-﻿var GameObjectTag;
+var GameObjectTag;
 (function (GameObjectTag) {
     GameObjectTag[GameObjectTag["Default"] = 0] = "Default";
     GameObjectTag[GameObjectTag["Player"] = 1] = "Player";

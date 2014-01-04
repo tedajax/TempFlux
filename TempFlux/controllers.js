@@ -1,4 +1,4 @@
-﻿var __extends = this.__extends || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -201,6 +201,50 @@ var BulletController = (function (_super) {
     return BulletController;
 })(Controller);
 
+var MissileController = (function (_super) {
+    __extends(MissileController, _super);
+    function MissileController() {
+        _super.apply(this, arguments);
+        this.speed = 100;
+        this.angle = 0;
+    }
+    MissileController.prototype.update = function (dt) {
+        _super.prototype.update.call(this, dt);
+
+        this.velocity.x = Math.cos(this.angle * Util.deg2Rad) * this.speed;
+        this.velocity.y = Math.sin(this.angle * Util.deg2Rad) * this.speed;
+
+        this.position.x += this.velocity.x * dt;
+        this.position.y += this.velocity.y * dt;
+
+        this.rotation.z = this.angle * Util.deg2Rad;
+
+        if (!this.worldBoundary.pointInside(this.position.xy)) {
+            this.gameObject.destroy();
+        }
+
+        this.lifetime -= dt;
+        if (this.lifetime < 0) {
+            this.gameObject.destroy();
+        }
+
+        this.gameObject.position = this.position;
+        this.gameObject.rotation = this.rotation;
+    };
+
+    MissileController.prototype.onCollisionEnter = function (collider) {
+        if (collider.parent.tag != 3 /* Enemy */) {
+            return;
+        }
+
+        if (!this.gameObject.shouldDestroy) {
+            game.audio.playSound("hit_enemy");
+        }
+        this.gameObject.destroy();
+    };
+    return MissileController;
+})(Controller);
+
 var LocalPlayerState = (function () {
     function LocalPlayerState() {
         this.position = new TSM.vec3;
@@ -222,6 +266,8 @@ var LocalPlayerController = (function (_super) {
         this.weapon = 0;
 
         this.health.setMax(100);
+        this.energyMax = 100;
+        this.energy = this.energyMax;
 
         this.stateRecord = [];
 
@@ -269,10 +315,17 @@ var LocalPlayerController = (function (_super) {
         }
 
         if (game.input.getMouseButton(MouseButtons.RIGHT)) {
-            timeScale = 0.25;
+            if (this.energy > 0) {
+                timeScale = 0.25;
+                this.energy -= 100 * dt;
+            } else {
+                timeScale = 1;
+            }
         } else {
             timeScale = 1;
+            this.energy += 10 * dt;
         }
+        this.energy = Util.clamp(this.energy, 0, this.energyMax);
 
         this.position.x += this.velocity.x * dt;
         this.position.y += this.velocity.y * dt;
@@ -336,7 +389,7 @@ var LocalPlayerController = (function (_super) {
         //this.muzzleFlash.hidden = false;
         game.camera.kick(this.rotation.z, 2);
 
-        var startPos = new TSM.vec2([this.position.x - this.gameObject.sprite.origin.x + 4, this.position.y - this.gameObject.sprite.origin.y + 4]);
+        var startPos = new TSM.vec2([this.position.x - this.gameObject.sprite.origin.x, this.position.y - this.gameObject.sprite.origin.y]);
         startPos.x += Math.cos(this.rotation.z) * 16;
         startPos.y += Math.sin(this.rotation.z) * 16;
 

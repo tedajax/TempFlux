@@ -192,6 +192,49 @@ class BulletController extends Controller {
     }
 }
 
+class MissileController extends Controller {
+    hasTarget: boolean;
+    target: GameObject;
+    speed: number = 100;
+    angle: number = 0;
+    lifetime: number;
+
+    update(dt) {
+        super.update(dt);
+
+        this.velocity.x = Math.cos(this.angle * Util.deg2Rad) * this.speed;
+        this.velocity.y = Math.sin(this.angle * Util.deg2Rad) * this.speed;
+        
+        this.position.x += this.velocity.x * dt;
+        this.position.y += this.velocity.y * dt;
+
+        this.rotation.z = this.angle * Util.deg2Rad;
+
+        if (!this.worldBoundary.pointInside(this.position.xy)) {
+            this.gameObject.destroy();
+        }
+
+        this.lifetime -= dt;
+        if (this.lifetime < 0) {
+            this.gameObject.destroy();
+        }        
+
+        this.gameObject.position = this.position;
+        this.gameObject.rotation = this.rotation;
+    }
+
+    onCollisionEnter(collider: Collider) {
+        if (collider.parent.tag != GameObjectTag.Enemy) {
+            return;
+        }
+
+        if (!this.gameObject.shouldDestroy) {
+            game.audio.playSound("hit_enemy");
+        }
+        this.gameObject.destroy();
+    }
+}
+
 class LocalPlayerState {
     position: TSM.vec3;
     rotation: number;
@@ -217,6 +260,9 @@ class LocalPlayerController extends Controller {
 
     muzzleFlash: Sprite;
 
+    energy: number;
+    energyMax: number;
+
     constructor(gameObject: GameObject) {
         super(gameObject);
 
@@ -227,6 +273,8 @@ class LocalPlayerController extends Controller {
         this.weapon = 0;
 
         this.health.setMax(100);
+        this.energyMax = 100;
+        this.energy = this.energyMax;
 
         this.stateRecord = [];
 
@@ -275,10 +323,17 @@ class LocalPlayerController extends Controller {
         }
 
         if (game.input.getMouseButton(MouseButtons.RIGHT)) {
-            timeScale = 0.25;
+            if (this.energy > 0) {
+                timeScale = 0.25;
+                this.energy -= 100 * dt;
+            } else {
+                timeScale = 1;
+            }
         } else {
             timeScale = 1;
+            this.energy += 10 * dt;
         }
+        this.energy = Util.clamp(this.energy, 0, this.energyMax);
 
         this.position.x += this.velocity.x * dt;
         this.position.y += this.velocity.y * dt;
@@ -342,7 +397,7 @@ class LocalPlayerController extends Controller {
 
         game.camera.kick(this.rotation.z, 2);
 
-        var startPos = new TSM.vec2([this.position.x - this.gameObject.sprite.origin.x + 4, this.position.y - this.gameObject.sprite.origin.y + 4]);
+        var startPos = new TSM.vec2([this.position.x - this.gameObject.sprite.origin.x, this.position.y - this.gameObject.sprite.origin.y]);
         startPos.x += Math.cos(this.rotation.z) * 16;
         startPos.y += Math.sin(this.rotation.z) * 16;
 

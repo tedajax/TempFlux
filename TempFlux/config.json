@@ -6,6 +6,10 @@
           "url": "assets/game/bullet.png",
           "mode": "clamp"
         },
+        "missile": {
+          "url": "assets/game/missile.png",
+          "mode": "clamp"
+        },
         "redsquare": {
           "url": "assets/enemies/redsquare.png",
           "mode": "clamp"
@@ -36,6 +40,10 @@
         },
         "health_fg": {
           "url": "assets/game/health_fg.png",
+          "mode": "clamp"
+        },
+        "energy_fg": {
+          "url": "assets/game/energy_fg.png",
           "mode": "clamp"
         },
         "bitIdle00": {
