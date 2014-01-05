@@ -46,7 +46,7 @@ var BulletStream = (function () {
 
             if (_this.type == 1 /* Missile */) {
                 w = 48;
-                h = 24;
+                h = 12;
             }
 
             var sprite = new Sprite(w, h);

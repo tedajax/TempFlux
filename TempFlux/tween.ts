@@ -282,6 +282,7 @@ class Tween {
 class TweenManager {
     static tweens: {} = {};
     static destroyQueue: {} = {};
+    static removeQueue: number[] = [];
     static currentId: number = 0;
 
     static register(tween: Tween): Tween {
@@ -295,6 +296,13 @@ class TweenManager {
         for (var id in TweenManager.tweens) {
             var tween = TweenManager.tweens[id];
             tween.incrementTime(dt);
+            if (tween.done) {
+                TweenManager.removeQueue.push(id);
+            }
+        }
+
+        while (TweenManager.removeQueue.length > 0) {
+            delete TweenManager.tweens[TweenManager.removeQueue.pop()];
         }
     }
 }

@@ -54,7 +54,7 @@ class BulletStream {
 
             if (this.type == BulletStreamType.Missile) {
                 w = 48;
-                h = 24;
+                h = 12;
             }
 
             var sprite = new Sprite(w, h);

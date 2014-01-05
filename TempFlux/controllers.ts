@@ -276,6 +276,71 @@ class MissileController extends Controller {
     }
 }
 
+enum PowerupType {
+    Health
+}
+
+class PowerupController extends Controller {
+    player: LocalPlayerController;
+    lifetime: number = 15;
+    magnetRadius: number = 500;
+    magnetCooldown: number = 1;
+    magnetized: boolean = false;
+    speed: number = 0;
+
+    type: PowerupType = PowerupType.Health;
+    amount: number = 0.5;
+    
+    constructor(gameObject: GameObject) {
+        super(gameObject);
+
+        this.player = game.playerController;
+
+        this.velocity.x = Util.randomRangeF(-50, 50);
+        this.velocity.y = Util.randomRangeF(-50, 50);
+    }
+
+    update(dt) {
+        super.update(dt);
+
+        this.lifetime -= dt;
+        if (this.lifetime <= 0) {
+            this.gameObject.destroy();
+        }
+
+        this.magnetCooldown -= dt;
+
+        if (!this.magnetized) {
+            this.velocity.x *= 0.98;
+            this.velocity.y *= 0.98;
+
+            this.position.x += this.velocity.x * dt;
+            this.position.y += this.velocity.y * dt;
+
+            if (Util.distanceSqr2D(this.position, this.player.position) <= this.magnetRadius * this.magnetRadius && this.magnetCooldown <= 0) {
+                this.magnetized = true;
+            }
+        } else {
+            this.velocity = Util.direction2D(this.player.position, this.position);
+            this.velocity.x *= this.speed;
+            this.velocity.y *= this.speed;
+            this.speed += 100 * dt;
+        }
+
+        this.position.x += this.velocity.x * dt;
+        this.position.y += this.velocity.y * dt;
+
+        this.gameObject.position = this.position;
+    }
+
+    onCollisionEnter(collider: Collider) {
+        if (collider.parent.tag == GameObjectTag.Player) {
+            this.player.powerup(this.type, this.amount);
+            this.gameObject.destroy();
+        }
+    }
+}
+
 class LocalPlayerState {
     position: TSM.vec3;
     rotation: number;
@@ -364,9 +429,9 @@ class LocalPlayerController extends Controller {
         }
 
         if (game.input.getMouseButton(MouseButtons.RIGHT)) {
-            if (this.energy > 0) {
+            if (this.health.current > 5) {
                 timeScale = 0.25;
-                this.energy -= 100 * dt;
+                this.health.current -= 25 * dt;
             } else {
                 timeScale = 1;
             }
@@ -405,8 +470,6 @@ class LocalPlayerController extends Controller {
                 this.shoot();
             }
         }
-
-        this.recordCurrentState();
     }
 
     render() {
@@ -446,6 +509,15 @@ class LocalPlayerController extends Controller {
         game.audio.playSound("shoot");
         
         //go.collider.continuousCollision = true;
+    }
+
+    powerup(type: PowerupType, amount: number) {
+        switch (type) {
+            default:
+            case PowerupType.Health:
+                this.health.heal(amount);
+                break;
+        }
     }
 
     onCollisionEnter(collider: Collider) {

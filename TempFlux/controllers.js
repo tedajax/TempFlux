@@ -291,6 +291,70 @@ var MissileController = (function (_super) {
     return MissileController;
 })(Controller);
 
+var PowerupType;
+(function (PowerupType) {
+    PowerupType[PowerupType["Health"] = 0] = "Health";
+})(PowerupType || (PowerupType = {}));
+
+var PowerupController = (function (_super) {
+    __extends(PowerupController, _super);
+    function PowerupController(gameObject) {
+        _super.call(this, gameObject);
+        this.lifetime = 15;
+        this.magnetRadius = 500;
+        this.magnetCooldown = 1;
+        this.magnetized = false;
+        this.speed = 0;
+        this.type = 0 /* Health */;
+        this.amount = 0.5;
+
+        this.player = game.playerController;
+
+        this.velocity.x = Util.randomRangeF(-50, 50);
+        this.velocity.y = Util.randomRangeF(-50, 50);
+    }
+    PowerupController.prototype.update = function (dt) {
+        _super.prototype.update.call(this, dt);
+
+        this.lifetime -= dt;
+        if (this.lifetime <= 0) {
+            this.gameObject.destroy();
+        }
+
+        this.magnetCooldown -= dt;
+
+        if (!this.magnetized) {
+            this.velocity.x *= 0.98;
+            this.velocity.y *= 0.98;
+
+            this.position.x += this.velocity.x * dt;
+            this.position.y += this.velocity.y * dt;
+
+            if (Util.distanceSqr2D(this.position, this.player.position) <= this.magnetRadius * this.magnetRadius && this.magnetCooldown <= 0) {
+                this.magnetized = true;
+            }
+        } else {
+            this.velocity = Util.direction2D(this.player.position, this.position);
+            this.velocity.x *= this.speed;
+            this.velocity.y *= this.speed;
+            this.speed += 100 * dt;
+        }
+
+        this.position.x += this.velocity.x * dt;
+        this.position.y += this.velocity.y * dt;
+
+        this.gameObject.position = this.position;
+    };
+
+    PowerupController.prototype.onCollisionEnter = function (collider) {
+        if (collider.parent.tag == 1 /* Player */) {
+            this.player.powerup(this.type, this.amount);
+            this.gameObject.destroy();
+        }
+    };
+    return PowerupController;
+})(Controller);
+
 var LocalPlayerState = (function () {
     function LocalPlayerState() {
         this.position = new TSM.vec3;
@@ -361,9 +425,9 @@ var LocalPlayerController = (function (_super) {
         }
 
         if (game.input.getMouseButton(MouseButtons.RIGHT)) {
-            if (this.energy > 0) {
+            if (this.health.current > 5) {
                 timeScale = 0.25;
-                this.energy -= 100 * dt;
+                this.health.current -= 25 * dt;
             } else {
                 timeScale = 1;
             }
@@ -402,8 +466,6 @@ var LocalPlayerController = (function (_super) {
                 this.shoot();
             }
         }
-
-        this.recordCurrentState();
     };
 
     LocalPlayerController.prototype.render = function () {
@@ -442,6 +504,15 @@ var LocalPlayerController = (function (_super) {
         this.fireTimer = game.armory.shoot(this.weapon, startPos, this.rotation.z * Util.rad2Deg, TSM.vec2.zero);
         game.audio.playSound("shoot");
         //go.collider.continuousCollision = true;
+    };
+
+    LocalPlayerController.prototype.powerup = function (type, amount) {
+        switch (type) {
+            default:
+            case 0 /* Health */:
+                this.health.heal(amount);
+                break;
+        }
     };
 
     LocalPlayerController.prototype.onCollisionEnter = function (collider) {

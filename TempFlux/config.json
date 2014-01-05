@@ -109,6 +109,10 @@
         "muzzle_flash": {
           "url": "assets/game/muzzleflash.png",
           "mode": "clamp"
+        },
+        "powerup_health": {
+          "url": "assets/game/healthpower.png",
+          "mode": "clamp"
         }
       },
       "sounds": {

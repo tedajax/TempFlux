@@ -229,6 +229,9 @@ class AIController extends Controller {
     }
 
     onDeath() {
+        this.spawnHealers(Util.randomRange(0, 3));
+        game.camera.shake(0.1, 5);
+
         game.audio.playSound("enemy_death");
         this.gameObject.destroy();
 
@@ -242,7 +245,6 @@ class AIController extends Controller {
     onDamage() {
         super.onDamage();
         sleep(5);
-        game.camera.shake(0.1, 5);
         this.damageColorFlash();
     }
 
@@ -379,6 +381,30 @@ class AIController extends Controller {
     damageColorFlash() {
         this.damageFlashTimer = this.damageFlashTime;
         this.gameObject.sprite.invertColor = true;
+    }
+
+    spawnHealers(amount: number) {
+        for (var i = 0; i < amount; ++i) {
+            var sprite = new Sprite(8, 8);
+            sprite.position.xy = this.position.xy;
+            sprite.position.x += 4;
+            sprite.position.y += 4;
+            sprite.setShader(game.spriteShader);
+            sprite.setTexture(game.textures.getTexture("powerup_health"));
+            sprite.alpha = true;
+
+            var go = new GameObject(null, null, "Healer", sprite);
+            go.tag = GameObjectTag.Powerup;
+
+            var controller = new PowerupController(null);
+            controller.position.xy = this.position.xy;
+            controller.position.x += 4;
+            controller.position.y += 4;
+            controller.posess(go);
+
+            game.gameObjects.add(go);
+            go.addCircleCollider();
+        }
     }
 }
 

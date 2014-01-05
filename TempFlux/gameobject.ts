@@ -2,7 +2,8 @@ enum GameObjectTag {
     Default,
     Player,
     Bullet,
-    Enemy
+    Enemy,
+    Powerup
 }
 
 class GameObject {

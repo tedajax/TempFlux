@@ -193,6 +193,9 @@ var AIController = (function (_super) {
         this.spawnTween = TweenManager.register(new Tween(TweenFunctions.easeOutQuad, 0, 1, 0.5));
     }
     AIController.prototype.onDeath = function () {
+        this.spawnHealers(Util.randomRange(0, 3));
+        game.camera.shake(0.1, 5);
+
         game.audio.playSound("enemy_death");
         this.gameObject.destroy();
         //var emitter = game.particles.createEmitter(5, game.textures.getTexture("smoke"));
@@ -205,7 +208,6 @@ var AIController = (function (_super) {
     AIController.prototype.onDamage = function () {
         _super.prototype.onDamage.call(this);
         sleep(5);
-        game.camera.shake(0.1, 5);
         this.damageColorFlash();
     };
 
@@ -343,6 +345,30 @@ var AIController = (function (_super) {
     AIController.prototype.damageColorFlash = function () {
         this.damageFlashTimer = this.damageFlashTime;
         this.gameObject.sprite.invertColor = true;
+    };
+
+    AIController.prototype.spawnHealers = function (amount) {
+        for (var i = 0; i < amount; ++i) {
+            var sprite = new Sprite(8, 8);
+            sprite.position.xy = this.position.xy;
+            sprite.position.x += 4;
+            sprite.position.y += 4;
+            sprite.setShader(game.spriteShader);
+            sprite.setTexture(game.textures.getTexture("powerup_health"));
+            sprite.alpha = true;
+
+            var go = new GameObject(null, null, "Healer", sprite);
+            go.tag = 4 /* Powerup */;
+
+            var controller = new PowerupController(null);
+            controller.position.xy = this.position.xy;
+            controller.position.x += 4;
+            controller.position.y += 4;
+            controller.posess(go);
+
+            game.gameObjects.add(go);
+            go.addCircleCollider();
+        }
     };
     return AIController;
 })(Controller);

@@ -4,6 +4,7 @@ var GameObjectTag;
     GameObjectTag[GameObjectTag["Player"] = 1] = "Player";
     GameObjectTag[GameObjectTag["Bullet"] = 2] = "Bullet";
     GameObjectTag[GameObjectTag["Enemy"] = 3] = "Enemy";
+    GameObjectTag[GameObjectTag["Powerup"] = 4] = "Powerup";
 })(GameObjectTag || (GameObjectTag = {}));
 
 var GameObject = (function () {

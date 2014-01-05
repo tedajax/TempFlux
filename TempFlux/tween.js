@@ -292,10 +292,18 @@ var TweenManager = (function () {
         for (var id in TweenManager.tweens) {
             var tween = TweenManager.tweens[id];
             tween.incrementTime(dt);
+            if (tween.done) {
+                TweenManager.removeQueue.push(id);
+            }
+        }
+
+        while (TweenManager.removeQueue.length > 0) {
+            delete TweenManager.tweens[TweenManager.removeQueue.pop()];
         }
     };
     TweenManager.tweens = {};
     TweenManager.destroyQueue = {};
+    TweenManager.removeQueue = [];
     TweenManager.currentId = 0;
     return TweenManager;
 })();
