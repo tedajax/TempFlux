@@ -182,6 +182,7 @@ var AIController = (function (_super) {
         _super.call(this, gameObject);
         this.damageFlashTime = 0.1;
         this.damageFlashTimer = 0;
+        this.playerDamage = 10;
 
         this.aiState = 0 /* Idle */;
         this.stateStarted = false;
@@ -379,6 +380,7 @@ var AIRedSquareController = (function (_super) {
         _super.apply(this, arguments);
     }
     AIRedSquareController.prototype.stateStartIdle = function () {
+        this.playerDamage = 20;
         this.health.setMax(8);
     };
 
@@ -512,6 +514,7 @@ var AIStarburstController = (function (_super) {
         this.distanceThresholdSqr = this.distanceThreshold * this.distanceThreshold;
         this.chargeTime = 1;
 
+        this.playerDamage = 20;
         this.health.setMax(14);
 
         this.children = [];
@@ -630,6 +633,8 @@ var AIStarburstPointController = (function (_super) {
     function AIStarburstPointController(gameObject, parent, side) {
         _super.call(this, gameObject);
         this.speed = 400;
+
+        this.playerDamage = 5;
 
         this.parent = parent;
         this.parent.registerChild(this);

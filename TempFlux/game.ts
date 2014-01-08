@@ -29,13 +29,17 @@ class Game {
     collision: CollisionManager;
     armory: Armory;
     particles: ParticleEmitterManager;
-    hud: GameHUD;
+    fonts: FontManager;
+    text: TextObjectManager;
+    hud: GameHUD;    
 
     spriteShader: SpriteShader;
     worldBoundary: Rectangle;
 
     gridBG: Sprite;
     gridGlow: Tween;
+
+    testText: TextObject;
 
     constructor(canvas: HTMLCanvasElement) {
         this.useFullWindow = false;
@@ -95,6 +99,7 @@ class Game {
         this.textures = new TextureManager();
         this.audio = new AudioManager();
         this.initializeAnimations();
+        this.fonts = new FontManager();
 
         this.meshFactory = new MeshFactory();
         
@@ -126,6 +131,9 @@ class Game {
         this.recordingControllers = [];
 
         this.hud = new GameHUD();
+        this.text = new TextObjectManager();
+
+        this.testText = this.text.add(new TextObject("Test"));
 
         this.audio.playMusic("awake");
         this.aiDirector.initialize();
@@ -213,6 +221,17 @@ class Game {
         this.particles.update(dt);
         TweenManager.update(dt);
         this.hud.update(dt);
+        this.text.update(dt);
+        this.testText.setText(this.renderedFrames.toString());
+        if (game.input.getKeyDown(Keys.L)) {
+            var str = "abcdefghijklmnopqrstuvwxyz";
+            for (var i = 0; i < str.length * str.length; ++i) {
+                var r1 = Util.randomRange(0, str.length - 1);
+                var r2 = Util.randomRange(0, str.length - 1);
+                str = Util.stringSwapIndices(str, r1, r2);
+            }
+            this.testText.setText(str);
+        }
         this.audio.update(dt);
         this.input.update();
         this.elapsedTime += dt;
@@ -223,7 +242,13 @@ class Game {
         this.spriteShader.frameDrawSetup();
         this.gameObjects.render();
         this.particles.render();
+
+        this.text.render();
+        this.spriteShader.unlockFromCamera();
+
         this.hud.render();
+        
+
         ++this.renderedFrames;
     }
 

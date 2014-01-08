@@ -1,4 +1,4 @@
-var __extends = this.__extends || function (d, b) {
+﻿var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -20,6 +20,7 @@ var Sprite = (function (_super) {
         this.alpha = false;
         this.tintColor = new Float32Array([1, 1, 1, 1]);
         this.addColor = new Float32Array([0, 0, 0, 1]);
+        this.invertColor = false;
 
         this.width = width;
         this.height = height;

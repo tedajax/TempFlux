@@ -100,8 +100,6 @@ class GameHUD {
     }
 
     render() {
-        game.spriteShader.unlockFromCamera();
-
         this.health.render();
         this.energy.render();
     }

@@ -85,21 +85,21 @@ class Controller {
     }
 
     constrainToBoundaries() {
-        if (this.position.x < this.worldBoundary.left()) {
-            this.position.x = this.worldBoundary.left();
+        if (this.position.x < this.worldBoundary.left) {
+            this.position.x = this.worldBoundary.left;
             this.hitWall();
         }
-        if (this.position.x > this.worldBoundary.right()) {
-            this.position.x = this.worldBoundary.right();
+        if (this.position.x > this.worldBoundary.right) {
+            this.position.x = this.worldBoundary.right;
             this.hitWall();
         }
 
-        if (this.position.y < this.worldBoundary.top()) {
-            this.position.y = this.worldBoundary.top();
+        if (this.position.y < this.worldBoundary.top) {
+            this.position.y = this.worldBoundary.top;
             this.hitWall();
         }
-        if (this.position.y > this.worldBoundary.bottom()) {
-            this.position.y = this.worldBoundary.bottom();
+        if (this.position.y > this.worldBoundary.bottom) {
+            this.position.y = this.worldBoundary.bottom;
             this.hitWall();
         }
     }
@@ -289,7 +289,7 @@ class PowerupController extends Controller {
     speed: number = 0;
 
     type: PowerupType = PowerupType.Health;
-    amount: number = 0.5;
+    amount: number = 0.2;
     
     constructor(gameObject: GameObject) {
         super(gameObject);
@@ -321,7 +321,10 @@ class PowerupController extends Controller {
                 this.magnetized = true;
             }
         } else {
-            this.velocity = Util.direction2D(this.player.position, this.position);
+            var pos = this.player.position.copy();
+            pos.x -= this.player.gameObject.sprite.width / 2;
+            pos.y -= this.player.gameObject.sprite.height / 2;
+            this.velocity = Util.direction2D(pos, this.position);
             this.velocity.x *= this.speed;
             this.velocity.y *= this.speed;
             this.speed += 100 * dt;
@@ -523,7 +526,8 @@ class LocalPlayerController extends Controller {
     onCollisionEnter(collider: Collider) {
         if (collider.parent.tag == GameObjectTag.Enemy) {
             this.gameObject.sprite.invertColor = true;
-            this.health.damage(5);
+            var ai = <AIController>collider.parent.controller;
+            this.health.damage(ai.playerDamage);
         }
     }
 

@@ -113,6 +113,10 @@
         "powerup_health": {
           "url": "assets/game/healthpower.png",
           "mode": "clamp"
+        }, 
+        "font_combo": {
+          "url": "assets/fonts/amazdoomleft_regular_48.png",
+          "mode": "clamp"
         }
       },
       "sounds": {
@@ -137,6 +141,12 @@
         "awake": {
           "url": "assets/audio/music/awake.mp3",
           "gain": 1.0
+        }
+      },
+      "fonts": {
+        "combo": {
+          "texture": "font_combo",
+          "data": "assets/fonts/amazdoomleft_regular_48.json"
         }
       }
     },

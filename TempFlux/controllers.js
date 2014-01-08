@@ -84,21 +84,21 @@ var Controller = (function () {
     };
 
     Controller.prototype.constrainToBoundaries = function () {
-        if (this.position.x < this.worldBoundary.left()) {
-            this.position.x = this.worldBoundary.left();
+        if (this.position.x < this.worldBoundary.left) {
+            this.position.x = this.worldBoundary.left;
             this.hitWall();
         }
-        if (this.position.x > this.worldBoundary.right()) {
-            this.position.x = this.worldBoundary.right();
+        if (this.position.x > this.worldBoundary.right) {
+            this.position.x = this.worldBoundary.right;
             this.hitWall();
         }
 
-        if (this.position.y < this.worldBoundary.top()) {
-            this.position.y = this.worldBoundary.top();
+        if (this.position.y < this.worldBoundary.top) {
+            this.position.y = this.worldBoundary.top;
             this.hitWall();
         }
-        if (this.position.y > this.worldBoundary.bottom()) {
-            this.position.y = this.worldBoundary.bottom();
+        if (this.position.y > this.worldBoundary.bottom) {
+            this.position.y = this.worldBoundary.bottom;
             this.hitWall();
         }
     };
@@ -306,7 +306,7 @@ var PowerupController = (function (_super) {
         this.magnetized = false;
         this.speed = 0;
         this.type = 0 /* Health */;
-        this.amount = 0.5;
+        this.amount = 0.2;
 
         this.player = game.playerController;
 
@@ -334,7 +334,10 @@ var PowerupController = (function (_super) {
                 this.magnetized = true;
             }
         } else {
-            this.velocity = Util.direction2D(this.player.position, this.position);
+            var pos = this.player.position.copy();
+            pos.x -= this.player.gameObject.sprite.width / 2;
+            pos.y -= this.player.gameObject.sprite.height / 2;
+            this.velocity = Util.direction2D(pos, this.position);
             this.velocity.x *= this.speed;
             this.velocity.y *= this.speed;
             this.speed += 100 * dt;
@@ -518,7 +521,8 @@ var LocalPlayerController = (function (_super) {
     LocalPlayerController.prototype.onCollisionEnter = function (collider) {
         if (collider.parent.tag == 3 /* Enemy */) {
             this.gameObject.sprite.invertColor = true;
-            this.health.damage(5);
+            var ai = collider.parent.controller;
+            this.health.damage(ai.playerDamage);
         }
     };
 

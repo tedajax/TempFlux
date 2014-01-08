@@ -118,6 +118,17 @@ var Util = (function () {
     Util.flattenVec3 = function (a) {
         return new TSM.vec2([a.x, a.y]);
     };
+
+    Util.stringReplaceAt = function (str, index, character) {
+        return str.substr(0, index) + character + str.substr(index + character.length);
+    };
+
+    Util.stringSwapIndices = function (str, i1, i2) {
+        var temp = str[i1];
+        str = Util.stringReplaceAt(str, i1, str[i2]);
+        str = Util.stringReplaceAt(str, i2, temp);
+        return str;
+    };
     Util.deg2Rad = 0.0174532925;
     Util.rad2Deg = 57.2957795;
     Util.PiOver2 = Math.PI / 2;
@@ -187,28 +198,44 @@ var Rectangle = (function () {
         return new Rectangle(new TSM.vec2([this.position.x, this.position.y]), this.width, this.height);
     };
 
-    Rectangle.prototype.left = function () {
-        return this.position.x;
-    };
+    Object.defineProperty(Rectangle.prototype, "left", {
+        get: function () {
+            return this.position.x;
+        },
+        enumerable: true,
+        configurable: true
+    });
 
-    Rectangle.prototype.right = function () {
-        return this.position.x + this.width;
-    };
+    Object.defineProperty(Rectangle.prototype, "right", {
+        get: function () {
+            return this.position.x + this.width;
+        },
+        enumerable: true,
+        configurable: true
+    });
 
-    Rectangle.prototype.top = function () {
-        return this.position.y;
-    };
+    Object.defineProperty(Rectangle.prototype, "top", {
+        get: function () {
+            return this.position.y;
+        },
+        enumerable: true,
+        configurable: true
+    });
 
-    Rectangle.prototype.bottom = function () {
-        return this.position.y + this.height;
-    };
+    Object.defineProperty(Rectangle.prototype, "bottom", {
+        get: function () {
+            return this.position.y + this.height;
+        },
+        enumerable: true,
+        configurable: true
+    });
 
     Rectangle.prototype.xDist = function (other) {
-        return Math.max(Math.max(other.left() - this.right(), this.left() - other.right()), 0);
+        return Math.max(Math.max(other.left - this.right, this.left - other.right), 0);
     };
 
     Rectangle.prototype.yDist = function (other) {
-        return Math.max(Math.max(other.top() - this.bottom(), this.top() - other.bottom()), 0);
+        return Math.max(Math.max(other.top - this.bottom, this.top - other.bottom), 0);
     };
 
     Rectangle.prototype.minDist = function (other) {
@@ -228,7 +255,7 @@ var Rectangle = (function () {
 
     Rectangle.prototype.pointInside = function (point) {
         var x = point[0], y = point[1];
-        return (x >= this.left() && x <= this.right() && y >= this.top() && y <= this.bottom());
+        return (x >= this.left && x <= this.right && y >= this.top && y <= this.bottom);
     };
 
     Rectangle.prototype.inflate = function (amount) {

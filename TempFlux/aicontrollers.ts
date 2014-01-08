@@ -213,6 +213,8 @@ class AIController extends Controller {
     damageFlashTime: number = 0.1;
     damageFlashTimer: number = 0;
 
+    playerDamage: number = 10;
+
     spawnTween: Tween;
 
     constructor(gameObject: GameObject) {
@@ -410,6 +412,7 @@ class AIController extends Controller {
 
 class AIRedSquareController extends AIController {
     stateStartIdle() {
+        this.playerDamage = 20;
         this.health.setMax(8);
     }
 
@@ -550,6 +553,7 @@ class AIStarburstController extends AIController {
     constructor(gameObject: GameObject) {
         super(gameObject);
 
+        this.playerDamage = 20;
         this.health.setMax(14);
         
         this.children = [];
@@ -670,6 +674,8 @@ class AIStarburstPointController extends AIController {
 
     constructor(gameObject: GameObject, parent: AIStarburstController, side: Side2D) {
         super(gameObject);
+
+        this.playerDamage = 5;
 
         this.parent = parent;
         this.parent.registerChild(this);

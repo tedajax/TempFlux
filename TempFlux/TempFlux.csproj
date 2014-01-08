@@ -24,11 +24,30 @@
     <Content Include="app.css" />
     <TypeScriptCompile Include="camera.ts" />
     <TypeScriptCompile Include="controllers.ts" />
+    <Content Include="assets\audio\music\awake.mp3" />
+    <Content Include="assets\audio\sfx\enemydeath.wav" />
+    <Content Include="assets\audio\sfx\gethit.wav" />
+    <Content Include="assets\audio\sfx\hitenemy.wav" />
+    <Content Include="assets\audio\sfx\shoot.wav" />
     <Content Include="assets\bit\bitIdle00.png" />
     <Content Include="assets\enemies\greentriangle.png" />
     <Content Include="assets\enemies\redsquare.png" />
+    <Content Include="assets\enemies\starburst_center.png" />
+    <Content Include="assets\enemies\starburst_horizontal.png" />
+    <Content Include="assets\enemies\starburst_vertical.png" />
+    <Content Include="assets\fonts\amazdoomleft_regular_48.PNG" />
     <Content Include="assets\game\bullet.png" />
-    <Content Include="assets\sounds\sfx\hitenemy.wav" />
+    <Content Include="assets\game\energy_fg.png" />
+    <Content Include="assets\game\explosion.png" />
+    <Content Include="assets\game\healthpower.png" />
+    <Content Include="assets\game\health_fg.png" />
+    <Content Include="assets\game\missile.png" />
+    <Content Include="assets\game\muzzleflash.png" />
+    <Content Include="assets\game\smoke.png" />
+    <Content Include="assets\game\spark.png" />
+    <Content Include="assets\game\statusbar_bg.png" />
+    <Content Include="assets\game\statusbar_bg_cap.png" />
+    <Content Include="assets\game\statusbar_bg_middle.png" />
     <Content Include="assets\tiles\grid0.png" />
     <Content Include="assets\tiles\grid1.png" />
     <Content Include="assets\tiles\gridcorner_bottomleft.png" />
@@ -62,10 +81,12 @@
     <TypeScriptCompile Include="health.ts" />
     <TypeScriptCompile Include="particles.ts" />
     <TypeScriptCompile Include="hud.ts" />
+    <TypeScriptCompile Include="fonts.ts" />
     <Content Include="Scripts\typings\threejs\three.d.ts" />
     <Content Include="Scripts\typings\webaudioapi\waa-20120802.d.ts" />
     <Content Include="Scripts\typings\webaudioapi\waa-nightly.d.ts" />
     <Content Include="Scripts\typings\webaudioapi\waa.d.ts" />
+    <TypeScriptCompile Include="text.ts" />
     <Content Include="web.config" />
     <TypeScriptCompile Include="WebGL.d.ts" />
   </ItemGroup>
@@ -78,6 +99,7 @@
     <Content Include="assets\tiles\.DS_Store" />
     <Content Include="config.json" />
     <Content Include="packages.config" />
+    <Content Include="assets\fonts\amazdoomleft_regular_48.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -85,9 +107,7 @@
       <DependentUpon>web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="assets\sounds\music\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

@@ -81,8 +81,6 @@ var GameHUD = (function () {
     };
 
     GameHUD.prototype.render = function () {
-        game.spriteShader.unlockFromCamera();
-
         this.health.render();
         this.energy.render();
     };

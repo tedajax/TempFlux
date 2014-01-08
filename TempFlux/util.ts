@@ -119,6 +119,17 @@ class Util {
     static flattenVec3(a: TSM.vec3): TSM.vec2 {
         return new TSM.vec2([a.x, a.y]);
     }
+
+    static stringReplaceAt(str: string, index: number, character: string) {
+        return str.substr(0, index) + character + str.substr(index + character.length);
+    }
+
+    static stringSwapIndices(str: string, i1: number, i2: number) {
+        var temp = str[i1];
+        str = Util.stringReplaceAt(str, i1, str[i2]);
+        str = Util.stringReplaceAt(str, i2, temp);
+        return str;
+    }
 }
 
 class PoolArray<T> {
@@ -185,28 +196,28 @@ class Rectangle {
         return new Rectangle(new TSM.vec2([this.position.x, this.position.y]), this.width, this.height);
     }
 
-    left() {
+    get left() {
         return this.position.x;
     }
 
-    right() {
+    get right() {
         return this.position.x + this.width;
     }
 
-    top() {
+    get top() {
         return this.position.y;
     }
 
-    bottom() {
+    get bottom() {
         return this.position.y + this.height;
     }
 
     xDist(other: Rectangle): number {
-        return Math.max(Math.max(other.left() - this.right(), this.left() - other.right()), 0)
+        return Math.max(Math.max(other.left - this.right, this.left - other.right), 0)
     }
 
     yDist(other: Rectangle): number {
-        return Math.max(Math.max(other.top() - this.bottom(), this.top() - other.bottom()), 0)
+        return Math.max(Math.max(other.top - this.bottom, this.top - other.bottom), 0)
     }
 
     minDist(other: Rectangle): number {
@@ -226,8 +237,8 @@ class Rectangle {
 
     pointInside(point: number[]): boolean {
         var x = point[0], y = point[1];
-        return (x >= this.left() && x <= this.right() &&
-            y >= this.top() && y <= this.bottom());
+        return (x >= this.left && x <= this.right &&
+            y >= this.top && y <= this.bottom);
     }
 
     inflate(amount: number) {
