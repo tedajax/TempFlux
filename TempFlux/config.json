@@ -117,6 +117,10 @@
         "font_combo": {
           "url": "assets/fonts/amazdoomleft_regular_48.png",
           "mode": "clamp"
+        },
+        "font_handwriting": {
+          "url": "assets/fonts/pp_handwriting_normal_48.png",
+          "mode": "clamp"
         }
       },
       "sounds": {
@@ -145,8 +149,8 @@
       },
       "fonts": {
         "combo": {
-          "texture": "font_combo",
-          "data": "assets/fonts/amazdoomleft_regular_48.json"
+          "texture": "font_handwriting",
+          "data": "assets/fonts/pp_handwriting_normal_48.json"
         }
       }
     },

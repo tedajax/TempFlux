@@ -41,6 +41,27 @@ var Font = (function () {
             v2: c.rect.bottom / h
         };
     };
+
+    Font.prototype.getCodeWidth = function (code) {
+        var c = this.chars[code];
+        if (c == null) {
+            return null;
+        }
+
+        return c.width;
+    };
+
+    Font.prototype.getCodeOffset = function (code) {
+        var c = this.chars[code];
+        if (c == null) {
+            return null;
+        }
+
+        return {
+            x: c.offset.x,
+            y: c.offset.y
+        };
+    };
     return Font;
 })();
 

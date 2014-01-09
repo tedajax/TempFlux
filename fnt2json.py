@@ -2,6 +2,7 @@ from __future__ import print_function
 from xml.dom import minidom
 import json
 import jsonpickle
+import sys
 
 class Point:
 	x = 0
@@ -62,7 +63,14 @@ class Font:
 		self.chars.append(c)
 
 
-xmldoc = minidom.parse('amazdoomleft_regular_48.xml')
+if len(sys.argv) <= 1:
+	print('insufficient arguments')
+	sys.exit(0)
+
+infilename = sys.argv[1] + '.xml'
+outfilename = sys.argv[1] + '.json'
+
+xmldoc = minidom.parse(infilename)
 
 f = Font(xmldoc.getElementsByTagName('Font')[0])
 
@@ -71,6 +79,6 @@ for c in chars:
 	ch = Char(c)
 	f.addChar(ch)
 
-outfile = open('amazdoomleft_regular_48.json', 'w+')
+outfile = open(outfilename, 'w+')
 
 print(json.dumps(json.loads(jsonpickle.encode(f, unpicklable=False)), indent=4), file=outfile)

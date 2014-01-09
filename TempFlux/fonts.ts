@@ -55,6 +55,27 @@ class Font {
             v2: c.rect.bottom / h
         };
     }
+
+    getCodeWidth(code: string) {
+        var c = <FontChar>this.chars[code];
+        if (c == null) {
+            return null;
+        }
+
+        return c.width;
+    }
+
+    getCodeOffset(code: string) {
+        var c = <FontChar>this.chars[code];
+        if (c == null) {
+            return null;
+        }
+
+        return {
+            x: c.offset.x,
+            y: c.offset.y
+        }
+    }
 }
 
 class FontManager {

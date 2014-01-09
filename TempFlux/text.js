@@ -1,22 +1,41 @@
-var TextCharacterObject = (function () {
+﻿var TextCharacterObject = (function () {
     function TextCharacterObject(char) {
-        this.char = char;
-
-        this.sprite = new Sprite(32, 32);
-        this.sprite.setShader(game.spriteShader);
-        this.sprite.mesh = game.meshFactory.createTextQuad(32, 32, "combo", char);
-        this.sprite.setTexture(game.fonts.getFont("combo").texture);
-        this.sprite.alpha = true;
         this.position = new TSM.vec3([0, 0, 1]);
+        this.setChar(char);
     }
     TextCharacterObject.prototype.setChar = function (char) {
         this.char = char;
 
-        this.sprite.mesh = game.meshFactory.createTextQuad(32, 32, "combo", char);
+        var width = game.fonts.getFont("combo").getCodeWidth(char);
+        var height = game.fonts.getFont("combo").height;
+
+        var offset = game.fonts.getFont("combo").getCodeOffset(char);
+        this.offset = new TSM.vec3([offset.x, offset.y, 0]);
+
+        this.sprite = new Sprite(width, height);
+        this.sprite.setShader(game.spriteShader);
+        this.sprite.mesh = game.meshFactory.createTextQuad(width, height, "combo", char);
+        this.sprite.setTexture(game.fonts.getFont("combo").texture);
+        this.sprite.alpha = true;
+        this.sprite.position = TSM.vec3.sum(this.position, this.offset);
+
+        this.sprite.mesh = game.meshFactory.createTextQuad(width, height, "combo", char);
+    };
+
+    TextCharacterObject.prototype.setPosition = function (posArray) {
+        if (posArray.length > 0) {
+            this.position.x = posArray[0];
+        } else if (posArray.length > 1) {
+            this.position.y = posArray[1];
+        } else if (posArray.length > 2) {
+            this.position.z = posArray[2];
+        }
+
+        this.sprite.position = TSM.vec3.sum(this.position, this.offset);
     };
 
     TextCharacterObject.prototype.update = function (dt) {
-        this.sprite.position = this.position;
+        this.sprite.position = TSM.vec3.sum(this.position, this.offset);
     };
 
     TextCharacterObject.prototype.render = function () {
@@ -34,8 +53,7 @@ var TextObject = (function () {
 
         for (var i = 0, len = text.length; i < len; ++i) {
             var char = new TextCharacterObject(text[i]);
-            char.position.x = i * 32;
-            char.sprite.position.x = i * 32;
+            char.setPosition([i * 32]);
             this.characters.push(char);
         }
 

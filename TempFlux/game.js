@@ -193,7 +193,8 @@ var Game = (function () {
         TweenManager.update(dt);
         this.hud.update(dt);
         this.text.update(dt);
-        this.testText.setText(this.renderedFrames.toString());
+
+        //this.testText.setText(this.renderedFrames.toString());
         if (game.input.getKeyDown(Keys.L)) {
             var str = "abcdefghijklmnopqrstuvwxyz";
             for (var i = 0; i < str.length * str.length; ++i) {
@@ -202,6 +203,7 @@ var Game = (function () {
                 str = Util.stringSwapIndices(str, r1, r2);
             }
             this.testText.setText(str);
+            this.testText.setText("ABCabc123");
         }
         this.audio.update(dt);
         this.input.update();
