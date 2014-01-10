@@ -3,7 +3,7 @@
         this.code = code;
         this.width = width;
         this.offset = new TSM.vec2([offset["x"], offset["y"]]);
-        this.rect = new Rectangle(new TSM.vec2([rect["x"], rect["y"]]), rect["w"], rect["h"]);
+        this.rect = new Rectangle(new TSM.vec2([parseInt(rect["x"]), parseInt(rect["y"])]), parseInt(rect["w"]), parseInt(rect["h"]));
     }
     return FontChar;
 })();
@@ -22,7 +22,8 @@ var Font = (function () {
         var chars = data["chars"];
         for (var i = 0, len = chars.length; i < len; ++i) {
             var c = chars[i];
-            var fc = new FontChar(c["code"], c["width"], c["offset"], c["rect"]);
+            console.log(parseInt(c["width"]));
+            var fc = new FontChar(c["code"], parseInt(c["width"]), parseInt(c["offset"]), c["rect"]);
             this.chars[fc.code] = fc;
         }
     }
@@ -42,13 +43,31 @@ var Font = (function () {
         };
     };
 
-    Font.prototype.getCodeWidth = function (code) {
+    Font.prototype.getCodeSpacing = function (code) {
         var c = this.chars[code];
         if (c == null) {
             return null;
         }
 
         return c.width;
+    };
+
+    Font.prototype.getCodeWidth = function (code) {
+        var c = this.chars[code];
+        if (c == null) {
+            return null;
+        }
+
+        return c.rect.width;
+    };
+
+    Font.prototype.getCodeHeight = function (code) {
+        var c = this.chars[code];
+        if (c == null) {
+            return null;
+        }
+
+        return c.rect.height;
     };
 
     Font.prototype.getCodeOffset = function (code) {

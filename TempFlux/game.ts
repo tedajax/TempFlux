@@ -231,7 +231,7 @@ class Game {
                 str = Util.stringSwapIndices(str, r1, r2);
             }
             this.testText.setText(str);
-            this.testText.setText("ABCabc123");
+            this.testText.setText("abcABC123");
         }
         this.audio.update(dt);
         this.input.update();

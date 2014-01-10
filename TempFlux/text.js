@@ -7,10 +7,10 @@
         this.char = char;
 
         var width = game.fonts.getFont("combo").getCodeWidth(char);
-        var height = game.fonts.getFont("combo").height;
+        var height = game.fonts.getFont("combo").getCodeHeight(char);
 
         var offset = game.fonts.getFont("combo").getCodeOffset(char);
-        this.offset = new TSM.vec3([offset.x, offset.y, 0]);
+        this.offset = new TSM.vec3([0, 0, 0]);
 
         this.sprite = new Sprite(width, height);
         this.sprite.setShader(game.spriteShader);
@@ -51,9 +51,12 @@ var TextObject = (function () {
     TextObject.prototype.setText = function (text) {
         this.characters = [];
 
+        var pos = 0;
         for (var i = 0, len = text.length; i < len; ++i) {
             var char = new TextCharacterObject(text[i]);
-            char.setPosition([i * 32]);
+            char.setPosition([pos]);
+            pos += game.fonts.getFont("combo").getCodeSpacing(text[i]);
+            console.log(pos);
             this.characters.push(char);
         }
 

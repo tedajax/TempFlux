@@ -7,8 +7,9 @@ class FontChar {
     constructor(code: string, width: number, offset: {}, rect: {}) {
         this.code = code;
         this.width = width;
-        this.offset = new TSM.vec2([offset["x"], offset["y"]]);
-        this.rect = new Rectangle(new TSM.vec2([rect["x"], rect["y"]]), rect["w"], rect["h"]);
+        this.offset = new TSM.vec2([parseInt(offset["x"]), parseInt(offset["y"]]));
+        this.rect = new Rectangle(new TSM.vec2([parseInt(rect["x"]), parseInt(rect["y"])]),
+            parseInt(rect["w"]), parseInt(rect["h"]));
     }
 }
 
@@ -35,7 +36,7 @@ class Font {
         var chars = <Array<any>>data["chars"];
         for (var i = 0, len = chars.length; i < len; ++i) {
             var c = chars[i];
-            var fc = new FontChar(c["code"], c["width"], c["offset"], c["rect"]);
+            var fc = new FontChar(c["code"], parseInt(c["width"]), c["offset"], c["rect"]);
             this.chars[fc.code] = fc;
         }
     }
@@ -56,13 +57,31 @@ class Font {
         };
     }
 
-    getCodeWidth(code: string) {
+    getCodeSpacing(code: string) {
         var c = <FontChar>this.chars[code];
         if (c == null) {
             return null;
         }
 
         return c.width;
+    }
+
+    getCodeWidth(code: string): number {
+        var c = <FontChar>this.chars[code];
+        if (c == null) {
+            return null;
+        }
+
+        return c.rect.width;
+    }
+
+    getCodeHeight(code: string): number {
+        var c = <FontChar>this.chars[code];
+        if (c == null) {
+            return null;
+        }
+
+        return c.rect.height;
     }
 
     getCodeOffset(code: string) {
