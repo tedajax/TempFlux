@@ -7,7 +7,7 @@ class FontChar {
     constructor(code: string, width: number, offset: {}, rect: {}) {
         this.code = code;
         this.width = width;
-        this.offset = new TSM.vec2([parseInt(offset["x"]), parseInt(offset["y"]]));
+        this.offset = new TSM.vec2([parseInt(offset["x"]), parseInt(offset["y"])]);
         this.rect = new Rectangle(new TSM.vec2([parseInt(rect["x"]), parseInt(rect["y"])]),
             parseInt(rect["w"]), parseInt(rect["h"]));
     }

@@ -2,7 +2,7 @@
     function FontChar(code, width, offset, rect) {
         this.code = code;
         this.width = width;
-        this.offset = new TSM.vec2([offset["x"], offset["y"]]);
+        this.offset = new TSM.vec2([parseInt(offset["x"]), parseInt(offset["y"])]);
         this.rect = new Rectangle(new TSM.vec2([parseInt(rect["x"]), parseInt(rect["y"])]), parseInt(rect["w"]), parseInt(rect["h"]));
     }
     return FontChar;
@@ -22,8 +22,7 @@ var Font = (function () {
         var chars = data["chars"];
         for (var i = 0, len = chars.length; i < len; ++i) {
             var c = chars[i];
-            console.log(parseInt(c["width"]));
-            var fc = new FontChar(c["code"], parseInt(c["width"]), parseInt(c["offset"]), c["rect"]);
+            var fc = new FontChar(c["code"], parseInt(c["width"]), c["offset"], c["rect"]);
             this.chars[fc.code] = fc;
         }
     }

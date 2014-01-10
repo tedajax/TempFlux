@@ -39,7 +39,8 @@ class Game {
     gridBG: Sprite;
     gridGlow: Tween;
 
-    testText: TextObject;
+    killCombo: number = 0;
+    killComboTimer: number = 0;
 
     constructor(canvas: HTMLCanvasElement) {
         this.useFullWindow = false;
@@ -130,10 +131,8 @@ class Game {
         this.playerController = new LocalPlayerController(go);
         this.recordingControllers = [];
 
-        this.hud = new GameHUD();
         this.text = new TextObjectManager();
-
-        this.testText = this.text.add(new TextObject("Test"));
+        this.hud = new GameHUD();        
 
         this.audio.playMusic("awake");
         this.aiDirector.initialize();
@@ -218,24 +217,33 @@ class Game {
         this.aiDirector.update(dt);
         this.collision.update(dt);
         this.camera.update(dt);
+
+        this.updateCombo(dt);
+
         this.particles.update(dt);
         TweenManager.update(dt);
         this.hud.update(dt);
         this.text.update(dt);
-        //this.testText.setText(this.renderedFrames.toString());
-        if (game.input.getKeyDown(Keys.L)) {
-            var str = "abcdefghijklmnopqrstuvwxyz";
-            for (var i = 0; i < str.length * str.length; ++i) {
-                var r1 = Util.randomRange(0, str.length - 1);
-                var r2 = Util.randomRange(0, str.length - 1);
-                str = Util.stringSwapIndices(str, r1, r2);
-            }
-            this.testText.setText(str);
-            this.testText.setText("abcABC123");
-        }
         this.audio.update(dt);
         this.input.update();
         this.elapsedTime += dt;
+    }
+
+    updateCombo(dt: number) {
+        if (this.killComboTimer > 0) {
+            this.killComboTimer -= dt;
+        }
+
+        if (this.killComboTimer <= 0) {
+            this.killCombo = 0;
+            game.hud.resetCombo();
+        }
+    }
+
+    increaseCombo() {
+        this.killComboTimer = 1;
+        this.killCombo++;
+        game.hud.increaseCombo();
     }
 
     render() {
@@ -244,9 +252,10 @@ class Game {
         this.gameObjects.render();
         this.particles.render();
 
-        this.text.render();
+        
         this.spriteShader.unlockFromCamera();
 
+        this.text.render();
         this.hud.render();
         
 

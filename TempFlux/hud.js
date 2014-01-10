@@ -1,4 +1,4 @@
-var SlidingSprite = (function () {
+﻿var SlidingSprite = (function () {
     function SlidingSprite(position, height, sliceName, capName) {
     }
     Object.defineProperty(SlidingSprite.prototype, "fillPercentage", {
@@ -71,13 +71,30 @@ var GameHUD = (function () {
         this.energy = new StatusBar(new TSM.vec2([0, 0]), 512, 32);
         this.energy.background = energyBG;
         this.energy.foreground = energyFG;
+
+        this.comboMeter = game.text.add(new TextObject("x0", "combo"));
     }
+    GameHUD.prototype.resetCombo = function () {
+        this.comboMeter.hidden = true;
+    };
+
+    GameHUD.prototype.increaseCombo = function () {
+        this.comboMeterTween = TweenManager.register(new Tween(TweenFunctions.easeOutQuad, 3, 1, 0.25, 0 /* None */, 0));
+        this.comboMeter.hidden = false;
+        this.comboMeter.setText("x" + game.killCombo);
+    };
+
     GameHUD.prototype.update = function (dt) {
         this.health.current = game.playerController.health.current / game.playerController.health.max;
         this.health.update(dt);
 
         this.energy.current = game.playerController.energy / game.playerController.energyMax;
         this.energy.update(dt);
+
+        if (this.comboMeterTween != null) {
+            var s = this.comboMeterTween.evaluate();
+            this.comboMeter.scale = new TSM.vec3([s, s, 1]);
+        }
     };
 
     GameHUD.prototype.render = function () {

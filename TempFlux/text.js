@@ -1,41 +1,52 @@
 ﻿var TextCharacterObject = (function () {
-    function TextCharacterObject(char) {
+    function TextCharacterObject(char, font) {
+        this.font = font;
         this.position = new TSM.vec3([0, 0, 1]);
+        this.scale = new TSM.vec3([1, 1, 1]);
         this.setChar(char);
     }
     TextCharacterObject.prototype.setChar = function (char) {
         this.char = char;
 
-        var width = game.fonts.getFont("combo").getCodeWidth(char);
-        var height = game.fonts.getFont("combo").getCodeHeight(char);
+        var width = game.fonts.getFont(this.font).getCodeWidth(char);
+        var height = game.fonts.getFont(this.font).getCodeHeight(char);
 
-        var offset = game.fonts.getFont("combo").getCodeOffset(char);
+        var offset = game.fonts.getFont(this.font).getCodeOffset(char);
         this.offset = new TSM.vec3([0, 0, 0]);
 
         this.sprite = new Sprite(width, height);
         this.sprite.setShader(game.spriteShader);
-        this.sprite.mesh = game.meshFactory.createTextQuad(width, height, "combo", char);
-        this.sprite.setTexture(game.fonts.getFont("combo").texture);
+        this.sprite.mesh = game.meshFactory.createTextQuad(width, height, this.font, char);
+        this.sprite.setTexture(game.fonts.getFont(this.font).texture);
         this.sprite.alpha = true;
         this.sprite.position = TSM.vec3.sum(this.position, this.offset);
 
-        this.sprite.mesh = game.meshFactory.createTextQuad(width, height, "combo", char);
+        //this.sprite.setBindTexture(false);
+        this.sprite.mesh = game.meshFactory.createTextQuad(width, height, this.font, char);
     };
 
     TextCharacterObject.prototype.setPosition = function (posArray) {
         if (posArray.length > 0) {
             this.position.x = posArray[0];
-        } else if (posArray.length > 1) {
+        }
+        if (posArray.length > 1) {
             this.position.y = posArray[1];
-        } else if (posArray.length > 2) {
+        }
+        if (posArray.length > 2) {
             this.position.z = posArray[2];
         }
 
-        this.sprite.position = TSM.vec3.sum(this.position, this.offset);
+        var scaledOffset = this.offset.copy();
+        scaledOffset.x *= this.scale.x;
+        scaledOffset.y *= this.scale.y;
+        this.sprite.position = TSM.vec3.sum(this.position, scaledOffset);
     };
 
     TextCharacterObject.prototype.update = function (dt) {
-        this.sprite.position = TSM.vec3.sum(this.position, this.offset);
+        var scaledOffset = this.offset.copy();
+        scaledOffset.x *= this.scale.x;
+        scaledOffset.y *= this.scale.y;
+        this.sprite.position = TSM.vec3.sum(this.position, scaledOffset);
     };
 
     TextCharacterObject.prototype.render = function () {
@@ -45,23 +56,66 @@
 })();
 
 var TextObject = (function () {
-    function TextObject(text) {
+    function TextObject(text, font) {
+        this.position_ = new TSM.vec3([400, 400, 0]);
+        this.scale_ = new TSM.vec3([1, 1, 1]);
+        this.font = font;
+        this.hidden = false;
         this.setText(text);
     }
     TextObject.prototype.setText = function (text) {
         this.characters = [];
 
-        var pos = 0;
+        var pos = this.position_.x;
         for (var i = 0, len = text.length; i < len; ++i) {
-            var char = new TextCharacterObject(text[i]);
-            char.setPosition([pos]);
-            pos += game.fonts.getFont("combo").getCodeSpacing(text[i]);
-            console.log(pos);
+            var char = new TextCharacterObject(text[i], this.font);
+            char.setPosition([pos, this.position_.y, 0]);
+            pos += game.fonts.getFont(this.font).getCodeSpacing(text[i]);
             this.characters.push(char);
         }
 
         this.text = text;
     };
+
+    TextObject.prototype.setFont = function (font) {
+        this.font = font;
+
+        //TODO: not this
+        this.setText(this.text);
+    };
+
+    Object.defineProperty(TextObject.prototype, "position", {
+        set: function (value) {
+            this.position_ = value;
+
+            var pos = this.position_.x;
+            for (var i = 0, len = this.characters.length; i < len; ++i) {
+                var char = this.characters[i];
+                char.setPosition([pos, this.position_.y, 0]);
+                pos += game.fonts.getFont(this.font).getCodeSpacing(this.text[i]);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(TextObject.prototype, "scale", {
+        set: function (value) {
+            this.scale_ = value;
+
+            var pos = this.position_.x;
+            for (var i = 0, len = this.characters.length; i < len; ++i) {
+                var char = this.characters[i];
+                char.sprite.scale.x = this.scale_.x;
+                char.sprite.scale.y = this.scale_.y;
+                char.scale = this.scale_;
+                char.setPosition([pos, this.position_.y, 0]);
+                pos += game.fonts.getFont(this.font).getCodeSpacing(this.text[i]) * this.scale_.x;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
 
     TextObject.prototype.update = function (dt) {
         for (var i = 0, len = this.characters.length; i < len; ++i) {
@@ -70,6 +124,13 @@ var TextObject = (function () {
     };
 
     TextObject.prototype.render = function () {
+        //game.gl.activeTexture(game.gl.TEXTURE0);
+        //game.gl.bindTexture(game.gl.TEXTURE_2D, game.fonts.getFont(this.font).texture.texture);
+        //game.gl.uniform1i(game.spriteShader.uniforms["texture"], 0);
+        if (this.hidden) {
+            return;
+        }
+
         for (var i = 0, len = this.characters.length; i < len; ++i) {
             this.characters[i].render();
         }

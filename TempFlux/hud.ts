@@ -45,11 +45,14 @@ class StatusBar {
         this.background.render();
         this.foreground.render();
     }
-} 
+}
 
 class GameHUD {
     health: StatusBar;
     energy: StatusBar;
+
+    comboMeter: TextObject;
+    comboMeterTween: Tween;
 
     constructor() {
         var healthBG = new Sprite(700, 8, 1, 1);
@@ -89,6 +92,18 @@ class GameHUD {
         this.energy = new StatusBar(new TSM.vec2([0, 0]), 512, 32);
         this.energy.background = energyBG;
         this.energy.foreground = energyFG;
+
+        this.comboMeter = game.text.add(new TextObject("x0", "combo"));
+    }
+
+    resetCombo() {
+        this.comboMeter.hidden = true;
+    }
+
+    increaseCombo() {
+        this.comboMeterTween = TweenManager.register(new Tween(TweenFunctions.easeOutQuad, 3, 1, 0.25, TweenLoopMode.None, 0));
+        this.comboMeter.hidden = false;
+        this.comboMeter.setText("x" + game.killCombo);
     }
 
     update(dt: number) {
@@ -97,6 +112,11 @@ class GameHUD {
 
         this.energy.current = game.playerController.energy / game.playerController.energyMax;
         this.energy.update(dt);
+
+        if (this.comboMeterTween != null) {
+            var s = this.comboMeterTween.evaluate();
+            this.comboMeter.scale = new TSM.vec3([s, s, 1]);
+        }
     }
 
     render() {

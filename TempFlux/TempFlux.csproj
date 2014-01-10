@@ -36,6 +36,7 @@
     <Content Include="assets\enemies\starburst_horizontal.png" />
     <Content Include="assets\enemies\starburst_vertical.png" />
     <Content Include="assets\fonts\amazdoomleft_regular_48.PNG" />
+    <Content Include="assets\fonts\pp_handwriting_normal_48.PNG" />
     <Content Include="assets\game\bullet.png" />
     <Content Include="assets\game\energy_fg.png" />
     <Content Include="assets\game\explosion.png" />
@@ -100,6 +101,7 @@
     <Content Include="config.json" />
     <Content Include="packages.config" />
     <Content Include="assets\fonts\amazdoomleft_regular_48.json" />
+    <Content Include="assets\fonts\pp_handwriting_normal_48.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

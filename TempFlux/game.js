@@ -2,6 +2,8 @@
 var Game = (function () {
     function Game(canvas) {
         var _this = this;
+        this.killCombo = 0;
+        this.killComboTimer = 0;
         this.useFullWindow = false;
 
         this.canvas = canvas;
@@ -101,10 +103,8 @@ var Game = (function () {
         this.playerController = new LocalPlayerController(go);
         this.recordingControllers = [];
 
-        this.hud = new GameHUD();
         this.text = new TextObjectManager();
-
-        this.testText = this.text.add(new TextObject("Test"));
+        this.hud = new GameHUD();
 
         this.audio.playMusic("awake");
         this.aiDirector.initialize();
@@ -189,25 +189,33 @@ var Game = (function () {
         this.aiDirector.update(dt);
         this.collision.update(dt);
         this.camera.update(dt);
+
+        this.updateCombo(dt);
+
         this.particles.update(dt);
         TweenManager.update(dt);
         this.hud.update(dt);
         this.text.update(dt);
-
-        //this.testText.setText(this.renderedFrames.toString());
-        if (game.input.getKeyDown(Keys.L)) {
-            var str = "abcdefghijklmnopqrstuvwxyz";
-            for (var i = 0; i < str.length * str.length; ++i) {
-                var r1 = Util.randomRange(0, str.length - 1);
-                var r2 = Util.randomRange(0, str.length - 1);
-                str = Util.stringSwapIndices(str, r1, r2);
-            }
-            this.testText.setText(str);
-            this.testText.setText("abcABC123");
-        }
         this.audio.update(dt);
         this.input.update();
         this.elapsedTime += dt;
+    };
+
+    Game.prototype.updateCombo = function (dt) {
+        if (this.killComboTimer > 0) {
+            this.killComboTimer -= dt;
+        }
+
+        if (this.killComboTimer <= 0) {
+            this.killCombo = 0;
+            game.hud.resetCombo();
+        }
+    };
+
+    Game.prototype.increaseCombo = function () {
+        this.killComboTimer = 1;
+        this.killCombo++;
+        game.hud.increaseCombo();
     };
 
     Game.prototype.render = function () {
@@ -216,9 +224,9 @@ var Game = (function () {
         this.gameObjects.render();
         this.particles.render();
 
-        this.text.render();
         this.spriteShader.unlockFromCamera();
 
+        this.text.render();
         this.hud.render();
 
         ++this.renderedFrames;

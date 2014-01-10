@@ -197,6 +197,8 @@ var AIController = (function (_super) {
         this.spawnHealers(Util.randomRange(0, 3));
         game.camera.shake(0.1, 5);
 
+        game.increaseCombo();
+
         game.audio.playSound("enemy_death");
         this.gameObject.destroy();
         //var emitter = game.particles.createEmitter(5, game.textures.getTexture("smoke"));
