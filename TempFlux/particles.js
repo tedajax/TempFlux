@@ -47,6 +47,8 @@ var ParticleEmitter = (function () {
         this.emissionAngle = 0;
         this.emissionAngleWidth = 360;
         this.emissionRadius = 0;
+        this.minAngularVelocity = 0;
+        this.maxAngularVelocity = 0;
         this.particleStartAngle = 0;
         this.startSpeed = 50;
         this.startLifetime = 1;
@@ -72,7 +74,7 @@ var ParticleEmitter = (function () {
         particle.rotation.z = this.particleStartAngle;
         particle.speed = this.startSpeed;
         particle.lifetime = this.startLifetime;
-        particle.angularVelocity = Util.randomRangeF(-50, 50);
+        particle.angularVelocity = Util.randomRangeF(this.minAngularVelocity, this.maxAngularVelocity);
         particle.start();
 
         var particleId = this.currentParticleId++;

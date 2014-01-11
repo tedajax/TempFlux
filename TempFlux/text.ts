@@ -76,7 +76,7 @@ class TextObject {
     hidden: boolean;
 
     constructor(text: string, font: string) {
-        this.position_ = new TSM.vec3([400, 400, 0]);
+        this.position_ = new TSM.vec3([0, 0, 0]);
         this.scale_ = new TSM.vec3([1, 1, 1]);
         this.font = font;
         this.hidden = false;

@@ -178,7 +178,6 @@ var AIState;
 var AIController = (function (_super) {
     __extends(AIController, _super);
     function AIController(gameObject) {
-        var _this = this;
         _super.call(this, gameObject);
         this.damageFlashTime = 0.1;
         this.damageFlashTimer = 0;
@@ -186,10 +185,6 @@ var AIController = (function (_super) {
 
         this.aiState = 0 /* Idle */;
         this.stateStarted = false;
-
-        this.health.onDeath = function () {
-            _this.onDeath();
-        };
 
         this.spawnTween = TweenManager.register(new Tween(TweenFunctions.easeOutQuad, 0, 1, 0.5));
     }
@@ -201,11 +196,19 @@ var AIController = (function (_super) {
 
         game.audio.playSound("enemy_death");
         this.gameObject.destroy();
-        //var emitter = game.particles.createEmitter(5, game.textures.getTexture("smoke"));
-        //emitter.position.xyz = this.position.xyz;
-        //emitter.position.x += this.gameObject.sprite.width;
-        //emitter.position.y += this.gameObject.sprite.height;
-        //emitter.lifetime = 0.5;
+
+        if (Util.randomPercent() <= 100) {
+            var emitter = game.particles.createEmitter(0.2, game.textures.getTexture("fire"));
+            emitter.scale = new TSM.vec2([0.5, 0.5, 1]);
+            emitter.emissionRate = 25;
+            emitter.position.xyz = this.position.xyz;
+            emitter.position.x += this.gameObject.sprite.width;
+            emitter.position.y += this.gameObject.sprite.height;
+            emitter.startSpeed = 200;
+            emitter.minAngularVelocity = 1000;
+            emitter.maxAngularVelocity = 1000;
+            emitter.startLifetime = 0.5;
+        }
     };
 
     AIController.prototype.onDamage = function () {
@@ -392,7 +395,7 @@ var AIRedSquareController = (function (_super) {
 
     AIRedSquareController.prototype.stateAggressive = function (dt) {
         var direction = Util.direction2D(AIController.player.position, this.position);
-        var speed = 100;
+        var speed = 150;
         this.velocity.x = direction.x * speed;
         this.velocity.y = direction.y * speed;
 

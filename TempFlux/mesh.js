@@ -1,4 +1,4 @@
-var RenderBuffer = (function () {
+﻿var RenderBuffer = (function () {
     function RenderBuffer() {
     }
     RenderBuffer.prototype.clear = function () {
@@ -13,10 +13,7 @@ var RenderBuffer = (function () {
 
 var Mesh = (function () {
     function Mesh() {
-        this.vertexBuffer = new RenderBuffer();
-        this.indexBuffer = new RenderBuffer();
-        this.colorBuffer = new RenderBuffer();
-        this.texCoordBuffer = new RenderBuffer();
+        this.renderMode = game.gl.TRIANGLES;
     }
     Mesh.prototype.createBuffer = function (buffer, data, bufferType, drawMode, itemSize) {
         buffer.id = Mesh.currentBufferId++;
@@ -36,35 +33,67 @@ var Mesh = (function () {
     };
 
     Mesh.prototype.setVertices = function (verts) {
-        this.vertexBuffer.clear();
+        if (verts == null) {
+            return;
+        }
+
+        if (this.vertexBuffer != null) {
+            this.vertexBuffer.clear();
+        } else {
+            this.vertexBuffer = new RenderBuffer();
+        }
 
         this.vertices = verts;
         this.createBuffer(this.vertexBuffer, this.vertices, game.gl.ARRAY_BUFFER, game.gl.STATIC_DRAW, 3);
     };
 
     Mesh.prototype.setColors = function (colors) {
-        this.colorBuffer.clear();
+        if (colors == null) {
+            return;
+        }
+
+        if (this.colorBuffer != null) {
+            this.colorBuffer.clear();
+        } else {
+            this.colorBuffer = new RenderBuffer();
+        }
 
         this.colors = colors;
         this.createBuffer(this.colorBuffer, this.colors, game.gl.ARRAY_BUFFER, game.gl.STATIC_DRAW, 4);
     };
 
     Mesh.prototype.setTexCoords = function (texCoords) {
-        this.texCoordBuffer.clear();
+        if (texCoords == null) {
+            return;
+        }
+
+        if (this.texCoordBuffer != null) {
+            this.texCoordBuffer.clear();
+        } else {
+            this.texCoordBuffer = new RenderBuffer();
+        }
 
         this.texCoords = texCoords;
         this.createBuffer(this.texCoordBuffer, this.texCoords, game.gl.ARRAY_BUFFER, game.gl.STATIC_DRAW, 2);
     };
 
     Mesh.prototype.setIndices = function (indices) {
-        this.indexBuffer.clear();
+        if (indices == null) {
+            return;
+        }
+
+        if (this.indexBuffer != null) {
+            this.indexBuffer.clear();
+        } else {
+            this.indexBuffer = new RenderBuffer();
+        }
 
         this.indices = indices;
         this.createBuffer(this.indexBuffer, this.indices, game.gl.ELEMENT_ARRAY_BUFFER, game.gl.STATIC_DRAW, 1);
     };
 
     Mesh.prototype.render = function (shader) {
-        game.renderer.render(shader, this.vertexBuffer, this.colorBuffer, this.texCoordBuffer, this.indexBuffer);
+        game.renderer.render(shader, this.vertexBuffer, this.colorBuffer, this.texCoordBuffer, this.indexBuffer, this.renderMode);
     };
     Mesh.currentBufferId = 1;
     return Mesh;

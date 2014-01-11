@@ -53,14 +53,14 @@ var GameHUD = (function () {
         this.health.background = healthBG;
         this.health.foreground = healthFG;
 
-        var energyBG = new Sprite(700, 8, 1, 1);
+        var energyBG = new Sprite(700, 12, 1, 1);
         energyBG.setTexture(game.textures.getTexture("statusbar_bg_slice"));
         energyBG.setShader(game.spriteShader);
         energyBG.alpha = true;
         energyBG.position.x = (game.width + healthBG.width) / 2;
         energyBG.position.y = 520;
 
-        var energyFG = new Sprite(1, 6, 1, 1);
+        var energyFG = new Sprite(1, 10, 1, 1);
         energyFG.setTexture(game.textures.getTexture("energy_fg"));
         energyFG.setShader(game.spriteShader);
         energyFG.alpha = true;
@@ -73,6 +73,7 @@ var GameHUD = (function () {
         this.energy.foreground = energyFG;
 
         this.comboMeter = game.text.add(new TextObject("x0", "combo"));
+        this.comboMeter.position = new TSM.vec3([800, 100, 0]);
     }
     GameHUD.prototype.resetCombo = function () {
         this.comboMeter.hidden = true;
@@ -88,7 +89,7 @@ var GameHUD = (function () {
         this.health.current = game.playerController.health.current / game.playerController.health.max;
         this.health.update(dt);
 
-        this.energy.current = game.playerController.energy / game.playerController.energyMax;
+        this.energy.current = game.playerController.health.current / game.playerController.health.max;
         this.energy.update(dt);
 
         if (this.comboMeterTween != null) {
@@ -98,7 +99,7 @@ var GameHUD = (function () {
     };
 
     GameHUD.prototype.render = function () {
-        this.health.render();
+        //this.health.render();
         this.energy.render();
     };
     return GameHUD;

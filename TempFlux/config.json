@@ -102,6 +102,10 @@
           "url": "assets/game/smoke.png",
           "mode": "clamp"
         },
+        "fire": {
+          "url": "assets/game/fire.png",
+          "mode": "clamp"
+        },
         "spark": {
           "url": "assets/game/spark.png",
           "mode": "clamp"

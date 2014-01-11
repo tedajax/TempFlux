@@ -1,4 +1,4 @@
-﻿var TextCharacterObject = (function () {
+var TextCharacterObject = (function () {
     function TextCharacterObject(char, font) {
         this.font = font;
         this.position = new TSM.vec3([0, 0, 1]);
@@ -57,7 +57,7 @@
 
 var TextObject = (function () {
     function TextObject(text, font) {
-        this.position_ = new TSM.vec3([400, 400, 0]);
+        this.position_ = new TSM.vec3([0, 0, 0]);
         this.scale_ = new TSM.vec3([1, 1, 1]);
         this.font = font;
         this.hidden = false;

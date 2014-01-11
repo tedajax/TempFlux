@@ -34,8 +34,8 @@ class RenderManager {
         } 
     }
 
-    render(shader: Shader, verts: RenderBuffer, colors: RenderBuffer, texCoords: RenderBuffer, indices: RenderBuffer) {
-        if (this.lastVertexBuffer == null || this.lastVertexBuffer.id != verts.id) {
+    render(shader: Shader, verts: RenderBuffer, colors: RenderBuffer, texCoords: RenderBuffer, indices: RenderBuffer, renderMode: number = game.gl.TRIANGLES) {
+        if (verts != null && (this.lastVertexBuffer == null || this.lastVertexBuffer.id != verts.id)) {
             game.gl.bindBuffer(game.gl.ARRAY_BUFFER, verts.glBuffer);
             game.gl.vertexAttribPointer(shader.attribs["position"],
                 verts.itemSize,
@@ -45,7 +45,7 @@ class RenderManager {
             this.lastVertexBuffer = verts;
         }
 
-        if (this.lastColorBuffer == null || this.lastColorBuffer.id != colors.id) {
+        if (colors != null && (this.lastColorBuffer == null || this.lastColorBuffer.id != colors.id)) {
             game.gl.bindBuffer(game.gl.ARRAY_BUFFER, colors.glBuffer);
             game.gl.vertexAttribPointer(shader.attribs["color"],
                 colors.itemSize,
@@ -55,7 +55,7 @@ class RenderManager {
             this.lastColorBuffer = colors;
         }
 
-        if (this.lastTexCoordBuffer == null || this.lastTexCoordBuffer.id != texCoords.id) {
+        if (texCoords != null && (this.lastTexCoordBuffer == null || this.lastTexCoordBuffer.id != texCoords.id)) {
             game.gl.bindBuffer(game.gl.ARRAY_BUFFER, texCoords.glBuffer);
             game.gl.vertexAttribPointer(shader.attribs["uv"],
                 texCoords.itemSize,
@@ -65,11 +65,11 @@ class RenderManager {
             this.lastTexCoordBuffer = texCoords;
         }
 
-        if (this.lastIndexBuffer == null || this.lastIndexBuffer.id != indices.id) {
+        if (indices != null && (this.lastIndexBuffer == null || this.lastIndexBuffer.id != indices.id)) {
             game.gl.bindBuffer(game.gl.ELEMENT_ARRAY_BUFFER, indices.glBuffer);
             this.lastIndexBuffer = indices;
         }
 
-        game.gl.drawElements(game.gl.TRIANGLES, indices.count, game.gl.UNSIGNED_SHORT, 0);
+        game.gl.drawElements(renderMode, indices.count, game.gl.UNSIGNED_SHORT, 0);
     }
 } 

@@ -21,8 +21,15 @@ var Controller = (function () {
         this.health.onDamage = function () {
             _this.onDamage();
         };
+
+        this.health.onDeath = function () {
+            _this.onDeath();
+        };
     }
     Controller.prototype.onDamage = function () {
+    };
+
+    Controller.prototype.onDeath = function () {
     };
 
     Controller.prototype.generateWorldBoundary = function (w, h) {
@@ -230,11 +237,13 @@ var MissileController = (function (_super) {
 
         if (!this.worldBoundary.pointInside(this.position.xy)) {
             this.gameObject.destroy();
+            this.explode();
         }
 
         this.lifetime -= dt;
         if (this.lifetime < 0) {
             this.gameObject.destroy();
+            this.explode();
         }
 
         this.gameObject.position = this.position;
@@ -285,8 +294,22 @@ var MissileController = (function (_super) {
 
         if (!this.gameObject.shouldDestroy) {
             game.audio.playSound("hit_enemy");
+            this.explode();
         }
         this.gameObject.destroy();
+    };
+
+    MissileController.prototype.explode = function () {
+        var emitter = game.particles.createEmitter(0.2, game.textures.getTexture("fire"));
+        emitter.scale = new TSM.vec2([0.5, 0.5, 1]);
+        emitter.emissionRate = 25;
+        emitter.position.xyz = this.position.xyz;
+        emitter.position.x += this.gameObject.sprite.width / 2;
+        emitter.position.y += this.gameObject.sprite.height / 2;
+        emitter.startSpeed = 100;
+        emitter.minAngularVelocity = 1000;
+        emitter.maxAngularVelocity = 1000;
+        emitter.startLifetime = 0.5;
     };
     return MissileController;
 })(Controller);
@@ -428,7 +451,7 @@ var LocalPlayerController = (function (_super) {
         }
 
         if (game.input.getMouseButton(MouseButtons.RIGHT)) {
-            if (this.health.current > 5) {
+            if (this.health.current > 5 || game.infiniteEnergy) {
                 timeScale = 0.25;
                 this.health.current -= 25 * dt;
             } else {

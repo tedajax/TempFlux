@@ -99,4 +99,29 @@ class MeshFactory {
 
         return quad;
     }
+
+    createPolygonMesh(points: TSM.vec3[]) {
+        var polygon = new Mesh();
+
+        var verts = [];
+
+        for (var i = 0, len = points.length; i < len; ++i) {
+            var p = points[i];
+            verts.push(p.x);
+            verts.push(p.y);
+            verts.push(p.z);
+        }
+
+        var indices = [];
+        for (var i = 0, len = points.length; i < len; ++i) {
+            indices.push(i);
+        }
+
+        indices.push(0);
+
+        polygon.renderMode = game.gl.LINE_STRIP;
+        polygon.buildMesh(verts, null, null, indices);
+
+        return polygon;
+    }
 } 

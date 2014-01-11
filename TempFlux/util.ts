@@ -88,6 +88,10 @@ class Util {
         return radians % Util.TwoPi;
     }
 
+    static randomPercent() {
+        return Util.randomRange(0, 100);
+    }
+
     static randomRange(min: number, max: number) {
         return Math.floor(Math.random() * ((max + 1) - min) + min);
     }

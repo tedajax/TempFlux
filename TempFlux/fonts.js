@@ -1,4 +1,4 @@
-﻿var FontChar = (function () {
+var FontChar = (function () {
     function FontChar(code, width, offset, rect) {
         this.code = code;
         this.width = width;

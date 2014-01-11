@@ -48,6 +48,9 @@ class ParticleEmitter {
     emissionAngleWidth: number = 360;
     emissionRadius: number = 0;
 
+    minAngularVelocity: number = 0;
+    maxAngularVelocity: number = 0;
+
     particleStartAngle: number = 0;
 
     startSpeed: number = 50;
@@ -80,7 +83,7 @@ class ParticleEmitter {
         particle.rotation.z = this.particleStartAngle;
         particle.speed = this.startSpeed;
         particle.lifetime = this.startLifetime;
-        particle.angularVelocity = Util.randomRangeF(-50, 50);
+        particle.angularVelocity = Util.randomRangeF(this.minAngularVelocity, this.maxAngularVelocity);
         particle.start();
 
         var particleId = this.currentParticleId++;

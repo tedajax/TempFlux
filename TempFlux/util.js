@@ -1,4 +1,4 @@
-var Util = (function () {
+﻿var Util = (function () {
     function Util() {
     }
     Util.toDegrees = function (radians) {
@@ -83,6 +83,10 @@ var Util = (function () {
 
     Util.wrapRadians = function (radians) {
         return radians % Util.TwoPi;
+    };
+
+    Util.randomPercent = function () {
+        return Util.randomRange(0, 100);
     };
 
     Util.randomRange = function (min, max) {

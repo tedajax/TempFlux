@@ -93,6 +93,52 @@ var Shader = (function () {
     return Shader;
 })();
 
+var LineShader = (function (_super) {
+    __extends(LineShader, _super);
+    function LineShader() {
+        _super.call(this);
+        this.name = "line";
+    }
+    LineShader.prototype.initLocales = function () {
+        _super.prototype.initLocales.call(this);
+
+        game.gl.useProgram(this.program);
+
+        this.addAttribute("position", "aVertexPosition");
+
+        this.addUniform("world", "uWorld");
+        this.addUniform("view", "uView");
+        this.addUniform("projection", "uProjection");
+        this.addUniform("color", "uColor");
+    };
+
+    LineShader.prototype.frameDrawSetup = function () {
+        _super.prototype.frameDrawSetup.call(this);
+
+        game.gl.useProgram(this.program);
+
+        this.projectionMatrix = game.camera.getProjectionMatrix();
+        this.viewMatrix = game.camera.getViewMatrix();
+
+        game.gl.uniformMatrix4fv(this.uniforms["projection"], false, this.projectionMatrix.all());
+        game.gl.uniformMatrix4fv(this.uniforms["view"], false, this.viewMatrix.all());
+    };
+
+    LineShader.prototype.unlockFromCamera = function () {
+        game.gl.useProgram(this.program);
+        game.gl.uniformMatrix4fv(this.uniforms["view"], false, game.camera.getFrozenViewMatrix().all());
+    };
+
+    LineShader.prototype.objectDrawSetup = function () {
+        _super.prototype.objectDrawSetup.call(this);
+
+        game.gl.useProgram(this.program);
+
+        game.gl.uniform4fv(this.uniforms["color"], this.color);
+    };
+    return LineShader;
+})(Shader);
+
 var SpriteShader = (function (_super) {
     __extends(SpriteShader, _super);
     function SpriteShader() {
@@ -120,7 +166,8 @@ var SpriteShader = (function (_super) {
     SpriteShader.prototype.frameDrawSetup = function () {
         _super.prototype.frameDrawSetup.call(this);
 
-        //game.gl.useProgram(this.program);
+        game.gl.useProgram(this.program);
+
         this.projectionMatrix = game.camera.getProjectionMatrix();
         this.viewMatrix = game.camera.getViewMatrix();
 
@@ -129,6 +176,7 @@ var SpriteShader = (function (_super) {
     };
 
     SpriteShader.prototype.unlockFromCamera = function () {
+        game.gl.useProgram(this.program);
         game.gl.uniformMatrix4fv(this.uniforms["view"], false, game.camera.getFrozenViewMatrix().all());
     };
 
@@ -144,7 +192,8 @@ var SpriteShader = (function (_super) {
     SpriteShader.prototype.objectDrawSetup = function () {
         _super.prototype.objectDrawSetup.call(this);
 
-        //game.gl.useProgram(this.program);
+        game.gl.useProgram(this.program);
+
         game.gl.uniformMatrix4fv(this.uniforms["world"], false, this.worldMatrix.all());
         game.gl.uniform4fv(this.uniforms["tintColor"], this.tintColor);
         game.gl.uniform4fv(this.uniforms["addColor"], this.addColor);

@@ -4,6 +4,7 @@ var Game = (function () {
         var _this = this;
         this.killCombo = 0;
         this.killComboTimer = 0;
+        this.infiniteEnergy = false;
         this.useFullWindow = false;
 
         this.canvas = canvas;
@@ -80,6 +81,10 @@ var Game = (function () {
         this.spriteShader.initialize();
         this.spriteShader.initLocales();
 
+        this.lineShader = new LineShader();
+        this.lineShader.initialize();
+        this.lineShader.initLocales();
+
         this.gameObjects = new GameObjectManager();
 
         this.collision = new CollisionManager();
@@ -110,6 +115,13 @@ var Game = (function () {
         this.aiDirector.initialize();
 
         this.particles = new ParticleEmitterManager();
+
+        this.polytest = new Primitive2D();
+        this.polytest.addPoint(new TSM.vec3([0, 0, 0]));
+        this.polytest.addPoint(new TSM.vec3([200, 0, 0]));
+        this.polytest.addPoint(new TSM.vec3([200, 200, 0]));
+        this.polytest.addPoint(new TSM.vec3([0, 200, 0]));
+        this.polytest.rebuildMesh();
     };
 
     Game.prototype.initializeAnimations = function () {
@@ -221,13 +233,16 @@ var Game = (function () {
     Game.prototype.render = function () {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         this.spriteShader.frameDrawSetup();
-        this.gameObjects.render();
-        this.particles.render();
+        this.lineShader.frameDrawSetup();
 
+        //this.gameObjects.render();
+        //this.particles.render();
         this.spriteShader.unlockFromCamera();
 
         this.text.render();
-        this.hud.render();
+
+        //this.hud.render();
+        this.polytest.render();
 
         ++this.renderedFrames;
     };

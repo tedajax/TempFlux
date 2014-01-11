@@ -23,9 +23,16 @@ class Controller {
         this.health.onDamage = () => {
             this.onDamage();
         }
+
+        this.health.onDeath = () => {
+            this.onDeath();
+        };
     }
 
     onDamage() {
+    }
+
+    onDeath() {
     }
 
     generateWorldBoundary(w: number = this.gameObject.sprite.width, h: number = this.gameObject.sprite.height) {
@@ -220,11 +227,13 @@ class MissileController extends Controller {
 
         if (!this.worldBoundary.pointInside(this.position.xy)) {
             this.gameObject.destroy();
+            this.explode();
         }
 
         this.lifetime -= dt;
         if (this.lifetime < 0) {
             this.gameObject.destroy();
+            this.explode();
         }        
 
         this.gameObject.position = this.position;
@@ -271,8 +280,22 @@ class MissileController extends Controller {
 
         if (!this.gameObject.shouldDestroy) {
             game.audio.playSound("hit_enemy");
+            this.explode();
         }
         this.gameObject.destroy();
+    }
+
+    explode() {
+        var emitter = game.particles.createEmitter(0.2, game.textures.getTexture("fire"));
+        emitter.scale = new TSM.vec2([0.5, 0.5, 1]);
+        emitter.emissionRate = 25;
+        emitter.position.xyz = this.position.xyz;
+        emitter.position.x += this.gameObject.sprite.width / 2;
+        emitter.position.y += this.gameObject.sprite.height / 2;
+        emitter.startSpeed = 100;
+        emitter.minAngularVelocity = 1000;
+        emitter.maxAngularVelocity = 1000;
+        emitter.startLifetime = 0.5;
     }
 }
 
@@ -432,7 +455,7 @@ class LocalPlayerController extends Controller {
         }
 
         if (game.input.getMouseButton(MouseButtons.RIGHT)) {
-            if (this.health.current > 5) {
+            if (this.health.current > 5 || game.infiniteEnergy) {
                 timeScale = 0.25;
                 this.health.current -= 25 * dt;
             } else {

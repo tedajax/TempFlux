@@ -34,6 +34,8 @@ class Game {
     hud: GameHUD;    
 
     spriteShader: SpriteShader;
+    lineShader: LineShader;
+
     worldBoundary: Rectangle;
 
     gridBG: Sprite;
@@ -41,6 +43,10 @@ class Game {
 
     killCombo: number = 0;
     killComboTimer: number = 0;
+
+    infiniteEnergy: boolean = false;
+
+    polytest: Primitive2D
 
     constructor(canvas: HTMLCanvasElement) {
         this.useFullWindow = false;
@@ -108,6 +114,10 @@ class Game {
         this.spriteShader.initialize();
         this.spriteShader.initLocales();
 
+        this.lineShader = new LineShader();
+        this.lineShader.initialize();
+        this.lineShader.initLocales();
+
         this.gameObjects = new GameObjectManager();
 
         this.collision = new CollisionManager();
@@ -138,6 +148,13 @@ class Game {
         this.aiDirector.initialize();
 
         this.particles = new ParticleEmitterManager();
+
+        this.polytest = new Primitive2D();
+        this.polytest.addPoint(new TSM.vec3([0, 0, 0]));
+        this.polytest.addPoint(new TSM.vec3([200, 0, 0]));
+        this.polytest.addPoint(new TSM.vec3([200, 200, 0]));
+        this.polytest.addPoint(new TSM.vec3([0, 200, 0]));
+        this.polytest.rebuildMesh();
     }
 
     initializeAnimations() {
@@ -249,15 +266,17 @@ class Game {
     render() {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         this.spriteShader.frameDrawSetup();
-        this.gameObjects.render();
-        this.particles.render();
+        this.lineShader.frameDrawSetup();
 
-        
+        //this.gameObjects.render();
+        //this.particles.render();
+                
         this.spriteShader.unlockFromCamera();
 
         this.text.render();
-        this.hud.render();
-        
+        //this.hud.render();
+
+        this.polytest.render();
 
         ++this.renderedFrames;
     }
