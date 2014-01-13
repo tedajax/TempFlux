@@ -4,6 +4,7 @@ class EnemyFactory {
     constructor() {
         this.enemyConstructors = {};
         this.enemyConstructors["red_square"] = this.createRedSquare;
+        this.enemyConstructors["pinwheel"] = this.createPinwheel;
         this.enemyConstructors["green_triangle"] = this.createGreenTriangle;
         this.enemyConstructors["starburst"] = this.createStarburst;
     }
@@ -28,6 +29,25 @@ class EnemyFactory {
         var go = new GameObject(null, null, "RedSquare", sprite);
         go.tag = GameObjectTag.Enemy;
         var controller = new AIRedSquareController(null);
+        controller.position.xy = position.xy;
+        controller.posess(go);
+
+        game.gameObjects.add(go);
+        go.addRectangleCollider();
+    }
+
+    createPinwheel(position: TSM.vec3) {
+        var sprite = new Sprite(32, 32);
+        sprite.position.xy = position.xy;
+        sprite.setShader(game.spriteShader);
+        sprite.setTexture(game.textures.getTexture("pinwheel"));
+        sprite.alpha = true;
+        sprite.scale.x = 0;
+        sprite.scale.y = 0;
+
+        var go = new GameObject(null, null, "Pinwheel", sprite);
+        go.tag = GameObjectTag.Enemy;
+        var controller = new AIPinwheelController(null);
         controller.position.xy = position.xy;
         controller.posess(go);
 

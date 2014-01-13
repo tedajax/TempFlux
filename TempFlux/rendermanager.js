@@ -1,4 +1,4 @@
-﻿var RenderManager = (function () {
+var RenderManager = (function () {
     function RenderManager() {
         this.lastVertexBuffer = null;
         this.lastColorBuffer = null;

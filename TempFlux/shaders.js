@@ -35,6 +35,18 @@ var Shader = (function () {
         game.gl.enableVertexAttribArray(this.attribs[name]);
     };
 
+    Shader.prototype.enableAttribArrays = function () {
+        for (var name in this.attribs) {
+            game.gl.enableVertexAttribArray(this.attribs[name]);
+        }
+    };
+
+    Shader.prototype.disableAttribArrays = function () {
+        for (var name in this.attribs) {
+            game.gl.disableVertexAttribArray(this.attribs[name]);
+        }
+    };
+
     Shader.prototype.addUniform = function (name, uniform) {
         this.uniforms[name] = game.gl.getUniformLocation(this.program, uniform);
     };
@@ -105,6 +117,8 @@ var LineShader = (function (_super) {
         game.gl.useProgram(this.program);
 
         this.addAttribute("position", "aVertexPosition");
+        this.addAttribute("color", "aVertexColor");
+        this.addAttribute("uv", "aVertexUV");
 
         this.addUniform("world", "uWorld");
         this.addUniform("view", "uView");

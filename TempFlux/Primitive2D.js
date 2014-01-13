@@ -11,7 +11,7 @@ var Primitive2D = (function (_super) {
 
         this.points = [];
         this.color = new Float32Array([1, 1, 1, 1]);
-        this.setShader(game.lineShader);
+        //this.setShader(game.lineShader);
     }
     Primitive2D.prototype.addPoint = function (point) {
         this.points.push(point);
@@ -35,4 +35,4 @@ var Primitive2D = (function (_super) {
     };
     return Primitive2D;
 })(Renderable);
-//# sourceMappingURL=Primitive2D.js.map
+//# sourceMappingURL=primitive2d.js.map

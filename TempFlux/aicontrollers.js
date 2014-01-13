@@ -10,14 +10,18 @@ var EnemySpawnerController = (function (_super) {
         _super.call(this, null);
         this.minPlayerDistance = 200;
         this.minPlayerDistanceSqr = this.minPlayerDistance * this.minPlayerDistance;
+        this.maxEnemies = 10;
+        this.enemyCount = 0;
 
         this.enableSpawning = true;
 
         this.enemyMap = [];
-        this.enemyMap[0] = "red_square";
-        this.enemyMap[1] = "green_triangle";
-        this.enemyMap[2] = "starburst";
 
+        //this.enemyMap[0] = "red_square";
+        this.enemyMap[0] = "pinwheel";
+
+        //this.enemyMap[2] = "green_triangle";
+        //this.enemyMap[3] = "starburst";
         this.spawnPoints = [];
         for (var i = 0; i < 5; ++i) {
             for (var j = 0; j < 5; ++j) {
@@ -96,6 +100,18 @@ var EnemySpawnerController = (function (_super) {
     EnemySpawnerController.prototype.spawnLocationValid = function (position) {
         return true;
     };
+
+    EnemySpawnerController.prototype.spawnAllowed = function () {
+        return (this.enemyCount < this.maxEnemies);
+    };
+
+    EnemySpawnerController.prototype.enemySpawned = function () {
+        this.enemyCount++;
+    };
+
+    EnemySpawnerController.prototype.enemyDied = function () {
+        this.enemyCount--;
+    };
     return EnemySpawnerController;
 })(Controller);
 
@@ -109,6 +125,7 @@ var SpawnWorker = (function () {
         this.spawnDelay = 0;
         this.enemiesPerSpawn = 0;
         this.spawnTimer = this.spawnDelay;
+        this.pendingSpawn = false;
     }
     SpawnWorker.prototype.on = function () {
         this.enabled = true;
@@ -141,28 +158,39 @@ var SpawnWorker = (function () {
 
         this.spawnTimer -= dt;
         if (this.spawnTimer <= 0) {
-            for (var i = 0; i < this.enemiesPerSpawn; ++i) {
-                var pos = this.spawnController.spawnPoints[this.spawnerIndex].copy();
-                pos.x += Util.randomRange(-50, 50);
-                pos.y += Util.randomRange(-50, 50);
-                game.enemies.createEnemy(this.spawnController.enemyMap[this.enemyType], pos);
-                this.spawnCounter++;
-            }
+            this.pendingSpawn = true;
+        }
 
-            this.spawnTimer = this.spawnDelay;
-
-            if (this.spawnCounter >= this.spawnRunCount) {
-                this.enabled = false;
-                this.spawnController.spawnerComplete(this.spawnWorkerIndex);
+        if (this.pendingSpawn) {
+            if (this.spawnController.spawnAllowed()) {
+                this.spawnEnemy();
             }
+        }
+    };
 
-            if (this.randomizeEnemy) {
-                this.enemyType = Util.randomRange(0, this.spawnController.enemyMap.length - 1);
-            }
+    SpawnWorker.prototype.spawnEnemy = function () {
+        for (var i = 0; i < this.enemiesPerSpawn; ++i) {
+            var pos = this.spawnController.spawnPoints[this.spawnerIndex].copy();
+            pos.x += Util.randomRange(-50, 50);
+            pos.y += Util.randomRange(-50, 50);
+            game.enemies.createEnemy(this.spawnController.enemyMap[this.enemyType], pos);
+            this.spawnCounter++;
+            this.spawnController.enemySpawned();
+        }
 
-            if (this.randomizeSpawner) {
-                this.spawnerIndex = this.spawnController.chooseSpawnPoint();
-            }
+        this.spawnTimer = this.spawnDelay;
+
+        if (this.spawnCounter >= this.spawnRunCount) {
+            this.enabled = false;
+            this.spawnController.spawnerComplete(this.spawnWorkerIndex);
+        }
+
+        if (this.randomizeEnemy) {
+            this.enemyType = Util.randomRange(0, this.spawnController.enemyMap.length - 1);
+        }
+
+        if (this.randomizeSpawner) {
+            this.spawnerIndex = this.spawnController.chooseSpawnPoint();
         }
     };
     return SpawnWorker;
@@ -196,6 +224,8 @@ var AIController = (function (_super) {
 
         game.audio.playSound("enemy_death");
         this.gameObject.destroy();
+
+        game.aiDirector.enemyDied();
 
         if (Util.randomPercent() <= 100) {
             var emitter = game.particles.createEmitter(0.2, game.textures.getTexture("fire"));
@@ -403,6 +433,22 @@ var AIRedSquareController = (function (_super) {
         this.position.y += this.velocity.y * dt;
     };
     return AIRedSquareController;
+})(AIController);
+
+var AIPinwheelController = (function (_super) {
+    __extends(AIPinwheelController, _super);
+    function AIPinwheelController() {
+        _super.apply(this, arguments);
+    }
+    AIPinwheelController.prototype.startStateIdle = function () {
+    };
+
+    AIPinwheelController.prototype.stateIdle = function (dt) {
+        this.rotation.z += 5 * dt;
+
+        this.position.x += 50 * dt;
+    };
+    return AIPinwheelController;
 })(AIController);
 
 var AIGreenTriangleController = (function (_super) {

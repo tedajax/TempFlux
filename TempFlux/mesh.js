@@ -1,4 +1,4 @@
-﻿var RenderBuffer = (function () {
+var RenderBuffer = (function () {
     function RenderBuffer() {
     }
     RenderBuffer.prototype.clear = function () {

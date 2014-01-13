@@ -1,4 +1,4 @@
-﻿var SlidingSprite = (function () {
+var SlidingSprite = (function () {
     function SlidingSprite(position, height, sliceName, capName) {
     }
     Object.defineProperty(SlidingSprite.prototype, "fillPercentage", {

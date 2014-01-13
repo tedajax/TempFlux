@@ -104,12 +104,22 @@ class MeshFactory {
         var polygon = new Mesh();
 
         var verts = [];
+        var colors = [];
+        var uvs = [];
 
         for (var i = 0, len = points.length; i < len; ++i) {
             var p = points[i];
             verts.push(p.x);
             verts.push(p.y);
             verts.push(p.z);
+
+            colors.push(1.0);
+            colors.push(1.0);
+            colors.push(1.0);
+            colors.push(1.0);
+
+            uvs.push(0.0);
+            uvs.push(0.0);
         }
 
         var indices = [];
@@ -117,10 +127,8 @@ class MeshFactory {
             indices.push(i);
         }
 
-        indices.push(0);
-
-        polygon.renderMode = game.gl.LINE_STRIP;
-        polygon.buildMesh(verts, null, null, indices);
+        polygon.renderMode = game.gl.LINE_LOOP;
+        polygon.buildMesh(verts, colors, uvs, indices);
 
         return polygon;
     }

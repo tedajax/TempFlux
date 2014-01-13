@@ -38,6 +38,18 @@ class Shader {
         game.gl.enableVertexAttribArray(this.attribs[name]);
     }
 
+    enableAttribArrays() {
+        for (var name in this.attribs) {
+            game.gl.enableVertexAttribArray(this.attribs[name]);
+        }
+    }
+
+    disableAttribArrays() {
+        for (var name in this.attribs) {
+            game.gl.disableVertexAttribArray(this.attribs[name]);
+        }
+    }
+
     addUniform(name: string, uniform: string) {
         this.uniforms[name] = game.gl.getUniformLocation(this.program, uniform);
     }
@@ -111,6 +123,8 @@ class LineShader extends Shader {
         game.gl.useProgram(this.program);
 
         this.addAttribute("position", "aVertexPosition");
+        this.addAttribute("color", "aVertexColor");
+        this.addAttribute("uv", "aVertexUV");        
 
         this.addUniform("world", "uWorld");
         this.addUniform("view", "uView");

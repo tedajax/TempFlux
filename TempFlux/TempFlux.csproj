@@ -83,6 +83,7 @@
     <TypeScriptCompile Include="particles.ts" />
     <TypeScriptCompile Include="hud.ts" />
     <TypeScriptCompile Include="fonts.ts" />
+    <TypeScriptCompile Include="primitive2d.ts" />
     <Content Include="Scripts\typings\threejs\three.d.ts" />
     <Content Include="Scripts\typings\webaudioapi\waa-20120802.d.ts" />
     <Content Include="Scripts\typings\webaudioapi\waa-nightly.d.ts" />
@@ -102,6 +103,8 @@
     <Content Include="packages.config" />
     <Content Include="assets\fonts\amazdoomleft_regular_48.json" />
     <Content Include="assets\fonts\pp_handwriting_normal_48.json" />
+    <Content Include="assets\shaders\line.frag" />
+    <Content Include="assets\shaders\line.vert" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

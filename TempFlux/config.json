@@ -30,6 +30,10 @@
           "url": "assets/enemies/starburst_horizontal.png",
           "mode": "clamp"
         },
+        "pinwheel": {
+          "url": "assets/enemies/pinwheel.png",
+          "mode": "clamp"
+        },
         "statusbar_bg_cap": {
           "url": "assets/game/statusbar_bg_cap.png",
           "mode": "clamp"

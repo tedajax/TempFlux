@@ -4,6 +4,9 @@ class EnemySpawnerController extends Controller {
     minPlayerDistance: number = 200;
     minPlayerDistanceSqr: number = this.minPlayerDistance * this.minPlayerDistance;
 
+    maxEnemies: number = 10;
+    enemyCount: number = 0;
+    
     spawners: SpawnWorker[];
     freeSpawners: number[];
 
@@ -19,9 +22,10 @@ class EnemySpawnerController extends Controller {
         this.enableSpawning = true;
 
         this.enemyMap = [];
-        this.enemyMap[0] = "red_square";
-        this.enemyMap[1] = "green_triangle";
-        this.enemyMap[2] = "starburst";
+        //this.enemyMap[0] = "red_square";
+        this.enemyMap[0] = "pinwheel";
+        //this.enemyMap[2] = "green_triangle";
+        //this.enemyMap[3] = "starburst";
 
         this.spawnPoints = [];
         for (var i = 0; i < 5; ++i) {
@@ -115,6 +119,18 @@ class EnemySpawnerController extends Controller {
     spawnLocationValid(position: TSM.vec3): boolean {
         return true;
     }
+
+    spawnAllowed(): boolean {
+        return (this.enemyCount < this.maxEnemies);
+    }
+
+    enemySpawned() {
+        this.enemyCount++;
+    }
+
+    enemyDied() {
+        this.enemyCount--;
+    }
 }
 
 class SpawnWorker {
@@ -134,6 +150,8 @@ class SpawnWorker {
     randomizeEnemy: boolean;
     randomizeSpawner: boolean;
 
+    pendingSpawn: boolean;
+
     constructor(spawnController: EnemySpawnerController, index: number) {
         this.spawnController = spawnController;
         this.spawnWorkerIndex = index;
@@ -143,6 +161,7 @@ class SpawnWorker {
         this.spawnDelay = 0;
         this.enemiesPerSpawn = 0;
         this.spawnTimer = this.spawnDelay;
+        this.pendingSpawn = false;
     }
 
     on() {
@@ -173,28 +192,39 @@ class SpawnWorker {
 
         this.spawnTimer -= dt;
         if (this.spawnTimer <= 0) {
-            for (var i = 0; i < this.enemiesPerSpawn; ++i) {
-                var pos = this.spawnController.spawnPoints[this.spawnerIndex].copy();
-                pos.x += Util.randomRange(-50, 50);
-                pos.y += Util.randomRange(-50, 50);
-                game.enemies.createEnemy(this.spawnController.enemyMap[this.enemyType], pos);
-                this.spawnCounter++;
-            }
+            this.pendingSpawn = true;
+        }
 
-            this.spawnTimer = this.spawnDelay;           
-
-            if (this.spawnCounter >= this.spawnRunCount) {
-                this.enabled = false;
-                this.spawnController.spawnerComplete(this.spawnWorkerIndex);
+        if (this.pendingSpawn) {
+            if (this.spawnController.spawnAllowed()) {
+                this.spawnEnemy();
             }
+        }
+    }
 
-            if (this.randomizeEnemy) {
-                this.enemyType = Util.randomRange(0, this.spawnController.enemyMap.length - 1);
-            }
+    spawnEnemy() {
+        for (var i = 0; i < this.enemiesPerSpawn; ++i) {
+            var pos = this.spawnController.spawnPoints[this.spawnerIndex].copy();
+            pos.x += Util.randomRange(-50, 50);
+            pos.y += Util.randomRange(-50, 50);
+            game.enemies.createEnemy(this.spawnController.enemyMap[this.enemyType], pos);
+            this.spawnCounter++;
+            this.spawnController.enemySpawned();
+        }
 
-            if (this.randomizeSpawner) {
-                this.spawnerIndex = this.spawnController.chooseSpawnPoint();
-            }
+        this.spawnTimer = this.spawnDelay;
+
+        if (this.spawnCounter >= this.spawnRunCount) {
+            this.enabled = false;
+            this.spawnController.spawnerComplete(this.spawnWorkerIndex);
+        }
+
+        if (this.randomizeEnemy) {
+            this.enemyType = Util.randomRange(0, this.spawnController.enemyMap.length - 1);
+        }
+
+        if (this.randomizeSpawner) {
+            this.spawnerIndex = this.spawnController.chooseSpawnPoint();
         }
     }
 }
@@ -234,6 +264,8 @@ class AIController extends Controller {
 
         game.audio.playSound("enemy_death");
         this.gameObject.destroy();
+
+        game.aiDirector.enemyDied();
 
         if (Util.randomPercent() <= 100) {
             var emitter = game.particles.createEmitter(0.2, game.textures.getTexture("fire"));
@@ -433,6 +465,18 @@ class AIRedSquareController extends AIController {
 
         this.position.x += this.velocity.x * dt;
         this.position.y += this.velocity.y * dt;
+    }
+}
+
+class AIPinwheelController extends AIController {
+    startStateIdle() {
+
+    }
+
+    stateIdle(dt: number) {
+        this.rotation.z += 5 * dt;
+
+        this.position.x += 50 * dt;
     }
 }
 
